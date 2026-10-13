@@ -1,0 +1,569 @@
+{
+  "schema": "memlite_new_committed_outputs_audit_v1",
+  "observed_at": "2026-10-13T13:56:55.097143+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/manifest.json",
+    "sha256": "ec02111c9e0944fe34d5f01f4470d83320d7ff82d62ca364e3b69d79f33a8ba5"
+  },
+  "read_only_auditor_commit": "691d2e43abcc42538a0ddf83d2f208da55b59dcb",
+  "auditor": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v6-standalone/scripts/eval/continue_memlite_final.py",
+    "sha256": "5b0a8aad964d58998b92cc71705b82615e71e66e63eb51973812f313d4349e86"
+  },
+  "excluded_prior_cases": 14,
+  "new_cases": 18,
+  "new_controls": 177978,
+  "q_sum": 0,
+  "successes": 0,
+  "all_current_committed": 32,
+  "cases": [
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 7961,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n2-i8/json/clean_a_trumpet_309_0.json",
+        "sha256": "501e93c69212a3b6488b73bef14cf19f6ff7e5d6683572fffab90dc16d7a559b"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n2-i8/videos/clean_a_trumpet_309_0.mp4",
+        "sha256": "58c242e93ebf69a9eb9d05021583c80d6f201fc959229350cc89c2d659d275fa"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "7961"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 7961,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n2-i8/json/clean_a_trumpet_310_0.json",
+        "sha256": "b5f8a4b97dfc3053537b60b8e8ef73ea067fe2e2a4ab3755f895338a93419cea"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n2-i8/videos/clean_a_trumpet_310_0.mp4",
+        "sha256": "121dd29b30919cff6634aa4831aefefc9d4af283c582010c413e0eebbe40b011"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "7961"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "cook_a_brisket",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 11003,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n4-i0/json/cook_a_brisket_301_0.json",
+        "sha256": "e3a11d07cce5baf36ae7579327d3b18f983f036604e554945d26bea247152a89"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n4-i0/videos/cook_a_brisket_301_0.mp4",
+        "sha256": "422caa0f49f640aa05afb7cebb5d2c3dee57a0f64756db2b43ecaad3036d4ca5"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11003"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "cook_a_brisket",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 11003,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n4-i0/json/cook_a_brisket_302_0.json",
+        "sha256": "e2761472f6aaaa634dd9d7ab125706172a2d5dd209369c0b862ec8e019a5350f"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n4-i0/videos/cook_a_brisket_302_0.mp4",
+        "sha256": "739ae12b826c741550022f8ef6f4deaa904a1bf20a54271127b5f25f6f6419c8"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11003"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "cook_a_brisket",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 11003,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n4-i0/json/cook_a_brisket_303_0.json",
+        "sha256": "1b34755f060c3207d85d687b4a7948c0508fde147d268f58a2316d8c8368e8ab"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n4-i0/videos/cook_a_brisket_303_0.mp4",
+        "sha256": "846ec0318e5abee3170b6c71b4fc73b23d34608db8061a359e64df48880d9272"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11003"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "cook_a_brisket",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 11003,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n4-i0/json/cook_a_brisket_304_0.json",
+        "sha256": "37adf7160bd4befbd04569dff8d170a671f34053316f0a3f118c8f060590476e"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n4-i0/videos/cook_a_brisket_304_0.mp4",
+        "sha256": "6fc2764f8da2af1ab7fd8db4a4259445f7103c423501c17704fa591fade8f8f2"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11003"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "cook_bacon",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 11520,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_bacon-n4-i0/json/cook_bacon_301_0.json",
+        "sha256": "6e075dcce6a03dcb55b5678ebf34f6adbf783ca40a66da05ecaed51fdded2524"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_bacon-n4-i0/videos/cook_bacon_301_0.mp4",
+        "sha256": "43e461324f40f5d3cb8fbccf853b50550cb849c775d2ce5245fd19aadab21ce5"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11520"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "cook_bacon",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 11520,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_bacon-n4-i0/json/cook_bacon_302_0.json",
+        "sha256": "ecd92c334db367dba1a170444936ff80daca8425d238dc108a095aba118ad400"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_bacon-n4-i0/videos/cook_bacon_302_0.mp4",
+        "sha256": "130640b5cdc39b81538bd03c977693fce48750d7f93f7e0cc63c29df2f581812"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11520"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "cook_bacon",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 11520,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_bacon-n4-i0/json/cook_bacon_303_0.json",
+        "sha256": "6bd834252faf432e976d05a12c14295f0aaa3e6e79c5a89e76291a0d2deac26d"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_bacon-n4-i0/videos/cook_bacon_303_0.mp4",
+        "sha256": "1cc16d8ff4e8697874ca843734f7ebe0d23f0c3bf958a2fd385f57b73a085095"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11520"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "cook_bacon",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 11520,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_bacon-n4-i0/json/cook_bacon_304_0.json",
+        "sha256": "22d57e67f0070e4d993d559d1da5bcc01075227d05ea84e48503131199c70184"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_bacon-n4-i0/videos/cook_bacon_304_0.mp4",
+        "sha256": "2a8804336bebe8cd5b1086a513c0a0d954820197959325c7cf02389b7cc1f897"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11520"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 6388,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n2-i8/json/installing_a_scanner_309_0.json",
+        "sha256": "304972f1692b74547c757ae1ddc03de303e62f7c31e5a98c27a146819129daf3"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n2-i8/videos/installing_a_scanner_309_0.mp4",
+        "sha256": "af861dda95302dfbf2b650fb92ef06ec7b5f697e70af7c17b26ce264770d486b"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "6388"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 6388,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n2-i8/json/installing_a_scanner_310_0.json",
+        "sha256": "cc22371517674f58f1cca80750dcf88bfb84e763b30853f5d57d4b55958ba83e"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n2-i8/videos/installing_a_scanner_310_0.mp4",
+        "sha256": "441d29ec531a78873834f2cd9246136b41ab3b882b5f5c4e9a4f93da7ed461b5"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "6388"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 9292,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n2-i8/json/organizing_art_supplies_309_0.json",
+        "sha256": "e8515de66222919538f8719a4db58b6a59832d94bb399483e8ba94d3a944a947"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n2-i8/videos/organizing_art_supplies_309_0.mp4",
+        "sha256": "2524eab92db2b18a246f2a04e57b14d78e0ccd1005fa7a5717b1196976d12296"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9292"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 9292,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n2-i8/json/organizing_art_supplies_310_0.json",
+        "sha256": "01143cbb13c417ad46f67fd5c470341d15e0908e4f8e74d3746030e5e0bba3d6"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n2-i8/videos/organizing_art_supplies_310_0.mp4",
+        "sha256": "c08114e83a6b117002f3e88ff14eb6cef9fb3d1fffbcab08c21610c30d49f050"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9292"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "store_honey",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 10151,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/store_honey-n4-i0/json/store_honey_301_0.json",
+        "sha256": "a9ab79ae8b439ce89268aa6c7439ddb8cee5ece0626dbc12521d2071ebded814"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/store_honey-n4-i0/videos/store_honey_301_0.mp4",
+        "sha256": "a2425b1fa2ffa938e92da1235ddd8c772e08f09b9d02d2465accfa8244ae7742"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "10151"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "store_honey",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 10151,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/store_honey-n4-i0/json/store_honey_302_0.json",
+        "sha256": "686ed653cea27eb0836903977fa9ed9db43ca4eb51fe9f177b30b2f87253c8b8"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/store_honey-n4-i0/videos/store_honey_302_0.mp4",
+        "sha256": "52e5ccdc7bc7520086c40e65af40952a780ef7a661cd1212049dc4e5f21d2c50"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "10151"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "store_honey",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 10151,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/store_honey-n4-i0/json/store_honey_303_0.json",
+        "sha256": "82f310c85739059091a57f19a3a5e346361e7f6b72257d5f2628ee31fb80a813"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/store_honey-n4-i0/videos/store_honey_303_0.mp4",
+        "sha256": "370db9ff3a23a83483241ee73ff670c8808321bb7eba77c594c760d38fb1caf5"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "10151"
+      },
+      "success": false,
+      "q_score": 0
+    },
+    {
+      "task": "store_honey",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 10151,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/store_honey-n4-i0/json/store_honey_304_0.json",
+        "sha256": "716a9143d707d0cbdf94e5b684ee179bf3176684f1cf2d9c27f510e3b1fd3096"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/store_honey-n4-i0/videos/store_honey_304_0.mp4",
+        "sha256": "d502ed5ae61db9191dd6195267ad0ef973d54a97065575f9787c7f84d1c5ec6d"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "10151"
+      },
+      "success": false,
+      "q_score": 0
+    }
+  ],
+  "checks": [
+    "Only committed original attempts; no provisional metrics counted",
+    "Original metrics steps equal simulation and service ACK receipts",
+    "Original MP4 frames equal executed control steps at 672x448/30fps",
+    "Original metric and video SHA256 recorded; no files modified"
+  ],
+  "not_a_causal_trace_audit": true,
+  "not_a_final_model_weight_seal": true,
+  "not_full1000_results": true,
+  "summary": {
+    "status": "running",
+    "completed": 184,
+    "execution_errors": 16,
+    "unaccounted": 800,
+    "completed_only_q": 0,
+    "completed_only_sr": 0
+  },
+  "supervisor_pid": 3599503,
+  "supervisor_live": true,
+  "workers_live": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+  },
+  "physical_receipt_cross_check": {
+    "observed_at": "2026-10-13T13:58:02.555441+00:00",
+    "matched_cases": 18,
+    "receipts": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/clean_a_trumpet-n2-i8/attempts/08.json",
+        "sha256": "e8184014be20805fea6eccd159796c49d5da7c0f72a188b6e82465b54767eed3",
+        "instance_ids": [
+          309,
+          310
+        ],
+        "actual_applied_controls": [
+          7961,
+          7961
+        ],
+        "service_ack_steps": [
+          7961,
+          7961
+        ]
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_a_brisket-n4-i0/attempts/00.json",
+        "sha256": "0359b3a03d450331d10b96848ee2113f20388e652901964b0972254785886ed2",
+        "instance_ids": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "actual_applied_controls": [
+          11003,
+          11003,
+          11003,
+          11003
+        ],
+        "service_ack_steps": [
+          11003,
+          11003,
+          11003,
+          11003
+        ]
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/cook_bacon-n4-i0/attempts/00.json",
+        "sha256": "208747a9dba79b77a3b9b9bd345762ec01fc046330e02d5946b36d6835e9022a",
+        "instance_ids": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "actual_applied_controls": [
+          11520,
+          11520,
+          11520,
+          11520
+        ],
+        "service_ack_steps": [
+          11520,
+          11520,
+          11520,
+          11520
+        ]
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/installing_a_scanner-n2-i8/attempts/08.json",
+        "sha256": "01c856477e8ff899ecdde25c23430044f157980249ae13cde3c5b85f818c595a",
+        "instance_ids": [
+          309,
+          310
+        ],
+        "actual_applied_controls": [
+          6388,
+          6388
+        ],
+        "service_ack_steps": [
+          6388,
+          6388
+        ]
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/organizing_art_supplies-n2-i8/attempts/08.json",
+        "sha256": "d2657937c047649e06cd8fcedc0fb806ff2db1157e494a8b14e4f24ef49ec6c0",
+        "instance_ids": [
+          309,
+          310
+        ],
+        "actual_applied_controls": [
+          9292,
+          9292
+        ],
+        "service_ack_steps": [
+          9292,
+          9292
+        ]
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/parts/store_honey-n4-i0/attempts/00.json",
+        "sha256": "b82a536b52df7be02ed42be6802c091af4fe3ed514bb62c0b9919fe4030a5cb3",
+        "instance_ids": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "actual_applied_controls": [
+          10151,
+          10151,
+          10151,
+          10151
+        ],
+        "service_ack_steps": [
+          10151,
+          10151,
+          10151,
+          10151
+        ]
+      }
+    ]
+  },
+  "scope": "18 additional committed outputs after the separately audited first14 in this FIFO continuation; inherited152 excluded. This receipt verifies original scores/videos/physical-clock agreement, not full causal traces or final weights.",
+  "read_only_diagnostic_correction": "First ad-hoc SSH checker exited on a shell-quoting NameError before scanning cases; quoted remote command rerun succeeded. No evaluation process or files changed."
+}
