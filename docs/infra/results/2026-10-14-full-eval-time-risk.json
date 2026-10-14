@@ -1,0 +1,177 @@
+{
+  "schema": "full_eval_remaining_work_scenarios_v1",
+  "observed_at": "2026-10-14T05:39:43.245713+00:00",
+  "run": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6",
+  "counts": 390,
+  "rates": {
+    "2": {
+      "attempts": 39,
+      "episodes": 78,
+      "weighted_rate": 11.422345490431546,
+      "median_rate": 12.017273861849919,
+      "min_rate": 8.95212583872835,
+      "max_rate": 13.737678882130677,
+      "completed_part_overheads": 39,
+      "median_part_overhead_s": 189.81206033285707
+    },
+    "4": {
+      "attempts": 78,
+      "episodes": 312,
+      "weighted_rate": 14.8575913097219,
+      "median_rate": 15.45515008900048,
+      "min_rate": 11.490514377722974,
+      "max_rate": 18.25553008802004,
+      "completed_part_overheads": 36,
+      "median_part_overhead_s": 340.4834637786262
+    }
+  },
+  "nominal_vs_attempt_max_steps_mismatches": [],
+  "mem_remaining": [
+    {
+      "gpu": 0,
+      "remaining_cases": 60,
+      "parts": 12,
+      "remaining_max_controls": 1338400,
+      "physics_at_history_rate_hours": 26.527856557781636,
+      "plus_serial_median_load_hours": 27.411682431300775
+    },
+    {
+      "gpu": 1,
+      "remaining_cases": 70,
+      "parts": 14,
+      "remaining_max_controls": 1472440,
+      "physics_at_history_rate_hours": 29.184606328407053,
+      "plus_serial_median_load_hours": 30.215736514179383
+    },
+    {
+      "gpu": 2,
+      "remaining_cases": 76,
+      "parts": 16,
+      "remaining_max_controls": 1549258,
+      "physics_at_history_rate_hours": 30.769227279082973,
+      "plus_serial_median_load_hours": 31.94766177710849
+    },
+    {
+      "gpu": 3,
+      "remaining_cases": 72,
+      "parts": 15,
+      "remaining_max_controls": 1497970,
+      "physics_at_history_rate_hours": 29.81131308517656,
+      "plus_serial_median_load_hours": 30.895168843263573
+    },
+    {
+      "gpu": 4,
+      "remaining_cases": 76,
+      "parts": 16,
+      "remaining_max_controls": 1551168,
+      "physics_at_history_rate_hours": 30.80872642962853,
+      "plus_serial_median_load_hours": 31.98716092765405
+    },
+    {
+      "gpu": 5,
+      "remaining_cases": 72,
+      "parts": 15,
+      "remaining_max_controls": 1495706,
+      "physics_at_history_rate_hours": 29.76880537380376,
+      "plus_serial_median_load_hours": 30.852661131890773
+    },
+    {
+      "gpu": 6,
+      "remaining_cases": 70,
+      "parts": 14,
+      "remaining_max_controls": 1472570,
+      "physics_at_history_rate_hours": 29.187183003057758,
+      "plus_serial_median_load_hours": 30.218313188830088
+    },
+    {
+      "gpu": 7,
+      "remaining_cases": 80,
+      "parts": 16,
+      "remaining_max_controls": 1605160,
+      "physics_at_history_rate_hours": 31.81519294104063,
+      "plus_serial_median_load_hours": 32.993627439066145
+    }
+  ],
+  "champion_scenario_not_measured_public_eta": [
+    {
+      "gpu": 0,
+      "tasks": 12,
+      "max_controls": 1962110,
+      "physics_at_train_preflight_rate_hours": 38.19105529020973,
+      "plus_MEM_median_load_scenario_hours": 39.958707037248004
+    },
+    {
+      "gpu": 1,
+      "tasks": 13,
+      "max_controls": 1991460,
+      "physics_at_train_preflight_rate_hours": 38.76233186123156,
+      "plus_MEM_median_load_scenario_hours": 40.67728792052303
+    },
+    {
+      "gpu": 2,
+      "tasks": 12,
+      "max_controls": 1965510,
+      "physics_at_train_preflight_rate_hours": 38.257233836767625,
+      "plus_MEM_median_load_scenario_hours": 40.024885583805904
+    },
+    {
+      "gpu": 3,
+      "tasks": 13,
+      "max_controls": 1993370,
+      "physics_at_train_preflight_rate_hours": 38.79950863297439,
+      "plus_MEM_median_load_scenario_hours": 40.71446469226585
+    },
+    {
+      "gpu": 4,
+      "tasks": 12,
+      "max_controls": 1960560,
+      "physics_at_train_preflight_rate_hours": 38.160885658690695,
+      "plus_MEM_median_load_scenario_hours": 39.92853740572897
+    },
+    {
+      "gpu": 5,
+      "tasks": 13,
+      "max_controls": 1993170,
+      "physics_at_train_preflight_rate_hours": 38.79561577729451,
+      "plus_MEM_median_load_scenario_hours": 40.71057183658598
+    },
+    {
+      "gpu": 6,
+      "tasks": 12,
+      "max_controls": 1960140,
+      "physics_at_train_preflight_rate_hours": 38.15271066176295,
+      "plus_MEM_median_load_scenario_hours": 39.92036240880123
+    },
+    {
+      "gpu": 7,
+      "tasks": 13,
+      "max_controls": 1992960,
+      "physics_at_train_preflight_rate_hours": 38.79152827883063,
+      "plus_MEM_median_load_scenario_hours": 40.7064843381221
+    }
+  ],
+  "caveats": [
+    "Nominal horizon + 1 mirrors completed official timeout clocks; all remaining cases are assumed to time out, not succeed early.",
+    "MEM rates are from completed original batches, biased to earlier shorter tasks; future complexity and restarts are unknown.",
+    "Median loading adds serial per-part overhead but omits additional shared FIFO waiting and future model restarts.",
+    "Champion rates are fixed completed TRAIN preflight values, not measured public1000 throughput; load costs borrow MEM only as a scenario.",
+    "No run is shortened, changed, restarted or switched by this calculation."
+  ],
+  "owner": "Codex root",
+  "mem_manifest_sha256": "b709e4e7b21e700e489b448c548ff8d4885fb21f2a6dd9982f9695ae6831229d",
+  "mem_original_manifest": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_v2/manifest.json",
+  "champion_manifest": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+  "champion_preflight_evidence": "docs/infra/results/2026-10-13-champion-final-rtx-preflight.json",
+  "deadline": {
+    "official": "2026-10-16 23:59 AoE",
+    "utc": "2026-10-17T11:59:00+00:00",
+    "cst": "2026-10-17T19:59:00+08:00",
+    "source": "https://behavior.stanford.edu/challenge/updates.html",
+    "announcement_dates": [
+      "2026-10-09",
+      "2026-09-28"
+    ],
+    "checked_at": "2026-10-14T13:40:28+08:00"
+  },
+  "scheduling_decision": "User explicitly approved champion public1000 first, then remaining MEM, on 2026-10-14 at about13:42 CST. A separately SHA-bound receipt records the administrative stop; no outcome-based rerolls, shortened official horizons, or policy changes."
+}

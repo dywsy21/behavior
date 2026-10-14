@@ -364,6 +364,80 @@ def test_freeze_second_stop_keeps_inherited_and_new_originals(tmp_path,monkeypat
     with pytest.raises(ValueError):m.freeze_continuation(prior,output)
 
 
+def priority_stop_fixture(tmp_path, monkeypatch):
+    import os, time
+    prior, output = stopped_continuation(tmp_path, monkeypatch)
+    stamp = time.time()
+    state = m.read(prior/'status.json')
+    state.update(started=stamp-20, finished=stamp+20, failed_gpus={},
+                 error="InterruptedError('Administrative stop')")
+    (prior/'status.json').write_text(json.dumps(state))
+    worker = prior/'workers/gpu_5/status.json'; row = m.read(worker)
+    row['error'] = "InterruptedError('Administrative stop')"
+    worker.write_text(json.dumps(row))
+    (prior/'workers/gpu_5/task5-n4-i0.log').write_text('Interrupted for priority change')
+    champion = tmp_path/'champion'; queue = champion/'queue-old'; queue.mkdir(parents=True)
+    (champion/'manifest.json').write_text(json.dumps(dict(schema='champion_final_public100_run_v1')))
+    queued = dict(status='waiting_for_memlite', pid=98766000, phases=[], mem_job=str(prior),
+        champion_job=str(champion), bindings={str(p):m.sha256(p)
+        for p in (prior/'manifest.json',champion/'manifest.json')})
+    (queue/'status.json').write_text(json.dumps(queued | dict(status='needs_diagnosis', finished=stamp+10,
+        error="InterruptedError('Requested queue stop')")))
+    auth = tmp_path/'authorization.json'
+    auth.write_text(json.dumps(dict(schema='user_authorized_eval_priority_stop_v1', created_at=stamp,
+        instruction='Champion first, then remaining MEM', mem_job=str(prior),
+        mem_manifest_sha256=m.sha256(prior/'manifest.json'),champion_job=str(champion),
+        champion_manifest_sha256=m.sha256(champion/'manifest.json'),previous_queue=str(queue),
+        prior_mem_state=state | dict(status='running'),prior_queue_state=queued,
+        policy_changed=False,physics_changed=False,automatic_retries=False)))
+    for p in (prior/'STOP',queue/'STOP'):
+        p.write_text(str(auth)); os.utime(p,(stamp+1,stamp+1))
+    return prior,output,auth
+
+
+def test_user_priority_stop_needs_separate_authorization_and_preserves_results(tmp_path,monkeypatch):
+    prior,output,auth=priority_stop_fixture(tmp_path,monkeypatch)
+    with pytest.raises(ValueError):m.freeze_continuation(prior,output)
+    result=m.freeze_continuation(prior,output,authorization=auth)
+    assert result['completed']==8 and len(result['execution_errors'])==4
+    assert len(result['administrative_interruptions'])==8
+    assert result['priority_authorization']==m.binding(auth)
+    assert all('User requested champion-first' in r['reason'] for r in result['administrative_interruptions'])
+    groups=m.remaining_parts(m.read(tmp_path/'original/manifest.json'),result)
+    assert sum(len(p['indices']) for g in groups for p in g['parts'])==988
+
+
+@pytest.mark.parametrize('bad',['wrong_manifest','late_permission','queue_live','queue_launched',
+    'no_queue_stop','wrong_stop_reason','foreign_job','unknown_failure','changed_weights'])
+def test_user_priority_permission_does_not_bypass_safety_gates(tmp_path,monkeypatch,bad):
+    import os
+    prior,output,auth=priority_stop_fixture(tmp_path,monkeypatch)
+    row=m.read(auth);queue=Path(row['previous_queue']);qs=m.read(queue/'status.json')
+    if bad=='wrong_manifest':row['mem_manifest_sha256']='wrong'
+    elif bad=='late_permission':row['created_at']=m.read(prior/'status.json')['finished']+1
+    elif bad=='queue_live':qs['pid']=os.getpid();row['prior_queue_state']['pid']=os.getpid()
+    elif bad=='queue_launched':qs['phases']=[dict(name='public1000')]
+    elif bad=='no_queue_stop':(queue/'STOP').unlink()
+    elif bad=='wrong_stop_reason':(prior/'STOP').write_text('unbound')
+    elif bad=='foreign_job':row['mem_job']=str(tmp_path/'foreign')
+    elif bad=='unknown_failure':
+        (prior/'workers/gpu_5/task5-n4-i0.log').write_text('Traceback (most recent call last):\nValueError: broken')
+    else:
+        path=prior/'workers/gpu_5/model-000/weights-final.json'
+        weights=m.read(path);weights['optimizer_updates']=1;path.write_text(json.dumps(weights))
+    auth.write_text(json.dumps(row));(queue/'status.json').write_text(json.dumps(qs))
+    with pytest.raises(ValueError):m.freeze_continuation(prior,output,authorization=auth)
+    assert not output.exists()
+
+
+def test_independent_physics_error_is_not_retried_under_user_priority_permission(tmp_path,monkeypatch):
+    prior,output,auth=priority_stop_fixture(tmp_path,monkeypatch)
+    (prior/'workers/gpu_5/task5-n4-i0.log').write_text(articulation_failure_fixture())
+    result=m.freeze_continuation(prior,output,authorization=auth)
+    assert len(result['execution_errors'])==8 and len(result['administrative_interruptions'])==4
+    assert all(r['task']!='task5' for r in result['administrative_interruptions'])
+
+
 @pytest.mark.parametrize('bad',['live','weights','foreign_runtime','extra_metric','unknown_error','wrong_seed','original_changed'])
 def test_freeze_second_stop_rejects_unsafe_or_ambiguous_restarts(tmp_path,monkeypatch,bad):
     import os

@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 13:54 CST / Codex SUBMISSION-FULL-EVAL（行政封存/反向依赖本地验收）：** 独立代码增加显式授权收据的行政停机封存，仍拒绝未知错误/权重变化/遗漏原件；冠军后继改为MEM队列，须冠军1000完整、八卡终态权重核验、原物理/归档计数一致、所有原PID退出及GPU实空才启动。新增正反例后144本地回归通过（13.59s）；尚待独立Git冻结/RTX验收/真实seal，不能称队列已挂起。冠军supervisor3787083/八worker3787168–75实活、4环境，原1177/9f源不动；首两模型加载中、0公共完整结果。
+
+- **2026-10-14 13:48 CST / Codex SUBMISSION-FULL-EVAL（资源已释放，冠军全量启动）：** 原MEM supervisor/八worker/model/sim及旧队列均实退出，八终态权重/observer未变、0更新，GPU计算进程已空；handoff收据`runs/final_eval_preparation_20261014/champion-priority-handoff-v1.json` SHA `57a5b699fb10b2307c9d73799a1b9995f33bfee6f605d0c20afcdbc0bb4b8ae9`。已由原1177 FIFO编排启动原冠军v2/9f actor/final8000，tmux `champion-final100-priority-v1`，log `supervisor-priority-v1.log`；复用原TRAIN门，不重训、不改公共条件。MEM行政封存及反向队列正在独立实现/测试，未称已接续。
+
+- **2026-10-14 13:47 CST / Codex SUBMISSION-FULL-EVAL（用户批准冠军优先，停止请求已发）：** 用户已选择先冠军全量再续MEM；只在原queue-resume-v6和MEM resume_v6写STOP，冠军主job没有STOP。优先级授权收据`runs/final_eval_preparation_20261014/priority-champion-first-v1.json` SHA `211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214`绑定两个原manifest和停机前PID/状态。停机前仍390完整/34异常/576剩余，GPU0刚有128控制/环境；下一验原进程全部退出/权重终态/原件，再起冠军原final8000，不把STOP请求称已停或新评测已开。本地存在本线程尚未提交的时间风险文档，已fetch未pull，未覆盖团队文件。
+
+- **2026-10-14 13:41 CST / Codex SUBMISSION-FULL-EVAL（真实工作量与截止风险）：** 上一轮为修复/封存/恢复的实质进展；本轮原3778026/八worker/冠军3778032直接实活、无新异常，13:39六模型ready、另二加载，不重复启动。按390原完整的117个物理batch核名义horizon全部吻合：2环境吞吐11.4223、4环境14.8576控制/s（包括推理/通信/物理；另核加载中位耗时），剩576名义控制11,982,672；MEM按最慢GPU＋中位加载约33h。冠军按原TRAIN2/4吞吐外推约41h，非公共实测；两者串行约74h，不含新故障/额外FIFO等待。官方updates 10/9及9/28明确23:59 AoE，已核为北京时间10/17 19:59，纠正早前“时区未确认”；只约4–5h估算余量，详`docs/infra/results/2026-10-14-full-eval-time-risk.json`。已非阻塞询问是否改冠军优先，未答前保持MEM→冠军，不自动停机/改预算。模型交付仍暂停。
+
 - **2026-10-14 13:34 CST / Codex SUBMISSION-FULL-EVAL（停机尾部隔离复核）：** 只读补审旧resume_v5八份原trace从0到最后全ACK前缀，共32episode/2正常关闭、250,584真实控制/1,976高层plan；身份/空memory/精确K=3递推/previous intent与parent/高低层/observer/raw23 ACK均过，包括GPU0从produce切polishing_shoes。各尾部未ACK动作不伪造执行或close，记录精确边界/复读SHA，详`docs/infra/results/2026-10-14-memlite-stopped-v5-causal-prefixes.json`。此证据未发现记录内串环境，不能证明异常动作合理或排除物理/动作语义问题；生火306首超100块为6416、raw23第17维约-3.94e12，前6400块最大1.53。新resume_v6独立作业仍实活，13:32 GPU0/1已ready，后续在加载，未改当前模型。
 
 - **2026-10-14 13:29 CST / Codex SUBMISSION-FULL-EVAL（续评与后继真实启动）：** 新MEM resume_v6/1177编排＋原51c actor已实际启动supervisor3778026与八worker3778054/56/57/58/60/61/64/67；GPU0/1加载原模型，其余FIFO等待，尚未新物理步，不能称模型效果恢复。冠军同原run/final8000/9f actor的新queue-resume-v6/PID3778032实活waiting，原两个TRAIN门只验签不重做，旧队列保留。390完整/34异常/576剩余按新b709 manifest保持；父seal/manifest复制本地并核SHA。下一核所有模型/场景首ACK，原件/旧STOP/仿真规则不动，模型交付仍暂停。

@@ -344,7 +344,46 @@ def nonfatal_property_ui(text, part_state, attempt):
                 later_applied_controls=steps, no_actor_or_physics_traceback=True)
 
 
-def freeze_continuation(prior, output):
+def priority_stop_evidence(prior, state, authorization):
+    """Validate a user-directed stop separately from a diagnosed failure.
+
+    The receipt must predate the stop and bind the live original jobs. It is
+    not permission to reinterpret an independent execution error as a retry.
+    """
+    authorization = Path(authorization).resolve()
+    row = read(authorization)
+    champion = Path(row['champion_job']).resolve()
+    queue = Path(row['previous_queue']).resolve()
+    before = row['prior_mem_state']; queued = row['prior_queue_state']
+    stopped = read(queue / 'status.json')
+    if (row.get('schema') != 'user_authorized_eval_priority_stop_v1'
+            or row.get('mem_job') != str(prior) or not row.get('instruction')
+            or row.get('mem_manifest_sha256') != sha256(prior / 'manifest.json')
+            or row.get('champion_manifest_sha256') != sha256(champion / 'manifest.json')
+            or read(champion / 'manifest.json').get('schema') != 'champion_final_public100_run_v1'
+            or row.get('policy_changed') is not False or row.get('physics_changed') is not False
+            or row.get('automatic_retries') is not False or queue.parent != champion
+            or before.get('status') != 'running' or before.get('pid') != state['pid']
+            or before.get('failed_gpus') != {} or state.get('failed_gpus') != {}
+            or state.get('error') != "InterruptedError('Administrative stop')"
+            or not before['started'] <= row['created_at'] <= (prior / 'STOP').stat().st_mtime <= state['finished']
+            or queued.get('status') != 'waiting_for_memlite' or queued.get('phases') != []
+            or stopped.get('pid') != queued.get('pid') or stopped.get('phases') != []
+            or stopped.get('mem_job') != str(prior) or stopped.get('champion_job') != str(champion)
+            or stopped.get('status') != 'needs_diagnosis'
+            or stopped.get('error') != "InterruptedError('Requested queue stop')"
+            or not stopped.get('finished') or stopped['finished'] < row['created_at']
+            or not (queue / 'STOP').is_file()
+            or any(str(authorization) not in p.read_text() for p in (prior / 'STOP', queue / 'STOP'))
+            or any(stopped.get('bindings', {}).get(str(p)) != sha256(p)
+                   for p in (prior / 'manifest.json', champion / 'manifest.json'))):
+        raise ValueError('Explicit bound user priority stop and cancelled never-launched queue required')
+    require_exited([stopped['pid']])
+    return [binding(authorization), binding(queue / 'status.json'), binding(queue / 'STOP'),
+            binding(champion / 'manifest.json')]
+
+
+def freeze_continuation(prior, output, *, authorization=None):
     """Seal an explicitly diagnosed stopped continuation, without rerolling it.
 
     Previous completed originals/errors remain immutable references. A global
@@ -356,9 +395,11 @@ def freeze_continuation(prior, output):
         raise ValueError('New receipt in an existing evidence directory required')
     m, state = read(prior / 'manifest.json'), read(prior / 'status.json')
     if (m['schema'] != 'memlite_final_explicit_continuation_v1' or state['status'] != 'needs_diagnosis'
-            or not state.get('finished') or not (prior / 'STOP').exists() or not state['failed_gpus']):
+            or not state.get('finished') or not (prior / 'STOP').exists()
+            or (not state['failed_gpus'] and authorization is None)):
         raise ValueError('Explicitly stopped continuation with a diagnosed failure required')
     require_exited([state['pid'], *state['worker_pids'].values()])
+    priority = priority_stop_evidence(prior, state, authorization) if authorization is not None else []
     root, original, root_pin = root_registration(prior)
     frozen_source(m['runtime_source'], original['source_commit'])
     sealed = read(m['seal']['path'])
@@ -367,7 +408,7 @@ def freeze_continuation(prior, output):
             or len(sealed['execution_errors']) != m['initial_execution_errors']):
         raise ValueError('Inherited seal identity/counts changed')
     evidence = list(sealed['evidence']) + [m['seal'], root_pin, binding(root / 'accepted-preflight.json'),
-        binding(prior / 'manifest.json'), binding(prior / 'status.json'), binding(prior / 'STOP')]
+        binding(prior / 'manifest.json'), binding(prior / 'status.json'), binding(prior / 'STOP'), *priority]
     for entry in evidence:
         check_binding(entry)
     records, errors = list(sealed['records']), list(sealed['execution_errors'])
@@ -505,7 +546,9 @@ def freeze_continuation(prior, output):
             if (worker.get('part') != part['id'] or worker.get('error') != "InterruptedError('Administrative stop')"
                     or ('Traceback (most recent call last)' in text and ui is None)):
                 raise ValueError('Independent unknown failure cannot be an administrative reroll: ' + part['id'])
-            interrupted.extend(r | dict(reason='Other worker triggered global administrative STOP',
+            reason = ('User requested champion-first priority; no outcome-based selection' if priority
+                      else 'Other worker triggered global administrative STOP')
+            interrupted.extend(r | dict(reason=reason,
                 rerun_allowed=True, best_of_n=False, log=binding(log),
                 reviewed_nonfatal_diagnostic=ui, last_physical_status=binding(part_path / 'status.json')) for r in pending_rows)
     if not set(state['failed_gpus']) <= newly_diagnosed:
@@ -526,6 +569,8 @@ def freeze_continuation(prior, output):
         all_loaded_models_unchanged=True, model_workers_started=8-len(never_loaded), never_admitted_workers=never_loaded,
         models_without_inference_events=unused_models,
         policy=sealed['policy'])
+    if priority:
+        result['priority_authorization'] = priority[0]
     remaining_parts(original, result)  # also refuses to silently regroup partial physical batches
     atomic_json(output, result)
     return result
@@ -849,12 +894,15 @@ def supervise(job):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command', choices=('freeze', 'freeze-continuation', 'prepare', 'worker', 'supervise', 'report'))
-    for name in ('prior', 'seal', 'runtime-source', 'job', 'output'):
+    for name in ('prior', 'seal', 'runtime-source', 'job', 'output', 'authorization'):
         parser.add_argument('--' + name, type=Path)
     parser.add_argument('--gpu', type=int); parser.add_argument('--final', action='store_true')
     args = parser.parse_args()
+    if args.authorization is not None and args.command != 'freeze-continuation':
+        parser.error('--authorization is only for a separately audited continuation priority stop')
     if args.command in ('freeze', 'freeze-continuation'):
-        result = (freeze if args.command == 'freeze' else freeze_continuation)(args.prior, args.output)
+        result = (freeze(args.prior, args.output) if args.command == 'freeze' else
+                  freeze_continuation(args.prior, args.output, authorization=args.authorization))
         print(json.dumps(dict(completed=result['completed'], execution_errors=len(result['execution_errors']),
                               administrative_interruptions=len(result['administrative_interruptions']))))
     elif args.command == 'prepare':

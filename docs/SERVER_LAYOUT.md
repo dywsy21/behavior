@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 13:54 CST：用户批准冠军优先，实际已切换
+
+- RTX根仍`/run/ti/rl_memlite_stage1_20261006`。**当前运行冠军**`runs/champion_final100_20261013_v2`，原manifest19b056a7/final8000/export9608b3ef；原actor `code/final-eval-continuation-20261013-v1`=9f6e75bd，FIFO编排`code/final-eval-continuation-20261014-v2`=1177a469。tmux `champion-final100-priority-v1`，supervisor3787083，八worker3787168–75，日志`supervisor-priority-v1.log`。不是旧等待队列，不热改这些源。
+- **暂停的MEM**`runs/memlite_final100_20261014_resume_v6`/旧`queue-resume-v6`均已正常行政退出，全部STOP/原件保留。390完整/34已诊断异常；本次只有polishing_shoes301–304实际开回合，最后物理状态每例256步，另两个场景加载但没有attempt；精确封存待独立工具执行，不能把它们当作完整或失败。
+- 优先级授权`runs/final_eval_preparation_20261014/priority-champion-first-v1.json` SHA211a42e0…66214；资源释放/权重核验/冠军启动绑定`champion-priority-handoff-v1.json` SHA57a5b699…b8ae9。八份权重终态全部unchanged、0更新。MEM反向队列仍待验收，旧queue3778032已退出且零阶段，不能继续称其等待中。
+
 ## 2026-10-14 13:29 CST：当前MEM续评v6与冠军后继
 
 - RTX根`/run/ti/rl_memlite_stage1_20261006`，当前MEM `runs/memlite_final100_20261014_resume_v6`；manifest `b709e4e7b21e700e489b448c548ff8d4885fb21f2a6dd9982f9695ae6831229d`。独立编排/最新异常草稿工具`code/final-eval-continuation-20261014-v2`=`1177a4691a46a7929506f02fb079882ca8dae887`，实际actor仍原`code/memlite-final-eval-20261013-v4`=51c，禁止热改。tmux `memlite-final100-resume-v6`，supervisor3778026，日志`supervisor.log`/各卡`workers/`；13:29为模型加载中。

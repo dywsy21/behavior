@@ -2,6 +2,14 @@
 
 2026-10-13，负责人Codex / SUBMISSION-FULL-EVAL。用户要求优先内部评测，模型交付暂缓。本页不授权外部上传、换权重或新训练。
 
+## 2026-10-14 用户选择冠军优先：行政暂停与反向依赖
+
+13:42 CST用户明确先冠军全量、再续MEM。原resume_v6和零阶段冠军queue-resume-v6按各自STOP有序退出，所有worker/model/sim已退出，8份最终权重/observer不变。原冠军v2/final8000、9f actor、1177 FIFO编排于13:48实际启动；已有TRAIN2/4工程门只验签，不重复执行，不改seed/预算/模型。
+
+新增`freeze-continuation --authorization PATH`专门验证停机前的授权收据：准确绑定两个manifest、原存活MEM/等待队列PID、授权先于STOP/终态、队列零阶段且已行政停止。未经此显式参数，原故障封存仍要求实际诊断错误；所有原件/权重/物理身份/未知异常拒绝门保留。独立物理错误即使与行政停止同时发生也不得列为可重跑。
+
+新增`queue_memlite_after_champion.py`只接受上述seal派生的新MEM清单，冠军须完整1000、八worker终态/权重/原JSON与物理回执/内部归档相符、原PID全部退出且GPU无人占用才放行。冠军有错即停队列等待诊断；不会自动重试、抢卡、清STOP或截短任务。它不是通知服务，不承担公网模型交付。144项本地回归已过，目标机器验收、真实seal与反向队列启动待实时计划核实；根自测不替代另一成员审查。
+
 ## 2026-10-14 生火任务：关节状态视图丢失
 
 resume_v5在11:39:17 CST的`setting_the_fire`305–308物理批次退出，11:40:46全局停止。唯一终止栈是官方evaluator的`_apply_actions`→env.step/get_obs→robot.get_proprioception→entity_prim.get_joint_positions，`_articulation_view.get_joint_positions()`返回None后`.view(self.n_dof)`抛AttributeError；此前有PhysX `unitDir is not valid`和`Articulation needs to be initialized`。模型服务因客户端退出而断连，不是高层解析错误、OOM或已知NaN四元数断言。日志SHA `89b099872561c6e4500eb8a410280643c18e2e1256b5708924c28b442d403bd9`。
