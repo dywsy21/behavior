@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 11:15 CST / Codex SUBMISSION-FULL-EVAL（八卡实际执行与隔离审计）：** 根只读审计本轮八个model000原trace从byte0至各自捕获快照最后全ACK边界，二次读取前缀SHA一致：28个进行中episode、88,320实际控制、698条高层plan。逐环境空初始memory、每次previous-intent/parent与K=3精确递推、身份/slot、高→低当前意图、observer时钟、raw23物理ACK digest均过，八进程模型身份相同。证据`docs/infra/results/2026-10-14-memlite-resume-v5-eight-gpu-live-audit.json`记录每个精确字节边界/SHA；不伪造close，不覆盖边界后的活跃尾部，不等于完整成功或最终权重封存。八卡已真实推进（包括先前仅请求的bringing_water），原388完整/30异常/582剩余仍待全回合关闭；MEM→冠军顺序与源码完全不动。
+
+- **2026-10-14 11:14 CST / Codex SUBMISSION-FULL-EVAL（目标验收完成）：** RTX独立37bc2e55目标环境68项测试全部通过（10.35s）；真实active resume_v5入口准确拒绝`not terminal`，指定草稿目录未创建，未读写活跃原件/未用GPU。此为拒绝门验收而非真实1000成绩包通过。11:13直接核八worker/model/sim与冠军队列实活，7卡已记录实际控制，第8卡bringing_water已有6次请求尚待ACK快照；无新执行异常。继续原1000覆盖和隔离审计，不改模型或评测参数。
+
+- **2026-10-14 11:12 CST / Codex SUBMISSION-FULL-EVAL（独立结果工具部署）：** 本分支fetch/pull无新变更、37bc2e55已push；本地结果草稿/原严格包/续评68测试再次通过。Git包0ee15ca3…327e9已双端同SHA，独立部署RTX `code/final-eval-packaging-20261014-v1`=37bc2e55，目标环境测试运行中；原66b7编排、51c actor和冠军9f均未热改。11:06原watch确认GPU0/1/2/3/6/7已实际控制，GPU4/5场景初始化，388完整/30异常/582剩余，MEM与冠军后继实活无STOP。下一验目标测试和未完run拒绝打包门；仍先内部全量，不做模型交付/公开上传。
+
 - **2026-10-14 10:54 CST / Codex SUBMISSION-FULL-EVAL（首实际续步＋独立草稿工具）：** 10:49:56直接核原supervisor/八worker/八model及冠军后继实活；GPU0 store_produce309/310各256真实控制/16次请求，GPU1/2已进入原任务场景，其余排队，无STOP/新错误。新增本地`scripts/eval/package_memlite_continuation.py`：只有1000案例全部已完成或诊断异常且全部原进程结束后，重新验证lineage/原视频/物理ACK/权重/命令/机器人wrapper，允许ZIP仅含真实metrics，缺失按0的固定1000分母单列，仍无伪造JSON/上传/模型交付。新目标测试运行中、未对未完run生成任何真实包、未热改服务器运行源；下一测试/独立部署与真run拒绝验收，并核各卡首步。
 
 - **2026-10-14 10:49 CST / Codex SUBMISSION-FULL-EVAL（已八模型ready；补结果打包口径）：** 10:47原watch确认八模型均ready、GPU0/1已进入场景加载，无新增错误/重复启动；冠军原3754801实活waiting。上一轮为实质进展（精确诊断＋封存＋恢复），本轮继续核实等待，非阻塞。今日重新打开官方submission/evaluation页面：明确允许部分提交、缺失按0，原件不可改；故“缺30 JSON就无结果草稿可准备”过严。仍坚持先覆盖原1000案例，不提前结束本轮；下一补独立只读continuation打包器，输出真实有效原件、缺失披露和固定1000分母，绝不合成缺失JSON/上传/模型交付。当前旧portal工具只支持1000有效原件，不能谎称已支持新口径。首页仅复核10/16日期，AoE具体时刻未在本次页面得到证实，应撤回其已确认表述。

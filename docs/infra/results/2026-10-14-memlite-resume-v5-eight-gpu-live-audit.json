@@ -1,0 +1,459 @@
+{
+  "schema": "memlite_live_ack_barrier_audit_v1",
+  "owner": "Codex root",
+  "observed_at": "2026-10-14T03:14:52.381202+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5",
+  "runtime_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+  "auditor_commit": "37bc2e5591ed99ed9e6e401fe559c1438f63752e",
+  "manifest_sha256": "966341edd2a0d05f1c1958707387f7db347fa689eeca11ac019fa53f0bc24a19",
+  "method": "Each original trace starts at byte zero; cut only at last complete-line barrier with no offered unacknowledged actions in the captured snapshot; no fake close or row filtering. Re-read same prefix hash.",
+  "audit_scope": "Frozen logs through explicit ACK barriers only, not later live tails, pixel-level identity, complete-task success or final weights.",
+  "reports": [
+    {
+      "gpu": 0,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_0/model-000/events.jsonl",
+      "prefix_bytes": 15865561,
+      "prefix_sha256": "193c7be07bf01265d0449ddac1226c2ca002ab490a4d6ef0f7b3d6e74f8ee75c",
+      "snapshot_bytes": 15865561,
+      "omitted_live_tail_bytes": 0,
+      "status": "incomplete_causal_trace_audit",
+      "episodes": 2,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 2,
+        "plan": 150,
+        "observer": 1350,
+        "action": 1200,
+        "ack": 1200
+      },
+      "applied_controls": 19200,
+      "tasks": [
+        "store produce"
+      ],
+      "exact_memory_chain_plans": 150,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-store_produce-309-r0",
+          "instance": 309,
+          "applied_controls": 9600
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-store_produce-310-r0",
+          "instance": 310,
+          "applied_controls": 9600
+        }
+      ],
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 1,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_1/model-000/events.jsonl",
+      "prefix_bytes": 6341876,
+      "prefix_sha256": "2e1c1e562a0d015e1789e76fb3016451891048933dcea5d111ba6b8356454ac3",
+      "snapshot_bytes": 6382310,
+      "omitted_live_tail_bytes": 40434,
+      "status": "incomplete_causal_trace_audit",
+      "episodes": 4,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 4,
+        "plan": 60,
+        "observer": 528,
+        "action": 468,
+        "ack": 468
+      },
+      "applied_controls": 7488,
+      "tasks": [
+        "turning out all lights before sleep"
+      ],
+      "exact_memory_chain_plans": 60,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-turning_out_all_lights_before_sleep-301-r0",
+          "instance": 301,
+          "applied_controls": 1872
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-turning_out_all_lights_before_sleep-302-r0",
+          "instance": 302,
+          "applied_controls": 1872
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-turning_out_all_lights_before_sleep-303-r0",
+          "instance": 303,
+          "applied_controls": 1872
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-turning_out_all_lights_before_sleep-304-r0",
+          "instance": 304,
+          "applied_controls": 1872
+        }
+      ],
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 2,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_2/model-000/events.jsonl",
+      "prefix_bytes": 21173248,
+      "prefix_sha256": "eb304cff67114f471d4bcff022375060f1d29522d582464368a55a5ee0dc8746",
+      "snapshot_bytes": 21173248,
+      "omitted_live_tail_bytes": 0,
+      "status": "incomplete_causal_trace_audit",
+      "episodes": 4,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 4,
+        "plan": 200,
+        "observer": 1800,
+        "action": 1600,
+        "ack": 1600
+      },
+      "applied_controls": 25600,
+      "tasks": [
+        "dispose of glass"
+      ],
+      "exact_memory_chain_plans": 200,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-dispose_of_glass-305-r0",
+          "instance": 305,
+          "applied_controls": 6400
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-dispose_of_glass-306-r0",
+          "instance": 306,
+          "applied_controls": 6400
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-dispose_of_glass-307-r0",
+          "instance": 307,
+          "applied_controls": 6400
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-dispose_of_glass-308-r0",
+          "instance": 308,
+          "applied_controls": 6400
+        }
+      ],
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 3,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_3/model-000/events.jsonl",
+      "prefix_bytes": 5418228,
+      "prefix_sha256": "ec4a665fcfc786caa43370b972f7e997e436654cbd61e9f8be9bf3b180247c4a",
+      "snapshot_bytes": 5438033,
+      "omitted_live_tail_bytes": 19805,
+      "status": "incomplete_causal_trace_audit",
+      "episodes": 2,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 2,
+        "plan": 52,
+        "observer": 456,
+        "action": 404,
+        "ack": 404
+      },
+      "applied_controls": 6464,
+      "tasks": [
+        "rearranging kitchen furniture"
+      ],
+      "exact_memory_chain_plans": 52,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-rearranging_kitchen_furniture-309-r0",
+          "instance": 309,
+          "applied_controls": 3232
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-rearranging_kitchen_furniture-310-r0",
+          "instance": 310,
+          "applied_controls": 3232
+        }
+      ],
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 4,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_4/model-000/events.jsonl",
+      "prefix_bytes": 1285939,
+      "prefix_sha256": "a87d447c5beff8da15a32d9908250a344b17ead1f9b0ac7889e8cad25fbc8f8b",
+      "snapshot_bytes": 1285939,
+      "omitted_live_tail_bytes": 0,
+      "status": "incomplete_causal_trace_audit",
+      "episodes": 4,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 4,
+        "plan": 12,
+        "observer": 108,
+        "action": 96,
+        "ack": 96
+      },
+      "applied_controls": 1536,
+      "tasks": [
+        "bringing water"
+      ],
+      "exact_memory_chain_plans": 12,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-bringing_water-305-r0",
+          "instance": 305,
+          "applied_controls": 384
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-bringing_water-306-r0",
+          "instance": 306,
+          "applied_controls": 384
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-bringing_water-307-r0",
+          "instance": 307,
+          "applied_controls": 384
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-bringing_water-308-r0",
+          "instance": 308,
+          "applied_controls": 384
+        }
+      ],
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 5,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_5/model-000/events.jsonl",
+      "prefix_bytes": 2107756,
+      "prefix_sha256": "fa652c28b02b61a756778764eb95fc09c1eecf68e9121e6d92b25e674e1335ad",
+      "snapshot_bytes": 2107756,
+      "omitted_live_tail_bytes": 0,
+      "status": "incomplete_causal_trace_audit",
+      "episodes": 4,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 4,
+        "plan": 20,
+        "observer": 180,
+        "action": 160,
+        "ack": 160
+      },
+      "applied_controls": 2560,
+      "tasks": [
+        "setting the fire"
+      ],
+      "exact_memory_chain_plans": 20,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-setting_the_fire-305-r0",
+          "instance": 305,
+          "applied_controls": 640
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-setting_the_fire-306-r0",
+          "instance": 306,
+          "applied_controls": 640
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-setting_the_fire-307-r0",
+          "instance": 307,
+          "applied_controls": 640
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-setting_the_fire-308-r0",
+          "instance": 308,
+          "applied_controls": 640
+        }
+      ],
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 6,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_6/model-000/events.jsonl",
+      "prefix_bytes": 13486471,
+      "prefix_sha256": "fa19799f3591e75edbfbcc9620f2c8b2239c07883caecb34df733fd2a8039ba6",
+      "snapshot_bytes": 13525538,
+      "omitted_live_tail_bytes": 39067,
+      "status": "incomplete_causal_trace_audit",
+      "episodes": 4,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 4,
+        "plan": 132,
+        "observer": 1160,
+        "action": 1028,
+        "ack": 1028
+      },
+      "applied_controls": 16448,
+      "tasks": [
+        "setting mousetraps"
+      ],
+      "exact_memory_chain_plans": 132,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-setting_mousetraps-301-r0",
+          "instance": 301,
+          "applied_controls": 4112
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-setting_mousetraps-302-r0",
+          "instance": 302,
+          "applied_controls": 4112
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-setting_mousetraps-303-r0",
+          "instance": 303,
+          "applied_controls": 4112
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-setting_mousetraps-304-r0",
+          "instance": 304,
+          "applied_controls": 4112
+        }
+      ],
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    },
+    {
+      "gpu": 7,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_7/model-000/events.jsonl",
+      "prefix_bytes": 7464887,
+      "prefix_sha256": "3a5193e3f1629a25b625a30b461ddef3447dfd84489d2b019411b295d7dc6549",
+      "snapshot_bytes": 7504064,
+      "omitted_live_tail_bytes": 39177,
+      "status": "incomplete_causal_trace_audit",
+      "episodes": 4,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 4,
+        "plan": 72,
+        "observer": 636,
+        "action": 564,
+        "ack": 564
+      },
+      "applied_controls": 9024,
+      "tasks": [
+        "cook hot dogs"
+      ],
+      "exact_memory_chain_plans": 72,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-cook_hot_dogs-301-r0",
+          "instance": 301,
+          "applied_controls": 2256
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-cook_hot_dogs-302-r0",
+          "instance": 302,
+          "applied_controls": 2256
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-cook_hot_dogs-303-r0",
+          "instance": 303,
+          "applied_controls": 2256
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-cook_hot_dogs-304-r0",
+          "instance": 304,
+          "applied_controls": 2256
+        }
+      ],
+      "checks": [
+        "fresh empty per-episode memory",
+        "full identity and fixed slot on every event",
+        "high-to-low exact current intent",
+        "observer attempt and applied clock",
+        "unique tokens and exact raw23 physical ACK digest",
+        "final partial chunk acknowledged"
+      ]
+    }
+  ],
+  "total_applied_controls": 88320,
+  "total_exact_memory_plans": 698,
+  "proves_full_task_success": false,
+  "changed_running_source": false,
+  "common_models": {
+    "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+    "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+    "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "models_equal_across_eight_processes": true
+}

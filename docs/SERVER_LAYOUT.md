@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 11:12 CST：独立内部结果归档工具
+
+- RTX根`/run/ti/rl_memlite_stage1_20261006`下新增`code/final-eval-packaging-20261014-v1`，独立Git源码固定`37bc2e5591ed99ed9e6e401fe559c1438f63752e`；不是运行中的编排/actor，不修改既有评测源。
+- Git传输包`runs/final_eval_preparation_20261014/packaging-v1.bundle`，本地`artifacts/final-eval-20261014/packaging-v1/source.bundle`，双端SHA `0ee15ca3010ed40c1e1635442a86e9d60e65632a83232ff35882602d1c4327e9`。
+- 入口`scripts/eval/package_memlite_continuation.py`仅在全部1000案例完成/诊断归属且原进程退出后重新核验原JSON/MP4/物理ACK/权重再归档；本地/目标各68测试过，11:14真实未完run拒绝门通过，`runs/final_eval_preparation_20261014/active-mem-draft-must-not-exist`没有创建，无真实结果包或公开上传。
+
 ## 2026-10-14 10:35 CST：当前内部续评与后继
 
 - RTX根仍`/run/ti/rl_memlite_stage1_20261006`。当前MEM `runs/memlite_final100_20261014_resume_v5`，manifest `966341edd2a0d05f1c1958707387f7db347fa689eeca11ac019fa53f0bc24a19`；新独立编排`code/final-eval-continuation-20261014-v1`=`66b7d54d370afe320066d8f3687626c80c628a76`，实际actor仍`code/memlite-final-eval-20261013-v4`=`51c11d32`。tmux `memlite-final100-resume-v5`，supervisor3754600，worker3754630–37，日志`supervisor.log`及各卡`workers/`；启动时加载中，未冒称已实际步进。
