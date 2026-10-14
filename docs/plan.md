@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 21:35 CST / Codex SUBMISSION-FULL-EVAL（煎培根全10结果齐）：** cook_bacon309–310各11520控制/帧、Q0/未成功，两原JSON/MP4 SHA、30fps/672×448与实际物理回执核合，原seed17/sim0/11519时限不变；23040控制/1892.724s＝12.1729控制/s。按真实manifest中的续评`cook_bacon-n4-i4`＋`n2-i8`与父seal301–304原JSON SHA去重核账，全10有效/0异常/0成功、Q均值0.07142857；不混用父run的`n4-i0`路径。证据`docs/infra/results/2026-10-14-champion-bacon-all10-originals.json`；累计唯一已审298，4既有异常/698剩，仅该task全10而非整个模型最终成绩。原50073/127593仍实活，其他公共实例继续；下方GPU2重置热点未热修/未重启，继续观察实际进展，MEM仍排队、外部交付暂停。
+
 - **2026-10-14 21:33 CST / Codex SUBMISSION-FULL-EVAL（放鞋第二批4原件）：** putting_shoes_on_rack305–308原batch自然结束，各11590实际控制/帧，Q依次0.2/0.6/0.7/0.8，均未完整成功；4原JSON/MP4 SHA、30fps/672×448及完成物理回执匹配，原seed17/sim0/11589时限不变，46360控制/2569.494s＝18.0425控制/s。证据`docs/infra/results/2026-10-14-champion-shoes305308-originals.json`；累计唯一已审296，4既有异常/700剩、6成功仅已完子集，不能将Q0.8算成功。GPU4原worker已新建309–310模拟器206947，原模型52608不变。GPU2下方已定位的下一批宏粒子重置仍待实际控制，不擅自重启/放宽看门狗/热改物理；冠军与MEM后继实活、外部交付仍暂停。
 
 - **2026-10-14 21:31 CST / Codex SUBMISSION-FULL-EVAL（真实重置慢点调用栈）：** 上一轮292完整/八卡实活为verified wait。本轮原GPU2模拟器127129 CPU忙、模型52568等请求；首301–304已完成，04回执明确305–308于21:24:05进入下一批，旧12500快照不能当当前动作进度。21:30:13/18对原PID两次`py-spy dump --nonblocking`均成功（约0.065/0.069s，不收locals/native、不暂停/发信号）；主线程分别位于宏粒子清理中的USD删除回调和接触视图重建。原源码实读确认`remove_all_group_particles`逐个删粒子，每次`remove_prim`都`update_handles`遍历场景对象并重建统一物理view。证据`docs/infra/results/2026-10-14-champion-spraying-reset-hotpath.json`；完整采样在忽略的`artifacts/final-eval-20261014/read-only-probes/spraying-gpu2-reset-2130.json`。这定位了采样瞬间的重置开销路径，不能量化整个延迟/粒子数或断言所有慢例同因；GUI scroll_y_max报错未证实为阻塞原因，不混同切洋葱load_state异常。不热改官方物理/重启，待原重置自然结束或真实终态再判定；冠军→MEM继续，外部交付暂停。
