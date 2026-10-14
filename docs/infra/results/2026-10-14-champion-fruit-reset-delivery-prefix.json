@@ -1,0 +1,262 @@
+{
+  "schema": "champion_fruit_reset_delivery_prefix_v1",
+  "observed_at": "2026-10-14T13:51:00.171773+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "trace_audit": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 4027383,
+    "prefix_sha256": "a8540b71a5326049145b4640bc824c4187f09cdbbdb348083220e11319bc6203",
+    "lines": 3476,
+    "connections": 6,
+    "episodes": 6,
+    "closed_episodes": 2,
+    "active_connections": 4,
+    "deliveries": 3462,
+    "delivered_controls": 69240,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      39,
+      62
+    ],
+    "require_closed": false,
+    "session_summaries": [
+      {
+        "episode": "1f917beecbc34965b82c86735aac4fbb/reset-1/task-62",
+        "connection": "1f917beecbc34965b82c86735aac4fbb",
+        "epoch": 1,
+        "task": 62,
+        "deliveries": 479,
+        "stage": 4,
+        "votes": [
+          2,
+          4,
+          2
+        ],
+        "stages": 7,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "dbf6e82740b14122a3da457e83085077/reset-1/task-62",
+        "connection": "dbf6e82740b14122a3da457e83085077",
+        "epoch": 1,
+        "task": 62,
+        "deliveries": 479,
+        "stage": 0,
+        "votes": [
+          4,
+          4,
+          4
+        ],
+        "stages": 7,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "dba710fbb91746f4aadbcbfdad9eee94/reset-1/task-39",
+        "connection": "dba710fbb91746f4aadbcbfdad9eee94",
+        "epoch": 1,
+        "task": 39,
+        "deliveries": 626,
+        "stage": 2,
+        "votes": [
+          2,
+          2
+        ],
+        "stages": 10,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "4915bde7c37e4855af61c5c15d188728/reset-1/task-39",
+        "connection": "4915bde7c37e4855af61c5c15d188728",
+        "epoch": 1,
+        "task": 39,
+        "deliveries": 626,
+        "stage": 5,
+        "votes": [
+          3,
+          3,
+          3
+        ],
+        "stages": 10,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "68b61eb5b7cc47f3a2b209e83736b42f/reset-1/task-39",
+        "connection": "68b61eb5b7cc47f3a2b209e83736b42f",
+        "epoch": 1,
+        "task": 39,
+        "deliveries": 626,
+        "stage": 0,
+        "votes": [
+          0,
+          0
+        ],
+        "stages": 10,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "8e80329e6de441d989850d9ce6381f88/reset-1/task-39",
+        "connection": "8e80329e6de441d989850d9ce6381f88",
+        "epoch": 1,
+        "task": 39,
+        "deliveries": 626,
+        "stage": 1,
+        "votes": [
+          1,
+          1,
+          1
+        ],
+        "stages": 10,
+        "legacy": true,
+        "closed": false
+      }
+    ],
+    "original_outputs_modified": false,
+    "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/workers/gpu_2/model-000/events.jsonl",
+    "captured_bytes": 4027383,
+    "ignored_incomplete_tail_bytes": 0
+  },
+  "trace_mtime": 1791984240.4097083,
+  "previous_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/spraying_fruit_trees-n4-i0/attempts/00.json",
+    "sha256": "b421d8ac279cf157d5da5ecc7f64bfb5c3b1ada209d87e5222ae88dbb4a164d6"
+  },
+  "previous_attempt_snapshot": {
+    "status": "completed",
+    "task": "spraying_fruit_trees",
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "instance_ids": [
+      301,
+      302,
+      303,
+      304
+    ],
+    "rollout": 0,
+    "started": 1791981101.122969,
+    "max_steps": 12518,
+    "policy_seed": 17,
+    "simulator_seed": 0,
+    "finished": 1791984245.4153724,
+    "seconds": 3144.291756746359,
+    "actual_applied_controls": [
+      12519,
+      12519,
+      12519,
+      12519
+    ],
+    "unused_delivered_controls": {
+      "0": 1,
+      "1": 1,
+      "2": 1,
+      "3": 1
+    },
+    "server_clock_kind": "policy_delivery",
+    "physical_ack_sent": false
+  },
+  "next_attempt_snapshot": {
+    "status": "running",
+    "task": "spraying_fruit_trees",
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "instance_ids": [
+      305,
+      306,
+      307,
+      308
+    ],
+    "rollout": 0,
+    "started": 1791984245.416154,
+    "max_steps": 12518,
+    "policy_seed": 17,
+    "simulator_seed": 0
+  },
+  "next_attempt_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/spraying_fruit_trees-n4-i0/attempts/04.json",
+  "task39_only_first_epoch_deliveries_observed": true,
+  "task39_delivered_controls": [
+    12520,
+    12520,
+    12520,
+    12520
+  ],
+  "prior_actual_controls": [
+    12519,
+    12519,
+    12519,
+    12519
+  ],
+  "official_source": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+    "sha256": "5885dceea636ce206accbb26d153b90c3004e3d5e959eced27529487c18ae870"
+  },
+  "official_sequence_start_line": 97,
+  "official_sequence": [
+    ") -> \"Dict[object, object]\":",
+    "    \"\"\"",
+    "    Drive one parallel evaluation batch with exactly one instance per logical environment. Pure",
+    "    orchestration: all sim work is delegated to the injected load_fn / step_fn / record_fn. When an",
+    "    instance finishes, its environment is removed from the active list and remains frozen until the",
+    "    complete batch finishes. Returns {instance id -> record_fn's return}.",
+    "    \"\"\"",
+    "    if num_envs < 1:",
+    "        raise ValueError(f\"num_envs must be >= 1, got {num_envs}\")",
+    "",
+    "    instances = list(instances)",
+    "    if len(instances) != num_envs:",
+    "        raise ValueError(",
+    "            f\"Evaluation requires exactly one instance per logical environment: \"",
+    "            f\"got {len(instances)} instances and num_envs={num_envs}.\"",
+    "        )",
+    "",
+    "    results: Dict[object, object] = {}",
+    "    env_idx_to_instance: Dict[int, object] = {env_idx: instance for env_idx, instance in enumerate(instances)}",
+    "    load_fn(dict(env_idx_to_instance))",
+    "",
+    "    active = {env_idx: True for env_idx in env_idx_to_instance}",
+    "    step = 0",
+    "    while any(active.values()):",
+    "        active_env_indices = sorted(env_idx for env_idx, is_active in active.items() if is_active)",
+    "        terminated, truncated = step_fn(active_env_indices)",
+    "        step += 1",
+    "",
+    "        hit_cap = max_steps is not None and step >= max_steps",
+    "        for env_idx in active_env_indices:",
+    "            term = bool(terminated[env_idx])",
+    "            trunc = bool(truncated[env_idx]) or hit_cap",
+    "            if term or trunc:",
+    "                results[env_idx_to_instance[env_idx]] = record_fn(",
+    "                    env_idx=env_idx,",
+    "                    instance=env_idx_to_instance[env_idx],",
+    "                    step=step,",
+    "                    terminated=term,",
+    "                    truncated=trunc,",
+    "                )",
+    "                active[env_idx] = False",
+    "",
+    "    return results",
+    "",
+    "",
+    "@dataclass(frozen=True)",
+    "class InstanceEnvAccessor:"
+  ],
+  "caution": "This is a stable journal-prefix proof at its captured byte limit, not a new physical ACK or final no-action classification. The next attempt is not terminal. Do not infer final failure, success, or automatic rerun eligibility from this observation."
+}
