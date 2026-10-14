@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 21:38 CST / Codex SUBMISSION-FULL-EVAL（收纳电池全10结果齐）：** store_batteries309–310各11557控制/帧、Q0/未成功，新两原JSON/MP4 SHA、30fps/672×448与完成物理回执一致，seed17/sim0/11556时限不变；23114控制/1397.236s＝16.5427控制/s。依据原manifest和实际各part原JSON SHA去重核齐全10有效/0异常/SR0/Q均值0；证据`docs/infra/results/2026-10-14-champion-batteries-all10-originals.json`，累计唯一已审300。21:37直接核50073/八worker/model/sim及127593等待队列实活；GPU0自然进入cook_a_frozen_pie，GPU1书架任务已有200控制，GPU2仍在21:24开始的下一批重置、旧12500快照未更新，未据此重启或伪记新控制。总300有效/4既有异常/696剩，6成功仅已完子集；继续原冠军→MEM，完整全量/最终归档仍待，外部交付暂停。
+
 - **2026-10-14 21:35 CST / Codex SUBMISSION-FULL-EVAL（煎培根全10结果齐）：** cook_bacon309–310各11520控制/帧、Q0/未成功，两原JSON/MP4 SHA、30fps/672×448与实际物理回执核合，原seed17/sim0/11519时限不变；23040控制/1892.724s＝12.1729控制/s。按真实manifest中的续评`cook_bacon-n4-i4`＋`n2-i8`与父seal301–304原JSON SHA去重核账，全10有效/0异常/0成功、Q均值0.07142857；不混用父run的`n4-i0`路径。证据`docs/infra/results/2026-10-14-champion-bacon-all10-originals.json`；累计唯一已审298，4既有异常/698剩，仅该task全10而非整个模型最终成绩。原50073/127593仍实活，其他公共实例继续；下方GPU2重置热点未热修/未重启，继续观察实际进展，MEM仍排队、外部交付暂停。
 
 - **2026-10-14 21:33 CST / Codex SUBMISSION-FULL-EVAL（放鞋第二批4原件）：** putting_shoes_on_rack305–308原batch自然结束，各11590实际控制/帧，Q依次0.2/0.6/0.7/0.8，均未完整成功；4原JSON/MP4 SHA、30fps/672×448及完成物理回执匹配，原seed17/sim0/11589时限不变，46360控制/2569.494s＝18.0425控制/s。证据`docs/infra/results/2026-10-14-champion-shoes305308-originals.json`；累计唯一已审296，4既有异常/700剩、6成功仅已完子集，不能将Q0.8算成功。GPU4原worker已新建309–310模拟器206947，原模型52608不变。GPU2下方已定位的下一批宏粒子重置仍待实际控制，不擅自重启/放宽看门狗/热改物理；冠军与MEM后继实活、外部交付仍暂停。

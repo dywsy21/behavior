@@ -1,0 +1,220 @@
+{
+  "schema": "champion_batteries_last2_and_all10_v1",
+  "observed_at": "2026-10-14T13:37:50.326293+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/manifest.json",
+    "sha256": "b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46"
+  },
+  "records": [
+    {
+      "task": "store_batteries",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 11557,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n2-i8/json/store_batteries_309_0.json",
+        "sha256": "8a5f01f97d0791645d52db428e7e4cceee5388422012825e3a7ba1a82b6345e3"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n2-i8/videos/store_batteries_309_0.mp4",
+        "sha256": "0603d228932676a28d31aacf526ec108c5611d324198b2894fa0008e15afa09a"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11557"
+      },
+      "success": false,
+      "q_score_final": 0
+    },
+    {
+      "task": "store_batteries",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 11557,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n2-i8/json/store_batteries_310_0.json",
+        "sha256": "971dc4899c93b6fc91558147f31c10b7a9a0a8d86db879ded22c0808fb69ec41"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n2-i8/videos/store_batteries_310_0.mp4",
+        "sha256": "df5121d5226eb62b1af73ec5d466b3830d7c0a1be0e8daf2806ca93a4da233b5"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11557"
+      },
+      "success": false,
+      "q_score_final": 0
+    }
+  ],
+  "physical_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n2-i8/attempts/08.json",
+    "sha256": "25cfe832d5fa55b3a8846290bb8b1847de6dda96a3332246f6147815f74e4b7e"
+  },
+  "attempt": {
+    "status": "completed",
+    "task": "store_batteries",
+    "indices": [
+      8,
+      9
+    ],
+    "instance_ids": [
+      309,
+      310
+    ],
+    "rollout": 0,
+    "started": 1791983635.4698706,
+    "max_steps": 11556,
+    "policy_seed": 17,
+    "simulator_seed": 0,
+    "finished": 1791985032.7070339,
+    "seconds": 1397.2363924598321,
+    "actual_applied_controls": [
+      11557,
+      11557
+    ],
+    "unused_delivered_controls": {
+      "0": 3,
+      "1": 3
+    },
+    "server_clock_kind": "policy_delivery",
+    "physical_ack_sent": false
+  },
+  "successful_instances": [],
+  "completed_q_sum": 0,
+  "actual_controls": 23114,
+  "controls_per_second": 16.542655290639722,
+  "manual_visual_review": false,
+  "full_task_all10_complete": true,
+  "task_summary": {
+    "records": [
+      {
+        "instance_id": 301,
+        "rollout_id": 0,
+        "success": false,
+        "q_score_final": 0,
+        "metrics": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/json/store_batteries_301_0.json",
+          "sha256": "a122d3c00bb598a1e51993357c1bfd56dd92df4fb635b59983c8cee856e9c460"
+        }
+      },
+      {
+        "instance_id": 302,
+        "rollout_id": 0,
+        "success": false,
+        "q_score_final": 0,
+        "metrics": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/json/store_batteries_302_0.json",
+          "sha256": "12b76ab2eb09c0943b0cfdf774e5e1bea06b68b151f04fbdc90b65183dc2c930"
+        }
+      },
+      {
+        "instance_id": 303,
+        "rollout_id": 0,
+        "success": false,
+        "q_score_final": 0,
+        "metrics": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/json/store_batteries_303_0.json",
+          "sha256": "cb4e73127b23717b29f4ba94141090654eab0449444ab4ee01aac7f27e52c16b"
+        }
+      },
+      {
+        "instance_id": 304,
+        "rollout_id": 0,
+        "success": false,
+        "q_score_final": 0,
+        "metrics": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/json/store_batteries_304_0.json",
+          "sha256": "851bf461c3a93cb06f21a0488559c9610330b9727124382aac2296762661b7c9"
+        }
+      },
+      {
+        "instance_id": 305,
+        "rollout_id": 0,
+        "success": false,
+        "q_score_final": 0,
+        "metrics": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/json/store_batteries_305_0.json",
+          "sha256": "93b3dfe0eb514db75ef3e36b09f32ea9a767d665ea2fdb6ce0f6da83877a7f5f"
+        }
+      },
+      {
+        "instance_id": 306,
+        "rollout_id": 0,
+        "success": false,
+        "q_score_final": 0,
+        "metrics": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/json/store_batteries_306_0.json",
+          "sha256": "686d5ab3683e1b9cb1ae4ea61734e13e700b743ee8e15b5fd3fbe50a3cb21206"
+        }
+      },
+      {
+        "instance_id": 307,
+        "rollout_id": 0,
+        "success": false,
+        "q_score_final": 0,
+        "metrics": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/json/store_batteries_307_0.json",
+          "sha256": "f114d1f8a71590692e4cea0f3baca20b41002b8f81bb5ca32cc96f8104a23279"
+        }
+      },
+      {
+        "instance_id": 308,
+        "rollout_id": 0,
+        "success": false,
+        "q_score_final": 0,
+        "metrics": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/json/store_batteries_308_0.json",
+          "sha256": "6900193b4e9944def77affc525c4ce3da893770f5febe4c8a920c88567a8d025"
+        }
+      },
+      {
+        "instance_id": 309,
+        "rollout_id": 0,
+        "success": false,
+        "q_score_final": 0,
+        "metrics": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n2-i8/json/store_batteries_309_0.json",
+          "sha256": "8a5f01f97d0791645d52db428e7e4cceee5388422012825e3a7ba1a82b6345e3"
+        }
+      },
+      {
+        "instance_id": 310,
+        "rollout_id": 0,
+        "success": false,
+        "q_score_final": 0,
+        "metrics": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n2-i8/json/store_batteries_310_0.json",
+          "sha256": "971dc4899c93b6fc91558147f31c10b7a9a0a8d86db879ded22c0808fb69ec41"
+        }
+      }
+    ],
+    "completed": 10,
+    "execution_errors": 0,
+    "successes": 0,
+    "q_sum": 0,
+    "q_mean": 0,
+    "prior_seal": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2-diagnosed-stop-v1.json",
+      "sha256": "2d196c19f4c6eb136044a0abf9d7aacb662ffff8e13289ed0bfb80b946dd1a08"
+    }
+  },
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "supervisor_live": {
+    "pid": 50073,
+    "status": "running",
+    "alive": true
+  },
+  "queue_live": {
+    "pid": 127593,
+    "status": "waiting_for_champion_continuation",
+    "phases": [],
+    "alive": true
+  }
+}
