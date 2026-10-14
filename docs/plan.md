@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 03:02 CST / Codex SUBMISSION-FULL-EVAL（440原件，拳套新增完整成功）：** 冠军累计440完整/4继承异常/556待，原241557/八worker与MEM300108后继实活，无新增故障。拳套309官方success=true/Q1/8835实控，310为12354步/Q0/false；农产品309–310均14284步/Q0/false。四份原JSON/MP4 SHA、672×448/30fps及各自不同实控帧数、注册seed/horizon/配置与两GPU journal稳定前缀通过，证据`docs/infra/results/2026-10-15-champion-gloves-produce-final4-originals.json`。拳套全10为SR2/10、平均Q0.20；农产品全10均0，累计完整成功10例仍非全模型成绩。连同下条本轮12新原件已核，GPU7已转做热狗、GPU0正常收尾/等加载，无STOP/重跑/改actor；继续冠军→MEM和终态内部归档，外部交付暂缓。
+
+- **2026-10-15 02:54 CST / Codex SUBMISSION-FULL-EVAL（图书/生火/碎玻璃新增8原件）：** 冠军累计436完整/4继承异常/560待，原241557/八worker及MEM300108后继实活，无新增故障。图书归架301–304各14293实控/Q0；碎玻璃309–310各13038步/Q0；生火309–310各13678步/Q分别0、1/4，八例均success=false。原JSON/MP4 SHA、672×448/30fps/帧数=实控、注册seed/horizon/配置与三GPU journal稳定前缀通过，证据`docs/infra/results/2026-10-15-champion-library-fire-glass-new8-originals.json`。生火全10平均Q0.125/SR0、碎玻璃全10均0；图书仅4/10，不称完整task或全模型成绩。GPU5/6自然转工具箱/捕鼠夹、GPU2续305–308，无STOP/重跑/改actor，继续冠军→MEM及最终内部归档，外部交付暂缓。
+
 - **2026-10-15 02:38 CST / Codex SUBMISSION-FULL-EVAL（关灯慢加载已真实推进）：** GPU1原worker241609/model241683/sim601640未重启；首次scene.ready距进程状态启动约794s（13.2min），之后原状态依次记录四实例各100/200实际控制。已核固定9f入口：scene.ready仅表示Evaluator进入，不能单独当实控；本次以后续applied控制记录确认进展。原同一模型14,329,573B journal稳定前缀通过，task81→66四个独立epoch1连接、stage/vote/inpainting/交付递推有效；不冒称原图/动作/RNG字节等价或成功。证据`docs/infra/results/2026-10-15-champion-lights-initial-load-and-session-audit.json`。慢加载未被误判停机，正常卡与MEM300108后继持续；本轮无运行源/参数/时限修改或重跑，完整全量仍待、外部交付暂停。
 
 - **2026-10-15 02:35 CST / Codex SUBMISSION-FULL-EVAL（取水/家具尾4原件）：** 冠军累计428完整/4继承异常/568待；原241557/八worker及MEM300108后继实活，无新增故障。取水309–310均14158实控/Q0，家具309–310均13415步/Q1/4，四例均未完整成功；两task全10已齐，取水平均Q1/15、家具0.175，SR均0。原JSON/MP4 SHA、672×448/30fps/帧数=实控、注册seed/horizon/配置与两GPU journal稳定前缀已验，证据`docs/infra/results/2026-10-15-champion-water-furniture-final4-originals.json`。附02:25只读进程start ticks与资源快照：磁盘约4.97TB可用、RAM约550GiB，正常卡/后继不动。GPU1关灯首次加载偏长，02:34新写scene.ready但尚未实控，正只读确认进展，不把CPU忙当已成功；继续冠军→MEM/终态内部归档，外部交付暂缓。
