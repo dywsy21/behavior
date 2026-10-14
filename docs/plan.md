@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 01:45 CST / Codex SUBMISSION-FULL-EVAL（取水新增4原件）：** 冠军累计396完整/4继承异常/600待；原241557、八worker及MEM300108后继仍实活，无新增故障。取水305–308均14158实际控制，Q依次0、0、0、1/3，success均false；原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置与GPU4 journal稳定前缀验过，证据`docs/infra/results/2026-10-15-champion-water305308-originals.json`。该task仅8/10，不能称全task或全模型成绩；同卡已自然切309–310，其余卡持续，不因审计停机、不重跑失败、不改actor/时限。下一继续冠军→MEM全量及终态内部归档，外部交付仍暂停。
+
 - **2026-10-15 01:29 CST / Codex SUBMISSION-FULL-EVAL（玻璃处理/存放农产品新增8原件）：** 冠军累计392完整/4继承异常/604待，原八worker与MEM300108后继持续实活，无新增错误。处理玻璃305–308均13793实控、存放农产品301–304均14284实控，8例均Q0/success=false；原JSON/MP4 SHA、30fps/672×448/帧数=实控、原seed/horizon/配置与两GPU journal稳定前缀通过，证据`docs/infra/results/2026-10-15-champion-glass-produce-new8-originals.json`。连同下条清碎玻璃4例，本轮新增12原件均已核；GPU2已切309–310，GPU0在等加载槽，不能把正常换场间隙说成八sim同时步进或worker失败。无STOP/重训/改actor/重跑，继续全量和终态内部归档，外部交付仍暂停。
 
 - **2026-10-15 01:23 CST / Codex SUBMISSION-FULL-EVAL（清碎玻璃首4原件）：** 冠军累计384完整/4继承异常/612待，原八worker/241557及MEM300108后继实活，无新增故障。清碎玻璃301–304均13038实际控制/Q0/success=false；原JSON/MP4 SHA、30fps/672×448/帧数=实控、原seed/horizon/配置与GPU6 journal稳定前缀通过，证据`docs/infra/results/2026-10-15-champion-broken-glass-first4-originals.json`。该worker当前收尾/等下一场景加载，不把已结束的旧sim PID当worker故障；其余卡继续，未停机或重跑。本task仅4/10，仍等待双路线全量和最终内部归档，交付暂缓。
