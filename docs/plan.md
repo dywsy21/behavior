@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 22:44 CST / Codex SUBMISSION-FULL-EVAL（双路线持续隔离已接好）：** 新MEM v8 `queue-after-champion-isolated-v1`PID300108真实waiting/零阶段，manifest7819b835，与旧v7严格同576实例/slot顺序/权重/原件，拆174独立物理batch；未来MEM编排79371d77、原actor51c，队列9122b137，目标249通过/1跳过＋队列修复42通过。原v7从未启动、旧等待器241922零阶段退出/保留STOP与原件。冠军原241557始终运行/未重启/无失败卡：六卡已真实推进，书架每例5800、喷果树3700，另两场景加载中。证据`docs/infra/results/2026-10-14-mem-isolated-queue-launch.json`；之后仍先冠军→MEM，异常逐batch记录/不伪造成绩，权重/物理/官方控制预算不改。下一继续全量监控/完整原件审计，完整Q/SR与归档仍未完成，外部交付暂缓。
+
 - **2026-10-14 22:41 CST / Codex SUBMISSION-FULL-EVAL（MEM等待器切换校验）：** 79371d77新MEM源目标249通过/1可选源跳过，v8已准备同576案例；按明示请求仅停止旧MEM241922等待器，冠军241557始终运行、未发STOP。旧等待器实际零阶段行政退出，但新verify正确阻止放行：文件系统STOP mtime比userspace请求created早0.253ms，其他绑定/PID/阶段均一致。只给文件系统边界加10ms容差，仍严核终态原因、零阶段、未启动MEM、同权重/实例/原件；42相关本地回归过，证据`docs/infra/results/2026-10-14-mem-queue-time-precision.json`。不热改793源或v8manifest，下一用新的独立队列工具源码验收并挂v8；当前MEM暂无线等待器，冠军不受影响。
 
 - **2026-10-14 22:36 CST / Codex SUBMISSION-FULL-EVAL（MEM故障隔离准备完成）：** 本地补齐MEM独立物理batch、未知已尝试批次异常留证后继续、单worker异常不发全局STOP及只替换未启动等待队列的严格工具`pending_mem_upgrade.py`；249整体回归通过，新增fresh-vs-reset记忆/意图/observer回归4/4通过（整体合计250项，下次目标一并运行）。原batch分组/实例顺序/权重/控制时限不变，实际MEM仍v7/241922等待，尚未部署新源或停等待队列；冠军f7正常推理不热改。下一独立Git部署、准备与v7同576案例的v8，停旧等待器（不是冠军）、绑定新后继。

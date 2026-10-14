@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 22:44 CST：MEM隔离续评等待器（当前）
+
+- RTX待运行MEM改为`/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8`，manifest SHA `7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b`，同旧v7的576剩余/174独立物理batch。尚未启动MEM模型；旧v7从未被评测启动，完整保留，不清STOP或重用旧等待目录。
+- 当前队列`queue-after-champion-isolated-v1/status.json` PID300108，tmux `mem-after-champion-isolated-v8`，日志同job的`queue-after-champion-isolated-v1.launch.log`。仍等待冠军`champion_final100_20261014_resume_v2`/原241557完成原件验收后才放行，冠军未因这次升级停机。
+- MEM编排`code/mem-batch-isolation-20261014-v1`固定`79371d77692e0c08a30e34b7de3077c166cd1a09`；实际actor仍`code/memlite-final-eval-20261013-v4`=51c。队列/归档工具另在`code/mem-queue-isolation-20261014-v2`固定`9122b13726bf1862dbe2d6616c0da916822e2487`，仅修等待器文件系统mtime的10ms有界容差，不热改MEM或冠军源。
+- 迁移授权/核验原件`runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json` SHA `7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b`；旧v7 queue-resume-v2终态SHA `643cca0bd67296878a5518bd6de3d786d331fd9bebe00b777b0d7b68a50f2ec5`/零阶段/已退出。Git包`mem-batch-isolation-v1.bundle` SHA d2cf3ad2…69c6，`mem-queue-fix-v1.bundle` SHA87885649…8c04，均在同preparation目录；本地验签副本`artifacts/final-eval-20261014/mem-batch-isolation-v1/`。新启动证据`docs/infra/results/2026-10-14-mem-isolated-queue-launch.json`。
+
 ## 2026-10-14 22:21 CST：独立物理batch冠军续评（当前运行）
 
 - RTX新运行`/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2`，manifest SHA `a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45`。tmux `champion-final100-resume-v2`/supervisor241557/八worker241608–615；日志`supervisor.log`和`workers/gpu_i/`。剩692，209个保持原slot/seed的独立物理batch，不是重评304完整结果。
