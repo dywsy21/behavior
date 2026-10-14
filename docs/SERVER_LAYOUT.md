@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 22:21 CST：独立物理batch冠军续评（当前运行）
+
+- RTX新运行`/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2`，manifest SHA `a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45`。tmux `champion-final100-resume-v2`/supervisor241557/八worker241608–615；日志`supervisor.log`和`workers/gpu_i/`。剩692，209个保持原slot/seed的独立物理batch，不是重评304完整结果。
+- 独立编排/后继源`code/champion-batch-isolation-20261014-v1`固定`f7b728549309b00940861f2a00ba4e9a36419855`，实际actor/模拟器入口仍`code/final-eval-continuation-20261013-v1`=9f。Git bundle `runs/final_eval_preparation_20261014/champion-batch-isolation-v1.bundle` SHA `9a35bd3e21b94c4a7e04c7561d40bb359973c12a8c3909ab8125c62555030888`。
+- 父封存`runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json` SHA `a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210`；重置证书`runs/final_eval_preparation_20261014/champion-fruit-precontrol-certificate-v1.json` SHA `ad6ec35b66bbe382148319a5d9a43ab115ad4263e6887acaed0ad84d96a8e7b9`。原件与旧STOP保留，本地验签副本在`artifacts/final-eval-20261014/champion-batch-isolation-v1/`。
+- MEM后继`runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v2/status.json` PID241922、tmux `mem-after-champion-resume-v2`，实际waiting/零阶段；同job日志`queue-after-champion-resume-v2.launch.log`。原MEM ae86编排/51c actor不改，576剩余仍等冠军终态；最终内部原件收集目录不变。证据`docs/infra/results/2026-10-14-champion-isolated-batch-launch.json`；不要热改上述运行源码。
+
 ## 2026-10-14 22:00 CST：冠军重置超时保护停止
 
 - RTX `runs/champion_final100_20261014_resume_v1` 已终态needs_diagnosis，原50073及八worker/model/sim已退出；304完整原件和原STOP不动，GPU2的旧12500快照属于上一批，不是下一批已执行12500步。后继MEM v7 `queue-after-champion-resume-v1`亦停止且零阶段；不能继续称其等待或重复启动旧目录。

@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 22:21 CST / Codex SUBMISSION-FULL-EVAL（冠军已恢复、MEM后继已挂）：** 新`champion_final100_20261014_resume_v2`实际supervisor241557/八worker241608–615，f7b72854独立编排，原9f actor/配置/官方物理/seed/4与2环境批次不改；首两模型加载、尚未确认新物理步。原304完整/4错误保留，30行政中断（其中4由终态零交付证书核准）＋662未启＝692剩余，拆为209个独立模拟器batch。目标232通过/1可选源路径跳过，本地233通过。MEM v7新`queue-after-champion-resume-v2`PID241922已waiting/零阶段，绑定原ae86/51c；旧run/STOP/失败队列不动。manifest a80d9602、seal a1ff634c、certificate ad6ec35b；证据`docs/infra/results/2026-10-14-champion-isolated-batch-launch.json`。下一验实际控制、连续故障隔离与MEM编排韧性；不能声称已完成全量/最终Q/SR或所有异常已自动修复。
+
 - **2026-10-14 22:16 CST / Codex SUBMISSION-FULL-EVAL（隔离编排本地验收）：** 独立batch、未知已尝试批次异常留证后继续、单worker安全故障不发全局STOP及新后继队列绑定已实现；233本机回归通过，包括新连接与reset的stage/history/inpainting/RNG相等（mock predictor，不冒称物理逐位相等）、未知批次不阻止下一批、单坏卡不停止其余七卡。预控制重置证书仅接受本次原journal SHA及完整尾部四个断开/关闭配对，目标真原件验收尚待。代码`continue_champion_final.py`/`champion_reset_timeout.py`及对应归档/队列，根自测非独立成员review；下一立即Git冻结部署/实际封存并恢复692剩余。
 
 - **2026-10-14 22:12 CST / Codex SUBMISSION-FULL-EVAL（用户要求持续评测覆盖）：** 用户明确不再接受单点异常导致整体停机，要求持续评测。根据此改为独立物理batch进程＋单卡异常隔离：其他GPU继续，异常原件保留、不伪造官方成绩或按表现重跑；资源/身份安全门只暂停受影响执行，不连带停正常卡。当前仍304完整/4旧异常、旧八卡已退，新编排实现/验收中，尚未恢复。终态trace原审计器正确拒绝四条停机后的ConnectionClosedError，需单独验证尾部而非忽略所有错误；Git fetch无新提交，本地文档脏故未pull。下一优先恢复冠军剩余，再续原MEM，外部交付仍暂停。
