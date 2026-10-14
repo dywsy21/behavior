@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 01:29 CST / Codex SUBMISSION-FULL-EVAL（玻璃处理/存放农产品新增8原件）：** 冠军累计392完整/4继承异常/604待，原八worker与MEM300108后继持续实活，无新增错误。处理玻璃305–308均13793实控、存放农产品301–304均14284实控，8例均Q0/success=false；原JSON/MP4 SHA、30fps/672×448/帧数=实控、原seed/horizon/配置与两GPU journal稳定前缀通过，证据`docs/infra/results/2026-10-15-champion-glass-produce-new8-originals.json`。连同下条清碎玻璃4例，本轮新增12原件均已核；GPU2已切309–310，GPU0在等加载槽，不能把正常换场间隙说成八sim同时步进或worker失败。无STOP/重训/改actor/重跑，继续全量和终态内部归档，外部交付仍暂停。
+
+- **2026-10-15 01:23 CST / Codex SUBMISSION-FULL-EVAL（清碎玻璃首4原件）：** 冠军累计384完整/4继承异常/612待，原八worker/241557及MEM300108后继实活，无新增故障。清碎玻璃301–304均13038实际控制/Q0/success=false；原JSON/MP4 SHA、30fps/672×448/帧数=实控、原seed/horizon/配置与GPU6 journal稳定前缀通过，证据`docs/infra/results/2026-10-15-champion-broken-glass-first4-originals.json`。该worker当前收尾/等下一场景加载，不把已结束的旧sim PID当worker故障；其余卡继续，未停机或重跑。本task仅4/10，仍等待双路线全量和最终内部归档，交付暂缓。
+
 - **2026-10-15 01:20 CST / Codex SUBMISSION-FULL-EVAL（生火/拳套新增8原件）：** 冠军累计380完整/4继承异常/616待，原八worker/241557及MEM300108等待器持续存活，无新增故障。清洗拳套303官方success=true/Q1/9406实控，其余301/302/304均12354步/Q0；生火301–304均13678步、Q依次1/4、1/8、1/8、0、均未完整成功。八份原JSON/MP4 SHA、30fps/672×448/帧数=实控、注册seed/horizon/配置及两GPU journal闭会话通过，证据`docs/infra/results/2026-10-15-champion-fire-boxing-first8-originals.json`。两task均仅4/10，不称全task SR；两卡自动进305–308，无停机/换模型/重跑。下一继续全量和原件核验，最终内部归档及模型全量Q/SR仍待，交付暂缓。
 
 - **2026-10-15 01:03 CST / Codex SUBMISSION-FULL-EVAL（新8原件完成）：** 原八worker/241557与MEM300108后继持续运行，累计372完整/4继承异常/624待，无新增异常。外卖打包301–304均13290实控，Q为0、1/6、0、0；厨房家具整理301–304均13415实控，Q为1/4、0、0、1/4，8例success均false。原JSON/MP4 SHA、672×448/30fps帧数=实控、注册seed/horizon/配置及两GPU journal稳定前缀已验，证据`docs/infra/results/2026-10-15-champion-packing-furniture-first8-originals.json`。两卡均进入305–308，未停正常卡/改模型；各task仅4/10，完整Q/SR与最终内部收集仍待。下一沿原全量顺序继续监控，外部交付暂停。
