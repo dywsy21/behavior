@@ -2,6 +2,14 @@
 
 2026-10-13，负责人Codex / SUBMISSION-FULL-EVAL。用户要求优先内部评测，模型交付暂缓。本页不授权外部上传、换权重或新训练。
 
+## 2026-10-14 冠军：下一批实例恢复时物体不可用
+
+18:44:50 CST，原冠军切洋葱首四例已经各9600控制正常完结；305–308开始官方`load_fn → load_batch → _load_instance_state`时，`object_scope[tro_key]`对应对象为None，`obj.load_state(tro_state, serialized=False)`抛AttributeError。日志没有具体slot/物体，因此不猜测缺失对象原因，也不把它当FM推理失败。18:45保护停止全局及MEM依赖队列。八份终态权重均不变，原STOP和所有原件保留。
+
+独立入口`continue_champion_final.py`的`freeze/prepare/worker/supervise/report`采用与MEM相同的原件、行政中断及缺失披露口径，但保持冠军自己的原9f服务/模拟器、8份配置、final8000 EMA、FM20/chunk20和23维控制。不把MEM模型/observer混入冠军。已完成和已诊断错误不再执行；原任务顺序/2或4实例批量保留，未启动后缀独立登记。未知错误、混合异常、未提交官方JSON、改权重/配置/超时或缺终态回执必须拒绝。
+
+新编排复用FIFO两加载槽，队列等待不是执行超时；原30分钟无模型进展门与官方episode时限均保留。每卡独立模型/端口/会话，已诊断的批次退出后核模型参数再为不同的未尝试实例新建服务，不允许让同一实例改答案。最终有执行异常时只能报告真实原件与缺失、completed-only统计和固定1000分母保守值，不能冒称1000有效官方JSON。目标机验收、实际封存、恢复及MEM后继/最终打包状态以plan为准；本机144回归不替代实际运行或另一成员review。
+
 ## 2026-10-14 用户选择冠军优先：行政暂停与反向依赖
 
 13:42 CST用户明确先冠军全量、再续MEM。原resume_v6和零阶段冠军queue-resume-v6按各自STOP有序退出，所有worker/model/sim已退出，8份最终权重/observer不变。原冠军v2/final8000、9f actor、1177 FIFO编排于13:48实际启动；已有TRAIN2/4工程门只验签，不重复执行，不改seed/预算/模型。

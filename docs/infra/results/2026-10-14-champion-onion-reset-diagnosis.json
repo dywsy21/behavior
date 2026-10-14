@@ -1,0 +1,228 @@
+{
+  "schema": "champion_original_reset_failure_diagnosis_v1",
+  "observed_at": "2026-10-14T11:22:13.985704+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+  "manifest_sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297",
+  "part_status": {
+    "status": "running",
+    "pid": 4178821,
+    "task": "chop_an_onion",
+    "task_id": 42,
+    "indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "2ef38ac2c0dceae284086501c55c731da93b6244db9887c7c11bc1a8b15a0da4",
+    "started": 1791972138.7673519,
+    "optimizer_updates": 0,
+    "control_steps": [
+      9600,
+      9600,
+      9600,
+      9600
+    ],
+    "updated": 1791974689.7792192
+  },
+  "attempts": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/chop_an_onion-n4-i0/attempts/00.json",
+      "status": "completed",
+      "task": "chop_an_onion",
+      "indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "instance_ids": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "rollout": 0,
+      "started": 1791972528.6881359,
+      "max_steps": 9599,
+      "policy_seed": 17,
+      "simulator_seed": 0,
+      "finished": 1791974690.054118,
+      "seconds": 2161.364377113059,
+      "actual_applied_controls": [
+        9600,
+        9600,
+        9600,
+        9600
+      ],
+      "unused_delivered_controls": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 0
+      },
+      "server_clock_kind": "policy_delivery",
+      "physical_ack_sent": false
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/chop_an_onion-n4-i0/attempts/04.json",
+      "status": "running",
+      "task": "chop_an_onion",
+      "indices": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "instance_ids": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "rollout": 0,
+      "started": 1791974690.0550911,
+      "max_steps": 9599,
+      "policy_seed": 17,
+      "simulator_seed": 0
+    }
+  ],
+  "terminal_weights": [
+    {
+      "gpu": 0,
+      "status": "closed",
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+      "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+      "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "weights_unchanged": true,
+      "optimizer_updates": 0
+    },
+    {
+      "gpu": 1,
+      "status": "closed",
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "ef627f701aeaa3994aa701ad0837b875e83ddbd582a5c0ab8029ac52ec29d947",
+      "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+      "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "weights_unchanged": true,
+      "optimizer_updates": 0
+    },
+    {
+      "gpu": 2,
+      "status": "closed",
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+      "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+      "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "weights_unchanged": true,
+      "optimizer_updates": 0
+    },
+    {
+      "gpu": 3,
+      "status": "closed",
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "78067a2510a97b7874a3550d2a759f5716351c33c5c1fc671e41fb2e2e290e9d",
+      "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+      "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "weights_unchanged": true,
+      "optimizer_updates": 0
+    },
+    {
+      "gpu": 4,
+      "status": "closed",
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+      "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+      "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "weights_unchanged": true,
+      "optimizer_updates": 0
+    },
+    {
+      "gpu": 5,
+      "status": "closed",
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "2ef38ac2c0dceae284086501c55c731da93b6244db9887c7c11bc1a8b15a0da4",
+      "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+      "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "weights_unchanged": true,
+      "optimizer_updates": 0
+    },
+    {
+      "gpu": 6,
+      "status": "closed",
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "6a7d2dd9c5c05b744652159d22ff8fb6aaad377c95822b78c8bb2dcb5df4bd4b",
+      "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+      "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "weights_unchanged": true,
+      "optimizer_updates": 0
+    },
+    {
+      "gpu": 7,
+      "status": "closed",
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "129bc9d9537459688305a59241f1e28ee1d6a42e6d59f380bde43db548d7c34e",
+      "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+      "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "weights_unchanged": true,
+      "optimizer_updates": 0
+    }
+  ],
+  "gpu_compute_processes_at_check": "",
+  "original_log": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/workers/gpu_5/chop_an_onion-n4-i0.log",
+    "sha256": "d185617d542ebeec040ff33125cf6316081a7b70e12260f539836ce0ccdda216",
+    "terminal_traceback": "Traceback (most recent call last):\n2026-10-14T10:44:50Z [2,537,256ms] [Error] [omni.kit.app._impl] [py stderr]:   File \"/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py\", line 72, in main\n    results=evaluator.run(ids,write_video=True,video_path=str(a.output/'videos'),\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-14T10:44:50Z [2,537,256ms] [Error] [omni.kit.app._impl] [py stderr]:   File \"/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py\", line 691, in run\n    return evaluate_instances_batched(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n2026-10-14T10:44:50Z [2,537,256ms] [Error] [omni.kit.app._impl] [py stderr]:   File \"/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py\", line 116, in evaluate_instances_batched\n    load_fn(dict(env_idx_to_instance))\n2026-10-14T10:44:50Z [2,537,256ms] [Error] [omni.kit.app._impl] [py stderr]:   File \"/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py\", line 654, in load_fn\n    self.load_batch(\n2026-10-14T10:44:50Z [2,537,256ms] [Error] [omni.kit.app._impl] [py stderr]:   File \"/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py\", line 549, in load_batch\n    self._load_instance_state(instance_eval_state.instance_id, instance_eval_state)\n2026-10-14T10:44:50Z [2,537,256ms] [Error] [omni.kit.app._impl] [py stderr]:   File \"/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py\", line 507, in _load_instance_state\n    obj.load_state(tro_state, serialized=False)\n    ^^^^^^^^^^^^^^\n2026-10-14T10:44:50Z [2,537,256ms] [Error] [omni.kit.app._impl] [py stderr]: AttributeError: 'NoneType' object has no attribute 'load_state'"
+  },
+  "official_state_restore_source": "            mode=mode,\n        )\n        if tro_file_path is None:\n            raise FileNotFoundError(\n                f\"Could not find 2026 {mode} task instance {instance_id} for \"\n                f\"{self.env.task.activity_name} in scene {scene_model}.\"\n            )\n\n        with open(tro_file_path, \"r\") as f:\n            tro_state = recursively_convert_to_torch(json.load(f))\n        for tro_key, tro_state in tro_state.items():\n            if tro_key == \"robot_poses\":\n                available_poses = get_presampled_robot_poses(\n                    tro_state,\n                    robot_model=robot.model,\n                    pose_key=self.robot_eval_config.get(\"use_presampled_pose_key\"),\n                )\n                # Presampled poses are scene-relative; frame=\"scene\" puts environment N's robot in its own\n                # scene rather than env 0's geometry (cf. #2257).\n                robot.set_position_orientation(\n                    available_poses[0][\"position\"], available_poses[0][\"orientation\"], frame=\"scene\"\n                )\n                scene.write_task_metadata(key=tro_key, data=tro_state)\n            else:\n                # load_state applies the TRO root-link pose in WORLD frame, but the TRO is authored in\n                # scene-relative (env 0) coordinates. For multi envs (env_idx != 0) the scene prim is\n                # shifted by its world offset, so add that offset to the root-link position up front --\n                # load_state then places the object correctly in a single write.\n                obj = env_accessor.object_scope[tro_key]\n                if env_idx != 0 and isinstance(tro_state, dict) and \"root_link\" in tro_state:\n                    scene_offset = scene._scene_prim.get_position_orientation()[0]\n                    tro_state[\"root_link\"][\"pos\"] = tro_state[\"root_link\"][\"pos\"] + scene_offset\n                obj.load_state(tro_state, serialized=False)\n\n        if self.should_sync_lights:\n            set_light_control_toggles(env_accessor.object_scope.values(), True)",
+  "diagnosis": {
+    "kind": "simulator_missing_task_object_on_reset",
+    "phase": "official_instance_state_load",
+    "specific_object_or_slot_known": false,
+    "root_cause_of_missing_object_not_proven": true,
+    "failed_batch_instances": [
+      305,
+      306,
+      307,
+      308
+    ],
+    "first_batch_completed": [
+      301,
+      302,
+      303,
+      304
+    ],
+    "model_or_physics_modified": false,
+    "failed_batch_rerolled": false
+  },
+  "summary_at_first_check": {
+    "completed": 254,
+    "missing": 746,
+    "completed_only_q": 0.05624609423822022,
+    "completed_only_sr": 0.01968503937007874
+  },
+  "supervisor_alive": false,
+  "mem_queue": {
+    "status": "needs_diagnosis",
+    "pid": 3812967,
+    "phases": [],
+    "error": "RuntimeError('Champion needs diagnosis; do not launch MEM or retry champion')"
+  },
+  "mem_queue_alive": false,
+  "continuation_status": "Code implemented; 144 local tests passed. Actual sealing, target tests and restart not yet done.",
+  "full_model_score": false
+}

@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 19:34 CST / Codex SUBMISSION-FULL-EVAL（精确重置故障与续评实现，本机144测试过）：** 原切洋葱301–304完整回执为各9600控制，305–308刚进入官方`load_batch/_load_instance_state`即因`object_scope[tro_key]`对应对象None、调用`load_state`抛唯一AttributeError；日志未记具体物体/slot，不能断言为何丢失。八模型result均closed/参数SHA相同/0更新，八卡无人占用。新增独立`scripts/eval/continue_champion_final.py`封存原件/错误/行政中断、保持原任务/实例/seed/批量排程；模型服务与模拟器仍从原9f源码运行，原文件和STOP不改。只对精确错误签名隔离整批，无原JSON者不造分数；其他未知错误继续停机。测试含完整/错误互斥、行政中断的独立错误拒绝、未提交JSON拒绝、权重/实例/超时绑定，以及fake进程验证原入口＋只续未启动后缀；本机144通过，真实目标验收/封存/重启尚待。证据`docs/infra/results/2026-10-14-champion-onion-reset-diagnosis.json`；待恢复冠军后重接MEM依赖及续评打包，交付仍暂停。
+
+- **2026-10-14 19:21 CST / Codex SUBMISSION-FULL-EVAL（冠军已保护停机，开始诊断）：** 本轮恢复时直接核原supervisor3787083、八worker/model均已退出；原run于18:45因GPU5 `chop_an_onion-n4-i0` 的 `Official task batch incomplete` 转needs_diagnosis，其他卡为行政中断，MEM3812967后继亦已停止且零阶段。当前254完整/746缺失、5成功，completed-only Q0.0562461/SR0.0196850，不是全量。此前“持续运行”记录不再是当前状态。根独自核原日志/物理回执/参数终态，具体底层异常、故障实例和行政中断清单尚待分类；不清STOP、不改原权重/actor/官方物理，不重跑已完整或实际错误批次。下一步按确证原因封存并构建独立剩余续评及MEM后继，模型交付仍暂停。
+
 - **2026-10-14 16:23 CST / Codex SUBMISSION-FULL-EVAL（第二个慢批自然完成，未取得调用栈）：** GPU7爆米花305–308在16:12仍同3894213/4800快照、模型最后交付已约7分钟、仿真CPU忙；准备非暂停采样时该PID已退出，实际未调用py-spy，不能声称取得根因。复核原worker/终态回执：16:17:54原批自然完成、随后正常加载309–310，未停机或重试。新增308官方Q1/success=true/4824控制，305–307各4857/Q0；四原JSON/MP4 SHA、帧数/物理回执全匹配，整批19395控制/2456.8004s≈7.89控制/s。证据`docs/infra/results/2026-10-14-champion-popcorn-second4-originals.json`，爆米花目前已完整8条/2成功而非全10；累计唯一原件已审158，16:22全run已162完整/4成功，非最终成绩。具体慢因仍未证实，保留冻结actor/官方物理与超时，冠军及MEM后继继续原顺序。
 
 - **2026-10-14 16:09 CST / Codex SUBMISSION-FULL-EVAL（新增50原件增量验收）：** 前几goal轮均直接核原supervisor3787083、八worker/model和MEM3812967实活，为verified wait；本轮fetch/pull无新增，原任务继续、没有重启或改配置。只读核此前未审的50条完整公共结果（9种task、15个物理batch）：全部原JSON/MP4 SHA、30fps/672×448帧数与actual_applied_controls/官方steps匹配；旧首100和爆米花首4通过文档SHA关联，不重复充数。累计唯一已审154条/3成功，新增50中0成功、Q和0.95；只是原件完整性验收和已完成子集，非全1000成绩，也不冒称人工画面/逐帧解码审查。证据`docs/infra/results/2026-10-14-champion-new50-originals.json`。冠军原1000继续、MEM576仍waiting；下一步继续原run并在新终态/异常时核验，最终汇总打包仍待全量结束，模型交付暂停。
