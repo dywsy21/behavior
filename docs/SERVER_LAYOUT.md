@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 20:51 CST：冠军放鞋成功完整原视频
+
+- 远端`/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/videos/putting_shoes_on_rack_302_0.mp4`；对应同part的`json/putting_shoes_on_rack_302_0.json`，官方success=true/Q1/7895实际控制。四实例批次均验SHA/物理回执，详`docs/infra/results/2026-10-14-champion-shoes-first4-originals.json`。
+- 本地`/home/wsy/behavior/artifacts/final-eval-20261014/champion-public-videos/putting_shoes_on_rack_302_0.mp4`，同SHA `34d864d6ea996677ac77cf22f0a41ab5b5caf27d00233a239c1f1b440777827b`、18,931,842字节/7895帧/30fps/263.166667秒/672×448。完整未重编码原件，Git忽略，不是可随意删除的缓存；不是MEM高层/结果头视频，无额外字幕。
+
 ## 2026-10-14 20:25 CST：冠军续评→MEM新后继
 
 - RTX独立队列/归档源码`/run/ti/rl_memlite_stage1_20261006/code/champion-dependency-20261014-v1`，commit `4a34789727c10386e6b35e249d80cc618f683979`；Git bundle `runs/final_eval_preparation_20261014/champion-dependency-v1.bundle`，本地`artifacts/final-eval-20261014/champion-dependency-v1/source.bundle`，SHA `001bf771296b3f042692d1ac482c83f4a21f4b4f4aeca676823312bc22a7f9f6`。本机/目标186回归通过，不是新actor。

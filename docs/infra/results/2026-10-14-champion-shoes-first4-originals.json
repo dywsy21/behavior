@@ -1,0 +1,164 @@
+{
+  "schema": "champion_shoes_first4_originals_v1",
+  "observed_at": "2026-10-14T12:48:35.666720+00:00",
+  "status": "four_original_completed_physical_episodes_verified",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/manifest.json",
+    "sha256": "b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46"
+  },
+  "records": [
+    {
+      "task": "putting_shoes_on_rack",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 11590,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/json/putting_shoes_on_rack_301_0.json",
+        "sha256": "80077512e3b45d9b2898a8d8d634f7a72de7bb9a997fe48a9a29205a75c752c2"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/videos/putting_shoes_on_rack_301_0.mp4",
+        "sha256": "92a3cc077eedea7f97882e32a15ceda4b4c68b94dc3b99449cce7d6d4c375a6d"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11590"
+      },
+      "success": false,
+      "q_score_final": 0.3
+    },
+    {
+      "task": "putting_shoes_on_rack",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 7895,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/json/putting_shoes_on_rack_302_0.json",
+        "sha256": "25dbb46a51cc718229c8aa62ea829008ab01a4ff6e84468945f32dec5cd082e1"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/videos/putting_shoes_on_rack_302_0.mp4",
+        "sha256": "34d864d6ea996677ac77cf22f0a41ab5b5caf27d00233a239c1f1b440777827b"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "7895"
+      },
+      "success": true,
+      "q_score_final": 1
+    },
+    {
+      "task": "putting_shoes_on_rack",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 11590,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/json/putting_shoes_on_rack_303_0.json",
+        "sha256": "0261e01a68cd4a70a120162d2bbfd875b6c6f15fca0f3ffe318ed82552571143"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/videos/putting_shoes_on_rack_303_0.mp4",
+        "sha256": "4bb182ea172379194bb02b6f2656d189eb1c18fe17b30a41bcf2fd90381e7667"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11590"
+      },
+      "success": false,
+      "q_score_final": 0.1
+    },
+    {
+      "task": "putting_shoes_on_rack",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 11590,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/json/putting_shoes_on_rack_304_0.json",
+        "sha256": "aab790639f28d63e57396c4abdb2cd76ed47b3190961241e1e23397cf09de78e"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/videos/putting_shoes_on_rack_304_0.mp4",
+        "sha256": "b03df48bbe89449d55a8dc83bf4e06cfb13fb0a6531e47d6569f90cd13bdf38d"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11590"
+      },
+      "success": false,
+      "q_score_final": 0.2
+    }
+  ],
+  "physical_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/attempts/00.json",
+    "sha256": "82328913a104af17b073ca487d4c51214f4520cc24bb92c50e5cf4e68554d079"
+  },
+  "attempt": {
+    "status": "completed",
+    "task": "putting_shoes_on_rack",
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "instance_ids": [
+      301,
+      302,
+      303,
+      304
+    ],
+    "rollout": 0,
+    "started": 1791979479.8945084,
+    "max_steps": 11589,
+    "policy_seed": 17,
+    "simulator_seed": 0,
+    "finished": 1791982022.9484265,
+    "seconds": 2543.053001040593,
+    "actual_applied_controls": [
+      11590,
+      7895,
+      11590,
+      11590
+    ],
+    "unused_delivered_controls": {
+      "0": 10,
+      "1": 5,
+      "2": 10,
+      "3": 10
+    },
+    "server_clock_kind": "policy_delivery",
+    "physical_ack_sent": false
+  },
+  "successful_instances": [
+    302
+  ],
+  "completed_q_sum": 1.6,
+  "actual_controls": 42665,
+  "controls_per_second": 16.7770785675886,
+  "prior_live_trace_evidence": "docs/infra/results/2026-10-14-champion-shoes-active-set-audit.json",
+  "manual_visual_review": false,
+  "full_task_all10_complete": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "local_success_video": {
+    "path": "/home/wsy/behavior/artifacts/final-eval-20261014/champion-public-videos/putting_shoes_on_rack_302_0.mp4",
+    "sha256": "34d864d6ea996677ac77cf22f0a41ab5b5caf27d00233a239c1f1b440777827b",
+    "bytes": 18931842,
+    "frames": 7895,
+    "frame_rate": "30/1",
+    "duration_seconds": 263.166667,
+    "resolution": [672, 448],
+    "checked_at": "2026-10-14T20:50:30+08:00",
+    "same_as_remote_original": true,
+    "edited_or_reencoded": false
+  }
+}
