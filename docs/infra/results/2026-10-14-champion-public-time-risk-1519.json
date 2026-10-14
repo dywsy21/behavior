@@ -1,5 +1,11 @@
 {
   "schema": "champion_remaining_work_public_rates_v1",
+  "later_observation": {
+    "evidence": "docs/infra/results/2026-10-14-champion-popcorn-long-step.json",
+    "observed_at": "2026-10-14T15:28:43+08:00",
+    "note": "The incomplete popcorn batch had a long interval with no new model delivery and then resumed physical controls under the same processes. This slow batch is not in the completed-batch rate sample; the calendar scenarios may underestimate later heavy transitions and are not guaranteed bounds.",
+    "model_or_evaluation_changed": false
+  },
   "observed_at": "2026-10-14T07:19:06.156117+00:00",
   "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
   "manifest_sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297",

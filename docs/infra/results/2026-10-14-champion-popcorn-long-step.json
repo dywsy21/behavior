@@ -1,0 +1,128 @@
+{
+  "schema": "champion_popcorn_long_step_observation_v1",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+  "sim_pid": 3894213,
+  "model_pid": 3792362,
+  "before": {
+    "observed_at": "2026-10-14T07:26:28.004409+00:00",
+    "part": {
+      "status": "running",
+      "pid": 3894213,
+      "task": "make_microwave_popcorn",
+      "task_id": 40,
+      "indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "129bc9d9537459688305a59241f1e28ee1d6a42e6d59f380bde43db548d7c34e",
+      "started": 1791960115.449748,
+      "optimizer_updates": 0,
+      "control_steps": [
+        2500,
+        2500,
+        2500,
+        2500
+      ],
+      "updated": 1791961992.0400722
+    },
+    "event_file": {
+      "bytes": 2477933,
+      "mtime": 1791962003.2640069
+    },
+    "processes": "    PID    PPID STAT ELAPSED     TIME %CPU %MEM WCHAN\n3787175 3787083 Ss      5904 00:00:00  0.0  0.0 poll_schedule_timeout.constprop.17\n3792362 3787175 Ssl     5724 00:09:28  9.9  1.7 ep_poll\n3894213 3787175 Rsl     2673 02:11:09  294  2.0 -\n",
+    "attempts": {
+      "00.json": {
+        "status": "running",
+        "task": "make_microwave_popcorn",
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "instance_ids": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "rollout": 0,
+        "started": 1791961307.1796398,
+        "max_steps": 4856,
+        "policy_seed": 17,
+        "simulator_seed": 0
+      }
+    },
+    "last_sim_log_observation": "/run/ti/behavior_stage3_20260930/envs/sim/lib/python3.11/site-packages/gymnasium/spaces/box.py:415: UserWarning: \u001b[33mWARN: Casting input x to numpy array.\u001b[0m\n  gym.logger.warn(\"Casting input x to numpy array.\")\n\u001b[0m[00:44:24.979] [INFO] [omnigibson.eval.evaluator] Instance 304 (env 3) finished at step 2549: success=True q_score=1.0\u001b[0m\n"
+  },
+  "after": {
+    "observed_at": "2026-10-14T07:28:43.182790+00:00",
+    "part": {
+      "status": "running",
+      "pid": 3894213,
+      "task": "make_microwave_popcorn",
+      "task_id": 40,
+      "indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "129bc9d9537459688305a59241f1e28ee1d6a42e6d59f380bde43db548d7c34e",
+      "started": 1791960115.449748,
+      "optimizer_updates": 0,
+      "control_steps": [
+        3000,
+        3000,
+        3000,
+        2549
+      ],
+      "updated": 1791962916.1716378
+    },
+    "event_mtime": 1791962922.9033659,
+    "events_bytes": 2554706,
+    "sim_pid_alive": true,
+    "model_pid_alive": true,
+    "attempts": {
+      "00.json": {
+        "status": "running",
+        "task": "make_microwave_popcorn",
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "instance_ids": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "rollout": 0,
+        "started": 1791961307.1796398,
+        "max_steps": 4856,
+        "policy_seed": 17,
+        "simulator_seed": 0
+      }
+    }
+  },
+  "processes_restarted": false,
+  "timeout_or_physics_changed": false,
+  "specific_slow_component_confirmed": false,
+  "incomplete_batch_included_in_score": false,
+  "originals_modified": false,
+  "scope": "Read-only observations establish resumed physical controls with the same live processes, not the exact cause of the long interval."
+}
