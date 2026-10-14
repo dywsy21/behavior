@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 20:34 CST / Codex SUBMISSION-FULL-EVAL（切洋葱10去向齐，实测时间风险收紧）：** 上一goal轮完成真实续评/新后继和首4原件，为实质进展；本轮fetch/pull无新增、直接核50073及八worker/model/sim、127593后继实活。切洋葱309/310各9600控制/帧、seed17/sim0/原9599时限，原JSON/MP4 SHA与物理回执匹配；全task6有效Q0/0成功＋4重置异常，不能称根因已修或10有效结果。证据`docs/infra/results/2026-10-14-champion-onion-accounted10.json`，累计唯一已审260。20:32共264完整/4异常/732待，79已闭合物理batch的2/4环境加权吞吐14.9572/16.5744控制/s，最近10批更慢14.2230/14.9973。按原排程不扣进行中步数，冠军剩32.83h加权/35.76h近期/36.93h较慢场景；原MEM同排程576仍约32.99h。条件串行结束10/17 14:22–18:28 CST，对刚再核官网10/17 19:59截止仅约1.5–5.6h余量，不含额外故障/FIFO/重载/归档，非上界或保证。证据`…/2026-10-14-champion-remaining-time-risk-2032.json`；原顺序/权重/时限不变，不因此自动缩减评测或恢复交付。
+
 - **2026-10-14 20:27 CST / Codex SUBMISSION-FULL-EVAL（续评首4新原件核验）：** halve_an_egg309/310各9566实际控制、spraying_for_bugs309/310各9720，4原JSON/MP4 SHA、30fps/672×448帧数和完成物理回执全吻合；原seed17/sim0、官方horizon+1超时语义未改，与既有254完整/4异常无重叠。四例Q0/未成功，非全量结论；累计唯一已审258原件。证据`docs/infra/results/2026-10-14-champion-continuation-first4-originals.json`，只是原件/控制时钟核验，不冒称人工逐帧画面审查。原冠军和127593后继继续，待完整终态/真正切换/最终结果收集；交付仍暂停。
 
 - **2026-10-14 20:25 CST / Codex SUBMISSION-FULL-EVAL（冠军→MEM真实后继已就绪）：** 4a347897独立Git源码`code/champion-dependency-20261014-v1`目标186通过（仅pynvml弃用警告），真实授权/原manifest/旧队列/两个原协调源校验过。新`memlite_final100_20261014_resume_v7/queue-after-champion-resume-v1` PID127593、tmux `mem-after-champion-resume-v1`实活waiting、0阶段，实际argv/cwd核对；旧失败队列保留，MEM job仍无status/STOP、未提前启动。冠军50073/八worker/model/sim正常，新summary256完整/4异常/740待，5成功只属已完子集；首新增2原件专门核验待。冠军全1000去向/终态权重/原件核账归档并释放GPU后自动接原ae86 MEM576，再归档MEM；实际结果包均尚未生成。证据`docs/infra/results/2026-10-14-champion-first-mem-dependency-launch.json`，源包SHA `001bf771296b3f042692d1ac482c83f4a21f4b4f4aeca676823312bc22a7f9f6`。模型交付/提交继续暂停，goal未完成。
