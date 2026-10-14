@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 10:54 CST / Codex SUBMISSION-FULL-EVAL（首实际续步＋独立草稿工具）：** 10:49:56直接核原supervisor/八worker/八model及冠军后继实活；GPU0 store_produce309/310各256真实控制/16次请求，GPU1/2已进入原任务场景，其余排队，无STOP/新错误。新增本地`scripts/eval/package_memlite_continuation.py`：只有1000案例全部已完成或诊断异常且全部原进程结束后，重新验证lineage/原视频/物理ACK/权重/命令/机器人wrapper，允许ZIP仅含真实metrics，缺失按0的固定1000分母单列，仍无伪造JSON/上传/模型交付。新目标测试运行中、未对未完run生成任何真实包、未热改服务器运行源；下一测试/独立部署与真run拒绝验收，并核各卡首步。
+
+- **2026-10-14 10:49 CST / Codex SUBMISSION-FULL-EVAL（已八模型ready；补结果打包口径）：** 10:47原watch确认八模型均ready、GPU0/1已进入场景加载，无新增错误/重复启动；冠军原3754801实活waiting。上一轮为实质进展（精确诊断＋封存＋恢复），本轮继续核实等待，非阻塞。今日重新打开官方submission/evaluation页面：明确允许部分提交、缺失按0，原件不可改；故“缺30 JSON就无结果草稿可准备”过严。仍坚持先覆盖原1000案例，不提前结束本轮；下一补独立只读continuation打包器，输出真实有效原件、缺失披露和固定1000分母，绝不合成缺失JSON/上传/模型交付。当前旧portal工具只支持1000有效原件，不能谎称已支持新口径。首页仅复核10/16日期，AoE具体时刻未在本次页面得到证实，应撤回其已确认表述。
+
 - **2026-10-14 10:43 CST / Codex SUBMISSION-FULL-EVAL（安全交接点）：** 新只读watch67414已接续真实MEM3754600/冠军后继3754801，旧watch82347明确终止于原停机，不复用其旧状态。10:40–41已核GPU0/1/2/7原模型ready，其余依公平槽加载，尚未新仿真控制；未把加载当完成。原388条汇总复核覆盖44task（33task各10例齐），3,463,040真实控制、8条非零Q、0完整成功，completed-only Q0.004095074；非全量、非训练提升。总览`docs/infra/FULL_EVAL_20261012.md`已纠正过期run/冠军预检待办，并明确30异常不造官方JSON；当前不制作/上传交付包。下一核八模型/场景和新实际ACK，继续582→冠军1000；goal仍active，等待不是阻塞。
 
 - **2026-10-14 10:35 CST / Codex SUBMISSION-FULL-EVAL（真实加载与冠军后继已核）：** 原定582剩余已由supervisor3754600和八worker3754630–37实际启动；GPU0/1先加载原模型，其余公平排队，非已经恢复控制。新冠军queue-resume-v5/PID3754801实活waiting，原run19b/原9f/final8000与两次已过TRAIN预检保持，0公共/不重试。新parent seal9d41…d4bc3与manifest9663…24a19已复制本地artifacts并双端SHA一致；源码66b7已push。接下来等场景就绪与真实ACK，后续仍MEM→冠军；不停止/改写原件，不恢复模型交付。
