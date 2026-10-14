@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 13:26 CST / Codex SUBMISSION-FULL-EVAL（生火异常精确分类）：** 已定位唯一终止为官方post-step proprioception的关节位置视图返回None（entity_prim `.view`），先行PhysX无效方向/关节未初始化警告；不是K=3拒绝或OOM，具体slot未记。原四例末ACK各6448、末4动作未ACK；306最后块虽有限但绝对值达3.946e12，不能称控制合理或先断言策略/物理谁先坏。八份终态权重/observer均不变、0更新。独立续评代码新增严格组合分类和反例/封存回归，草稿同步新异常类别；第一次测试因两个文件名写错未运行，已纠正目标重新测。旧run/actor/物理未改，下一冻结新编排、真实封存并恢复；详`docs/infra/FINAL_EVAL_CONTINUATION.md`。
+
+- **2026-10-14 13:24 CST / Codex SUBMISSION-FULL-EVAL（新保护停机，正在定位）：** 上一goal轮完成八卡真实隔离审计与独立工具部署，为实质进展。本轮fetch/pull无新变更；13:22直接确认MEM3754600/八worker/各model/sim及冠军3754801均已退出、GPU实空，不把旧summary当运行。MEM于11:40:46 CST因GPU5 `setting_the_fire-n4-i4`未分类异常全局STOP；日志先有PhysX unitDir错误，具体终止栈待核，不能先归咎模型/串任务。390完整（新增produce309/310）/30已登记异常/580未归属，completed-only Q0.004074074/SR0，冠军仍0公共。下一根独自精确诊断、封存并只恢复真正未完成项；原件/STOP/actor/物理不改，模型交付继续暂缓。
+
 - **2026-10-14 11:15 CST / Codex SUBMISSION-FULL-EVAL（八卡实际执行与隔离审计）：** 根只读审计本轮八个model000原trace从byte0至各自捕获快照最后全ACK边界，二次读取前缀SHA一致：28个进行中episode、88,320实际控制、698条高层plan。逐环境空初始memory、每次previous-intent/parent与K=3精确递推、身份/slot、高→低当前意图、observer时钟、raw23物理ACK digest均过，八进程模型身份相同。证据`docs/infra/results/2026-10-14-memlite-resume-v5-eight-gpu-live-audit.json`记录每个精确字节边界/SHA；不伪造close，不覆盖边界后的活跃尾部，不等于完整成功或最终权重封存。八卡已真实推进（包括先前仅请求的bringing_water），原388完整/30异常/582剩余仍待全回合关闭；MEM→冠军顺序与源码完全不动。
 
 - **2026-10-14 11:14 CST / Codex SUBMISSION-FULL-EVAL（目标验收完成）：** RTX独立37bc2e55目标环境68项测试全部通过（10.35s）；真实active resume_v5入口准确拒绝`not terminal`，指定草稿目录未创建，未读写活跃原件/未用GPU。此为拒绝门验收而非真实1000成绩包通过。11:13直接核八worker/model/sim与冠军队列实活，7卡已记录实际控制，第8卡bringing_water已有6次请求尚待ACK快照；无新执行异常。继续原1000覆盖和隔离审计，不改模型或评测参数。

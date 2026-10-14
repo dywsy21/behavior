@@ -25,7 +25,8 @@ def accounted_summary(tasks, records, errors):
         if (error.get('rerun_allowed') is not False
                 or error['diagnosis'].get('official_score_available') is not False
                 or error['diagnosis']['kind'] not in
-                ('simulator_nonfinite_robot_pose', 'planner_memory_recurrence_rejected')):
+                ('simulator_nonfinite_robot_pose', 'simulator_articulation_unavailable',
+                 'planner_memory_recurrence_rejected')):
             raise ValueError('Only explicitly diagnosed original execution errors may be missing')
     return result
 

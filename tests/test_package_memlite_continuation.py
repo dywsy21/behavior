@@ -27,6 +27,14 @@ def test_missing_four_keeps_1000_denominator_and_does_not_fabricate_json():
     assert s['fabricated_official_metrics']==0
 
 
+def test_diagnosed_articulation_failure_remains_a_disclosed_missing_result():
+    tasks,records,errors=rows()
+    for error in errors:error['diagnosis']['kind']='simulator_articulation_unavailable'
+    s=m.accounted_summary(tasks,records,errors)
+    assert s['execution_errors']==4 and s['coverage']==1000
+    assert s['official_full_q_score'] is None and s['fabricated_official_metrics']==0
+
+
 @pytest.mark.parametrize('bad', ['incomplete','duplicate','overlap','foreign','unknown','retry','claimed_score'])
 def test_diagnosed_missing_is_not_a_loophole_for_early_stopping_or_cherry_picking(bad):
     tasks, records, errors = rows()

@@ -69,6 +69,56 @@ def test_callback_nan_wrapped_repeated_finger_link_is_one_physical_failure():
         assert m.physics_error(bad) is None
 
 
+def articulation_failure_fixture():
+    return ('PhysX error: NpSceneQueries multiQuery input check: unitDir is not valid.\n'
+        'Articulation needs to be initialized.\nTraceback (most recent call last):\n'
+        'File "/official/omnigibson/eval/evaluator.py", line 386, in _apply_actions\n'
+        'File "/official/omnigibson/envs/env_base.py", line 769, in step\n'
+        'File "/official/omnigibson/envs/env_base.py", line 622, in get_obs\n'
+        'File "/official/omnigibson/robots/robot.py", line 1536, in get_proprioception\n'
+        'File "/official/omnigibson/robots/robot.py", line 1546, in _get_proprioception_dict\n'
+        'File "/official/omnigibson/prims/entity_prim.py", line 871, in get_joint_positions\n'
+        'joint_positions = self._articulation_view.get_joint_positions().view(self.n_dof)\n'
+        "AttributeError: 'NoneType' object has no attribute 'view'\n")
+
+
+def test_articulation_failure_is_not_a_nan_pose_or_model_failure():
+    text=articulation_failure_fixture();r=m.execution_error(text)
+    assert r['kind']=='simulator_articulation_unavailable' and r['scene_slot'] is None
+    assert r['failed_slot_known'] is False and r['official_score_available'] is False
+    assert r['invalid_query_messages']==1 and m.physics_error(text) is None
+
+
+@pytest.mark.parametrize('bad',['no_physx','no_articulation_warning','foreign_stack','wrong_call',
+    'other_exception','extra_error','cuda','duplicate_stack','warning_after_failure'])
+def test_articulation_diagnosis_refuses_unrelated_or_incomplete_evidence(bad):
+    text=articulation_failure_fixture()
+    if bad=='no_physx':text=text.replace('unitDir is not valid.','another warning')
+    elif bad=='no_articulation_warning':text=text.replace('Articulation needs to be initialized.','')
+    elif bad=='foreign_stack':text=text.replace('omnigibson/prims/entity_prim.py','other/model.py')
+    elif bad=='wrong_call':text=text.replace('self._articulation_view.get_joint_positions()','something_else()')
+    elif bad=='other_exception':text=text.replace("attribute 'view'","attribute 'shape'")
+    elif bad=='extra_error':text+='ValueError: foreign session\n'
+    elif bad=='cuda':text+='CUDA out of memory\n'
+    elif bad=='duplicate_stack':text+=text
+    else:
+        text=text.replace('Articulation needs to be initialized.\n','')+'Articulation needs to be initialized.\n'
+    assert m.execution_error(text) is None
+
+
+def test_freeze_articulation_batch_excludes_failed_instances_without_faking_metrics(tmp_path,monkeypatch):
+    prior,seal=stopped_continuation(tmp_path,monkeypatch)
+    (prior/'workers/gpu_5/task5-n4-i0.log').write_text(articulation_failure_fixture())
+    result=m.freeze_continuation(prior,seal)
+    rows=[r for r in result['execution_errors'] if r['task']=='task5']
+    assert len(rows)==4 and all(r['rerun_allowed'] is False for r in rows)
+    assert all(r['diagnosis']['kind']=='simulator_articulation_unavailable' for r in rows)
+    assert all(r['task']!='task5' for r in result['administrative_interruptions'])
+    original=m.read(tmp_path/'original/manifest.json')
+    parts=[p for g in m.remaining_parts(original,result) for p in g['parts'] if p['task']=='task5']
+    assert [i for p in parts for i in p['indices']]==list(range(4,10))
+
+
 def planner_rejection_fixture(path):
     path.mkdir(parents=True, exist_ok=True)
     message='planner generation violates causal K=3 memory recurrence'

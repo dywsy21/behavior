@@ -2,6 +2,14 @@
 
 2026-10-13，负责人Codex / SUBMISSION-FULL-EVAL。用户要求优先内部评测，模型交付暂缓。本页不授权外部上传、换权重或新训练。
 
+## 2026-10-14 生火任务：关节状态视图丢失
+
+resume_v5在11:39:17 CST的`setting_the_fire`305–308物理批次退出，11:40:46全局停止。唯一终止栈是官方evaluator的`_apply_actions`→env.step/get_obs→robot.get_proprioception→entity_prim.get_joint_positions，`_articulation_view.get_joint_positions()`返回None后`.view(self.n_dof)`抛AttributeError；此前有PhysX `unitDir is not valid`和`Articulation needs to be initialized`。模型服务因客户端退出而断连，不是高层解析错误、OOM或已知NaN四元数断言。日志SHA `89b099872561c6e4500eb8a410280643c18e2e1256b5708924c28b442d403bd9`。
+
+独立编排增加此**精确组合**的异常分类：必须同时具备先行PhysX/关节警告、完整官方读取路径、唯一指定AttributeError；缺栈、其他异常、CUDA错误或混合故障仍停止。失败slot未在栈中标明，不猜测；该4例记缺官方终局的执行异常、不重试、不合成JSON。只是记录和隔离新的故障类型，不修剪动作、不更改官方物理或actor。结果草稿支持披露这个新类别，仍先覆盖1000案例。
+
+原trace末次ACK为每例6448（part状态6400只是较早快照）；最后四个动作块未获ACK，不能伪造已执行回执。全部记录动作有限，但306最后块最大绝对值约3.946e12，其余三例约1.6，**有限不等于合理**。仅此仍不能确定物理状态先发散还是策略/动作转换先异常；保留原部分视频供进一步核帧，不为了赶评测把异常动作悄悄clip。八模型/observer终态权重均未变，0更新。本地回归及目标机封存/重启结果继续记实时计划，不能将这里的分类设计当评测已恢复。
+
 ## 原轮实际停止原因
 
 RTX `runs/memlite_final100_20261013_v2`，推理/物理入口固定`51c11d32a5d2a73df79b4a6a87dd266db2ae6c61`。传真机任务第二个四实例批次（305–308）中的scene3机器人姿态成为NaN，官方`rigid_dynamic_prim.py`断言退出；原调度器随之全局STOP。八卡最终权重均逐字节不变。

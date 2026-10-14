@@ -1,7 +1,7 @@
 """Explicit, outcome-independent continuation with immutable policy runtime.
 
 Completed originals are referenced by SHA, never copied over or rerolled. A
-diagnosed nonfinite-pose or strict planner rejection consumes its whole batch
+diagnosed physics-state failure or strict planner rejection consumes its whole batch
 as execution errors (NOT fabricated official JSON). Only unrelated global-stop
 interruptions may restart. New physics failures are isolated to their batch.
 All inference and physics still run from the original frozen source checkout.
@@ -76,6 +76,39 @@ def physics_error(text):
                 cause='Undetermined: finite model actions do not prove stable physics or correct action semantics')
 
 
+def articulation_error(text):
+    """One observed physical-state failure, not a generic AttributeError catch.
+
+    PhysX reported invalid query directions before the official evaluator's
+    post-step proprioception lost its joint-position view. This identifies the
+    failed execution interface, not whether the policy or simulator caused it.
+    No slot was logged; retain the whole original batch without a reroll.
+    """
+    text = re.sub(r'\x1b\[[0-9;]*m', '', text)
+    expected = "AttributeError: 'NoneType' object has no attribute 'view'"
+    query = 'PhysX error: NpSceneQueries multiQuery input check: unitDir is not valid.'
+    warning = 'Articulation needs to be initialized.'
+    trace = 'Traceback (most recent call last):'
+    frames = ('omnigibson/eval/evaluator.py', 'in _apply_actions',
+              'omnigibson/envs/env_base.py', 'in step', 'in get_obs',
+              'omnigibson/robots/robot.py', 'in get_proprioception',
+              'in _get_proprioception_dict', 'omnigibson/prims/entity_prim.py',
+              'in get_joint_positions',
+              'joint_positions = self._articulation_view.get_joint_positions().view(self.n_dof)')
+    exceptions = re.findall(r'\b[A-Za-z_][\w.]*(?:Error|Exception): [^\r\n]+', text)
+    start = text.find(trace)
+    if (start < 0 or text.count(trace) != 1 or exceptions != [expected]
+            or query not in text[:start] or warning not in text[:start]
+            or not all(frame in text[start:] for frame in frames)
+            or re.search(r'CUDA out of memory|CUDA error:|device-side assert', text, re.I)):
+        return None
+    return dict(kind='simulator_articulation_unavailable', scene_slot=None,
+        exception=expected, official_score_available=False, failed_slot_known=False,
+        invalid_query_messages=text[:start].count(query), traceback_copies=1,
+        cause='Official post-step proprioception received no articulation joint-position tensor after '
+              'PhysX invalid-direction errors. Policy-versus-physics first cause and affected slot are unknown.')
+
+
 def planner_rejection(text, model_path):
     """Classify one exact rejected decode, not a repair or a model reroll.
 
@@ -119,7 +152,7 @@ def planner_rejection(text, model_path):
 
 
 def execution_error(text, model_path=None):
-    return physics_error(text) or planner_rejection(text, model_path)
+    return physics_error(text) or articulation_error(text) or planner_rejection(text, model_path)
 
 
 def exact_frozen_weights(value):
@@ -535,7 +568,7 @@ def prepare(prior, seal, runtime_source, job):
                     administrative_restarts=len(receipt['administrative_interruptions']),
                     loader_admission='fifo_two_slots_queue_wait_is_not_execution_timeout_v1',
                     expected=1000, automatic_retries=False, policy_changed=False, optimizer_updates=0,
-                    error_policy='Record diagnosed nonfinite-pose or strict planner-rejection batches as missing official scores; '
+                    error_policy='Record diagnosed physics-state or strict planner-rejection batches as missing official scores; '
                                  'restart model only for different unattempted cases; no score fabrication',
                     numerical_notice='Original model/official source/seed/batching unchanged; administrative '
                                      'process restarts are explicit and not claimed bitwise-equivalent physics')
