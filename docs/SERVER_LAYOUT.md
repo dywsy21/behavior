@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 14:47 CST：冠军挂画成功原视频已收本地
+
+- 远端`/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/{json,videos}/hanging_pictures_306_0.{json,mp4}`；官方success=true/Q1/1427步。JSON SHA `dfe214a8e4dda515fc61bd2b04872a8732ed57b319805cdb524d2dcca6057b50`，MP4 SHA `6b7762b114dfa1d13a48a71e12c3f0a3b23a09744e3cc838fc639c087807e0e3`。
+- 本地`/home/wsy/behavior/artifacts/final-eval-20261014/champion-public-videos/hanging_pictures_306_0.mp4`，同SHA、4,066,037字节、1427帧/30fps/47.566667s/672×448；完整原件无重编码、不入Git。首8挂画原件/物理批次核验清单`docs/infra/results/2026-10-14-champion-hanging-first8-originals.json`，未冒称已全10或全1000。
+
 ## 2026-10-14 14:25 CST：独立冠军协议日志审计与首个成功原件
 
 - RTX独立CPU工具`/run/ti/rl_memlite_stage1_20261006/code/champion-trace-audit-20261014-v1`固定`d67b3c855af835ec0fe97512750e364ff1b0ce76`；不是运行中的1177编排或9f actor。Git包`runs/final_eval_preparation_20261014/champion-trace-audit-v1.bundle`及本地`artifacts/final-eval-20261014/champion-trace-audit-v1/source.bundle`，SHA `0fcb5bb4666ae0d430decdec98223ee47edbee00aa2b7eee92bf74eaa34c1799`。本地68测试通过，目标66通过/2可选源码路径缺失跳过。

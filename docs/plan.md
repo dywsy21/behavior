@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 14:45 CST / Codex SUBMISSION-FULL-EVAL（第二种任务完整成功）：** 上一goal轮核首个完整radio10与真实跨任务重置为实质进展；本轮fetch/pull无新增、原3787083/八worker/model及MEM3812967实活，14:43原watch已58完整/2成功、无错误。新hanging_pictures306官方success=true/Q1/1427实际控制，MP4同为1427帧/30fps/47.566667s；首8挂画全部原JSON/MP4 SHA、帧数及两个完成batch物理回执匹配（其余7例3582步/Q0/失败）。证据`docs/infra/results/2026-10-14-champion-hanging-first8-originals.json`，只是完整8例而非该任务10例/全量成绩，未读未闭合batch补分母。14:47本地完整原视频`artifacts/final-eval-20261014/champion-public-videos/hanging_pictures_306_0.mp4`SHA `6b7762b114dfa1d13a48a71e12c3f0a3b23a09744e3cc838fc639c087807e0e3`及ffprobe与原件相同；14:46:49直接核原全部进程实活、62完整/938待/2成功，completed-only Q0.056451613/SR0.032258065，非全量。原件/模型不改，继续冠军1000后MEM576，模型交付仍暂缓。
+
 - **2026-10-14 14:38 CST / Codex SUBMISSION-FULL-EVAL（真实跨任务边界通过）：** 同原GPU1 model3787333从radio task0的10已闭合episode进入compost task90的4新连接，独立d67工具只读原journal 1,751,790字节/SHA `b71dfbb5137c52a14d0d28adcf80f04bc6667fbdae6697c426d950fb033c0634`前缀并复读一致；新连接首次stage0/inpainting0/交付前时钟0及后续各19交付递推均过，task0 legacy=true未串到task90 legacy=false。证据`docs/infra/results/2026-10-14-champion-first-cross-task-reset.json`；仅证明记录中的连接/显示状态/交付时钟，不把缓存长度推为缓存原值相等或交付步数当物理执行。14:39原supervisor/八worker/model/sim与MEM队列均实活、52完整/948待、无错误；14:40再核9f actor/1177编排/ae86队列/d67审计源码HEAD准确且Git干净。继续冠军1000和之后MEM576，不新增rollout/修改原件。
 
 - **2026-10-14 14:35 CST / Codex SUBMISSION-FULL-EVAL（首个完整任务结果）：** 上一goal轮完成独立日志工具部署/八卡前缀审计、首20原件核验及首成功视频本地验签，属实质进展；本轮fetch/pull无新增，14:33直接核原3787083/八worker/model与MEM3812967实活，42完整/958待、无新增异常。radio301–310现在10例全部结束，逐原JSON/完整视频SHA/30fps帧数/物理回执均过，308成功2242步、其余9例3225步失败，task-only平均Q0.10/SR1/10；非全100模型成绩、非独立盲测，全部原件保留不挑优。证据`docs/infra/results/2026-10-14-champion-radio10-originals.json`；GPU1已切composting_waste加载，下一只读查首次跨任务重置及继续原1000→MEM576，模型交付仍暂缓。

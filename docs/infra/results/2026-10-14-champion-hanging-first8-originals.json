@@ -1,0 +1,239 @@
+{
+  "schema": "champion_hanging_pictures_completed_cohort_audit_v1",
+  "observed_at": "2026-10-14T06:45:02.694830+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+  "manifest_sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297",
+  "completed": 8,
+  "successes": 1,
+  "completed_only_q": 0.125,
+  "completed_only_sr": 0.125,
+  "records": [
+    {
+      "task": "hanging_pictures",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 3582,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/json/hanging_pictures_301_0.json",
+        "sha256": "ea9192989fbc4aae16c3e607e681e422f4c5483ba21ac1475034ad98429c002a"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/videos/hanging_pictures_301_0.mp4",
+        "sha256": "49aafb8c5815bac15e770145b3b25a6886ad49a0a217dee8211a360a1a254dd9",
+        "bytes": 9940554,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "119.400000",
+          "nb_frames": "3582"
+        }
+      }
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 3582,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/json/hanging_pictures_302_0.json",
+        "sha256": "67f6a9414ff2f93bd245cbef42dbfdcb75bc420361670e2dad063135fe1b91a8"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/videos/hanging_pictures_302_0.mp4",
+        "sha256": "4a5490aa67a923881d26aedebd747bd0243344c01478f51aef2c252ac7856448",
+        "bytes": 8447698,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "119.400000",
+          "nb_frames": "3582"
+        }
+      }
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 3582,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/json/hanging_pictures_303_0.json",
+        "sha256": "36a156f0e0a00b0fb75024ff05e01f201c565ede686e11093e0eabf380c57d54"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/videos/hanging_pictures_303_0.mp4",
+        "sha256": "df16e407b46b9d3e7d05f80adcdd14a995d121b6e7d308caaf4a60850664c00f",
+        "bytes": 7306671,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "119.400000",
+          "nb_frames": "3582"
+        }
+      }
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 3582,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/json/hanging_pictures_304_0.json",
+        "sha256": "45fd2afe0ac468849b01ad2d98b96e4482f79e98fb554e89685c04704608fd3c"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/videos/hanging_pictures_304_0.mp4",
+        "sha256": "ce659f890c78e3b47bcaef3456992cf2bb24aca1f7f897318f02820e5e151849",
+        "bytes": 9697737,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "119.400000",
+          "nb_frames": "3582"
+        }
+      }
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 3582,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/json/hanging_pictures_305_0.json",
+        "sha256": "c0629978745e080e4a166eacd5edbb5da1433253b9f28e16974ba2b328ae6117"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/videos/hanging_pictures_305_0.mp4",
+        "sha256": "a5acccc87a61c625e646c00ac5c029f4034c209c5b4f857ab2f559ba3b154ba5",
+        "bytes": 8902947,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "119.400000",
+          "nb_frames": "3582"
+        }
+      }
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 1427,
+      "success": true,
+      "q_final": 1,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/json/hanging_pictures_306_0.json",
+        "sha256": "dfe214a8e4dda515fc61bd2b04872a8732ed57b319805cdb524d2dcca6057b50"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/videos/hanging_pictures_306_0.mp4",
+        "sha256": "6b7762b114dfa1d13a48a71e12c3f0a3b23a09744e3cc838fc639c087807e0e3",
+        "bytes": 4066037,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "47.566667",
+          "nb_frames": "1427"
+        }
+      }
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 3582,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/json/hanging_pictures_307_0.json",
+        "sha256": "e6c3bd3323146d731d736c6b52f8a06b5a709774afe520e266ffbf99af8d2462"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/videos/hanging_pictures_307_0.mp4",
+        "sha256": "3645035c2d5cf257e711fbdbe9e4f2fac807b9f8cf9a70bceb1d63473ca15a20",
+        "bytes": 7245972,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "119.400000",
+          "nb_frames": "3582"
+        }
+      }
+    },
+    {
+      "task": "hanging_pictures",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 3582,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/json/hanging_pictures_308_0.json",
+        "sha256": "1afbf7b92ffd35b8db19e09d081bd8d4787e3c67eaf0f22cce244e9dd2c6767a"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/videos/hanging_pictures_308_0.mp4",
+        "sha256": "c59fa19db1882fcd0ceefbc4e66fb522bc93a386dbf151670348290a6b091b8f",
+        "bytes": 7334795,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "119.400000",
+          "nb_frames": "3582"
+        }
+      }
+    }
+  ],
+  "batches": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/attempts/00.json",
+      "sha256": "f262f09f53e7a1a43ae778e4ab5230989123eeebaa165502501c7fda3be8ed98",
+      "seconds": 809.350630373694,
+      "actual_controls": 14328,
+      "max_steps": 3581,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "task": "hanging_pictures-n4-i0"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/attempts/04.json",
+      "sha256": "95f465d280fe769a794172b4c160ea0a7bddb229d01c8f20655a766ff1c513bb",
+      "seconds": 773.7491744523868,
+      "actual_controls": 12173,
+      "max_steps": 3581,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "task": "hanging_pictures-n4-i0"
+    }
+  ],
+  "full_model_score": false,
+  "physical_and_original_video_frames_exact": true,
+  "originals_modified": false,
+  "is_full1000": false,
+  "complete_task": false
+}
