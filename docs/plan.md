@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 22:16 CST / Codex SUBMISSION-FULL-EVAL（隔离编排本地验收）：** 独立batch、未知已尝试批次异常留证后继续、单worker安全故障不发全局STOP及新后继队列绑定已实现；233本机回归通过，包括新连接与reset的stage/history/inpainting/RNG相等（mock predictor，不冒称物理逐位相等）、未知批次不阻止下一批、单坏卡不停止其余七卡。预控制重置证书仅接受本次原journal SHA及完整尾部四个断开/关闭配对，目标真原件验收尚待。代码`continue_champion_final.py`/`champion_reset_timeout.py`及对应归档/队列，根自测非独立成员review；下一立即Git冻结部署/实际封存并恢复692剩余。
+
+- **2026-10-14 22:12 CST / Codex SUBMISSION-FULL-EVAL（用户要求持续评测覆盖）：** 用户明确不再接受单点异常导致整体停机，要求持续评测。根据此改为独立物理batch进程＋单卡异常隔离：其他GPU继续，异常原件保留、不伪造官方成绩或按表现重跑；资源/身份安全门只暂停受影响执行，不连带停正常卡。当前仍304完整/4旧异常、旧八卡已退，新编排实现/验收中，尚未恢复。终态trace原审计器正确拒绝四条停机后的ConnectionClosedError，需单独验证尾部而非忽略所有错误；Git fetch无新提交，本地文档脏故未pull。下一优先恢复冠军剩余，再续原MEM，外部交付仍暂停。
+
+- **2026-10-14 22:00 CST / Codex SUBMISSION-FULL-EVAL（重置触发保护，当前已停）：** GPU2于21:54触发原`TimeoutError('No model progress for 30 minutes')`，总协调21:55:12终态needs_diagnosis；21:57直接核八worker/model/sim全部退出、GPU实空，八份终态参数均原`2a5ce80b…`、0更新。MEM127593后继亦needs_diagnosis/零阶段，旧summary的running不能继续当作存活。首304完整原件/4旧异常保留；692未完成中本次GPU2四例重置中断分类待终态trace验明，其余七卡26例行政中断，尚662未开始。21:53:14最后一次不暂停采样仍在`remove_particle_by_name→update_handles→RigidBodyView`/Warp构造路径。证据`docs/infra/results/2026-10-14-champion-fruit-reset-timeout-stop.json`，原STOP/JSON/视频/模型日志不动。根下一严验下一批没有动作交付，并实现独立物理batch进程避免沿旧场景逐粒子清理；源码已核每reset工厂新建session和固定seed17 RNG，不依赖连接ID，但尚需回归/正式新注册，不声称已恢复或可逐位复现物理轨迹。模型/物理/控制时限不改，外部交付暂停。
+
 - **2026-10-14 21:51 CST / Codex SUBMISSION-FULL-EVAL（长重置前后动作日志边界）：** 独立d67只读审GPU2原4027383字节日志前缀、二次读SHA `a8540b71a5326049145b4640bc824c4187f09cdbbdb348083220e11319bc6203`不变；task39仅四个epoch1、各626次交付/12520控制，原首批301–304物理各12519（尾1未执行），没有epoch2/新交付。下一04回执305–308仍running；原官方源码顺序明确先`load_fn`完成才进入`step_fn`循环，与21:30重置栈相符。证据`docs/infra/results/2026-10-14-champion-fruit-reset-delivery-prefix.json`，这里只证明精确前缀/已知回执，不是新增物理ACK、不代表最终零动作/失败分类或自动重跑许可。约21:54保护风险仍在，原进程未因本检查修改/暂停，继续观察自然恢复或真实终态再处置。
 
 - **2026-10-14 21:47 CST / Codex SUBMISSION-FULL-EVAL（午餐盒首4原件核验）：** preparing_lunch_box301–304自然各12368实际控制/帧，Q依次0.5、0.5、1/3、1/6，均未完整成功；4原JSON/MP4 SHA、30fps/672×448与完成物理回执一致，原seed17/sim0/12367时限未改，49472控制/3737.683s＝13.2360控制/s。证据`docs/infra/results/2026-10-14-champion-lunchbox-first4-originals.json`，累计唯一已审304，仅首4非该task全10/整个模型最终成绩，也非人工画面验收。50073/127593实活，GPU0此前已实际1300控制，其余继续；GPU2的重置/约21:54看门狗风险仍按下条原证据监控，尚未停机，不热改/伪造心跳。完整冠军→MEM及最终归档仍待，外部交付暂停。

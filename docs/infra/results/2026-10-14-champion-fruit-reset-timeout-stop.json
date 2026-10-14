@@ -1,0 +1,608 @@
+{
+  "schema": "champion_fruit_reset_timeout_terminal_diagnosis_v1",
+  "observed_at": "2026-10-14T13:57:34.296370+00:00",
+  "terminal": {
+    "observed_at": "2026-10-14T13:57:34.296370+00:00",
+    "status": {
+      "status": "needs_diagnosis",
+      "pid": 50073,
+      "started": 1791978362.5736244,
+      "completed_gpus": [],
+      "failed_gpus": {
+        "2": {
+          "status": "needs_diagnosis",
+          "pid": 50109,
+          "gpu": 2,
+          "started": 1791978362.8563561,
+          "completed_parts": [
+            "halve_an_egg-n2-i8"
+          ],
+          "diagnosed_failed_parts": [],
+          "model_generations": [
+            {
+              "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/workers/gpu_2/model-000/result.json",
+              "sha256": "31a4f597ea884a941ed342b06b35e6e77e86bc719290b345598d23d4f1c390bf"
+            }
+          ],
+          "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+          "model_pid": 52568,
+          "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/workers/gpu_2/model-000",
+          "updated": 1791986060.1436021,
+          "sim_pid": 127129,
+          "part": "spraying_fruit_trees-n4-i0",
+          "error": "TimeoutError('No model progress for 30 minutes')",
+          "finished": 1791986060.143601
+        }
+      },
+      "worker_pids": {
+        "0": 50107,
+        "1": 50108,
+        "2": 50109,
+        "3": 50110,
+        "4": 50111,
+        "5": 50112,
+        "6": 50113,
+        "7": 50114
+      },
+      "completed": 304,
+      "coverage": 308,
+      "updated": 1791986058.9382226,
+      "error": "RuntimeError('Unknown worker failure; no automatic reroll')",
+      "finished": 1791986112.9648018
+    },
+    "workers": [
+      {
+        "gpu": 0,
+        "worker_status": "needs_diagnosis",
+        "worker_error": "InterruptedError('Administrative stop')",
+        "part": "cook_a_frozen_pie-n4-i0",
+        "weights": {
+          "status": "closed",
+          "weights_unchanged": true,
+          "optimizer_updates": 0,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "pid": 50220,
+          "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b"
+        },
+        "unfinished": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/cook_a_frozen_pie-n4-i0/attempts/00.json",
+            "status": "running",
+            "task": "cook_a_frozen_pie",
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "instance_ids": [
+              301,
+              302,
+              303,
+              304
+            ],
+            "rollout": 0,
+            "started": 1791985270.8256068,
+            "max_steps": 13001,
+            "policy_seed": 17,
+            "simulator_seed": 0
+          }
+        ]
+      },
+      {
+        "gpu": 1,
+        "worker_status": "needs_diagnosis",
+        "worker_error": "InterruptedError('Administrative stop')",
+        "part": "sorting_books_on_shelf-n4-i0",
+        "weights": {
+          "status": "closed",
+          "weights_unchanged": true,
+          "optimizer_updates": 0,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "pid": 50217,
+          "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b"
+        },
+        "unfinished": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/sorting_books_on_shelf-n4-i0/attempts/00.json",
+            "status": "running",
+            "task": "sorting_books_on_shelf",
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "instance_ids": [
+              301,
+              302,
+              303,
+              304
+            ],
+            "rollout": 0,
+            "started": 1791984999.5650039,
+            "max_steps": 11609,
+            "policy_seed": 17,
+            "simulator_seed": 0
+          }
+        ]
+      },
+      {
+        "gpu": 2,
+        "worker_status": "needs_diagnosis",
+        "worker_error": "TimeoutError('No model progress for 30 minutes')",
+        "part": "spraying_fruit_trees-n4-i0",
+        "weights": {
+          "status": "closed",
+          "weights_unchanged": true,
+          "optimizer_updates": 0,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "pid": 52568,
+          "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b"
+        },
+        "unfinished": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/spraying_fruit_trees-n4-i0/attempts/04.json",
+            "status": "running",
+            "task": "spraying_fruit_trees",
+            "indices": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "instance_ids": [
+              305,
+              306,
+              307,
+              308
+            ],
+            "rollout": 0,
+            "started": 1791984245.416154,
+            "max_steps": 12518,
+            "policy_seed": 17,
+            "simulator_seed": 0
+          }
+        ]
+      },
+      {
+        "gpu": 3,
+        "worker_status": "needs_diagnosis",
+        "worker_error": "InterruptedError('Administrative stop')",
+        "part": "thawing_frozen_food-n4-i0",
+        "weights": {
+          "status": "closed",
+          "weights_unchanged": true,
+          "optimizer_updates": 0,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "pid": 55061,
+          "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b"
+        },
+        "unfinished": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/thawing_frozen_food-n4-i0/attempts/04.json",
+            "status": "running",
+            "task": "thawing_frozen_food",
+            "indices": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "instance_ids": [
+              305,
+              306,
+              307,
+              308
+            ],
+            "rollout": 0,
+            "started": 1791983955.00329,
+            "max_steps": 12344,
+            "policy_seed": 17,
+            "simulator_seed": 0
+          }
+        ]
+      },
+      {
+        "gpu": 4,
+        "worker_status": "needs_diagnosis",
+        "worker_error": "InterruptedError('Administrative stop')",
+        "part": "putting_shoes_on_rack-n2-i8",
+        "weights": {
+          "status": "closed",
+          "weights_unchanged": true,
+          "optimizer_updates": 0,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "pid": 52608,
+          "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b"
+        },
+        "unfinished": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n2-i8/attempts/08.json",
+            "status": "running",
+            "task": "putting_shoes_on_rack",
+            "indices": [
+              8,
+              9
+            ],
+            "instance_ids": [
+              309,
+              310
+            ],
+            "rollout": 0,
+            "started": 1791984811.5505943,
+            "max_steps": 11589,
+            "policy_seed": 17,
+            "simulator_seed": 0
+          }
+        ]
+      },
+      {
+        "gpu": 5,
+        "worker_status": "needs_diagnosis",
+        "worker_error": "InterruptedError('Administrative stop')",
+        "part": "preparing_lunch_box-n4-i0",
+        "weights": {
+          "status": "closed",
+          "weights_unchanged": true,
+          "optimizer_updates": 0,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "pid": 55062,
+          "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b"
+        },
+        "unfinished": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/preparing_lunch_box-n4-i0/attempts/04.json",
+            "status": "running",
+            "task": "preparing_lunch_box",
+            "indices": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "instance_ids": [
+              305,
+              306,
+              307,
+              308
+            ],
+            "rollout": 0,
+            "started": 1791985584.5149662,
+            "max_steps": 12367,
+            "policy_seed": 17,
+            "simulator_seed": 0
+          }
+        ]
+      },
+      {
+        "gpu": 6,
+        "worker_status": "needs_diagnosis",
+        "worker_error": "InterruptedError('Administrative stop')",
+        "part": "wash_a_baseball_cap-n4-i0",
+        "weights": {
+          "status": "closed",
+          "weights_unchanged": true,
+          "optimizer_updates": 0,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "pid": 57898,
+          "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b"
+        },
+        "unfinished": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/wash_a_baseball_cap-n4-i0/attempts/04.json",
+            "status": "running",
+            "task": "wash_a_baseball_cap",
+            "indices": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "instance_ids": [
+              305,
+              306,
+              307,
+              308
+            ],
+            "rollout": 0,
+            "started": 1791983474.3985314,
+            "max_steps": 12524,
+            "policy_seed": 17,
+            "simulator_seed": 0
+          }
+        ]
+      },
+      {
+        "gpu": 7,
+        "worker_status": "needs_diagnosis",
+        "worker_error": "InterruptedError('Administrative stop')",
+        "part": "boxing_food_after_dinner-n4-i0",
+        "weights": {
+          "status": "closed",
+          "weights_unchanged": true,
+          "optimizer_updates": 0,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "pid": 57948,
+          "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b"
+        },
+        "unfinished": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/boxing_food_after_dinner-n4-i0/attempts/04.json",
+            "status": "running",
+            "task": "boxing_food_after_dinner",
+            "indices": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "instance_ids": [
+              305,
+              306,
+              307,
+              308
+            ],
+            "rollout": 0,
+            "started": 1791983207.1967547,
+            "max_steps": 10046,
+            "policy_seed": 17,
+            "simulator_seed": 0
+          }
+        ]
+      }
+    ],
+    "queue": {
+      "status": "needs_diagnosis",
+      "pid": 127593,
+      "started": 1791980716.9312413,
+      "phases": [],
+      "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7",
+      "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+      "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+      "bindings": [
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/manifest.json",
+          "sha256": "a1709991df8902efeb5c0622baf7a0c9c7bd1038d7d290ca5802a8e780f4261a"
+        },
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/manifest.json",
+          "sha256": "b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46"
+        },
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+          "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+        },
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+          "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+        },
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2-diagnosed-stop-v1.json",
+          "sha256": "2d196c19f4c6eb136044a0abf9d7aacb662ffff8e13289ed0bfb80b946dd1a08"
+        },
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+          "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+        },
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion/status.json",
+          "sha256": "3aa0aa76a61591e70034dc8dbfaeffa86932f95b6fa094c6ea8190d6ced7b1c6"
+        }
+      ],
+      "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-priority-20261014-v1",
+      "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-final-continuation-20261014-v2",
+      "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-dependency-20261014-v1",
+      "queue_source_commit": "4a34789727c10386e6b35e249d80cc618f683979",
+      "automatic_retries": false,
+      "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+      "updated": 1791986122.044071,
+      "error": "RuntimeError('Champion continuation needs diagnosis; do not start MEM or retry')",
+      "finished": 1791986122.0440693
+    }
+  },
+  "last_pre_guard_sample": {
+    "observed_at": "2026-10-14T13:53:14.755294+00:00",
+    "pid": 127129,
+    "process_start_ticks": "537438335",
+    "nonblocking": true,
+    "source_or_policy_modified": false,
+    "main_thread": {
+      "pid": 127129,
+      "thread_id": 140292921620288,
+      "thread_name": "MainThread",
+      "os_thread_id": 127129,
+      "active": true,
+      "owns_gil": true,
+      "frames": [
+        {
+          "name": "__init__",
+          "filename": "/run/ti/behavior_stage3_20260930/envs/sim/lib/python3.11/site-packages/warp/_src/types.py",
+          "module": null,
+          "short_filename": "/run/ti/behavior_stage3_20260930/envs/sim/lib/python3.11/site-packages/warp/_src/types.py",
+          "line": 5277,
+          "locals": null,
+          "is_entry": true
+        },
+        {
+          "name": "initialize_view",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/utils/usd_utils.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/utils/usd_utils.py",
+          "line": 796,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "update_handles",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/simulator.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/simulator.py",
+          "line": 1242,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "remove_prim",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/simulator.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/simulator.py",
+          "line": 1123,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "remove_particle_by_name",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+          "line": 258,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "remove_particle_by_name",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+          "line": 493,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "remove_all_group_particles",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/system_base.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/system_base.py",
+          "line": 548,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "remove_attachment_group",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/system_base.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/system_base.py",
+          "line": 624,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "remove_attachment_group",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+          "line": 483,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "_sync_particle_groups",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+          "line": 963,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "_load_state",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+          "line": 1056,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "load_state",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/utils/python_utils.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/utils/python_utils.py",
+          "line": 437,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "_load_instance_state",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+          "line": 507,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "load_batch",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+          "line": 549,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "load_fn",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+          "line": 654,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "evaluate_instances_batched",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+          "line": 116,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "run",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+          "line": 691,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "main",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+          "line": 72,
+          "locals": null,
+          "is_entry": false
+        },
+        {
+          "name": "<module>",
+          "filename": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+          "module": null,
+          "short_filename": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+          "line": 86,
+          "locals": null,
+          "is_entry": true
+        }
+      ],
+      "process_info": null
+    }
+  },
+  "raw_local_path": "/home/wsy/behavior/artifacts/final-eval-20261014/read-only-probes/spraying-gpu2-reset-2153.json",
+  "completed_originals_audited": 304,
+  "previous_execution_errors": 4,
+  "next_batch_case_classification": "pending_terminal_trace_certificate",
+  "remaining_unaccounted": 692,
+  "policy_failure_claimed": false,
+  "automatic_retry_performed": false
+}

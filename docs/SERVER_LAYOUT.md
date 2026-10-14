@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 22:00 CST：冠军重置超时保护停止
+
+- RTX `runs/champion_final100_20261014_resume_v1` 已终态needs_diagnosis，原50073及八worker/model/sim已退出；304完整原件和原STOP不动，GPU2的旧12500快照属于上一批，不是下一批已执行12500步。后继MEM v7 `queue-after-champion-resume-v1`亦停止且零阶段；不能继续称其等待或重复启动旧目录。
+- 两次21:30和一次21:53只读非暂停采样原件在本地忽略目录`artifacts/final-eval-20261014/read-only-probes/`，诊断及原件路径/参数证据见`docs/infra/results/2026-10-14-champion-fruit-reset-timeout-stop.json`。新续评/后继尚未创建，原8份参数终态均未变；外部交付继续暂缓。
+
 ## 2026-10-14 20:51 CST：冠军放鞋成功完整原视频
 
 - 远端`/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/videos/putting_shoes_on_rack_302_0.mp4`；对应同part的`json/putting_shoes_on_rack_302_0.json`，官方success=true/Q1/7895实际控制。四实例批次均验SHA/物理回执，详`docs/infra/results/2026-10-14-champion-shoes-first4-originals.json`。

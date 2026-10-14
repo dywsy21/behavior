@@ -50,6 +50,21 @@ def factory(episode,task,clock_kind='policy_delivery'):
 
 
 class OfficialContractTests(unittest.TestCase):
+    def test_fresh_simulator_connections_equal_reset_stage_history_inpainting_and_rng(self):
+        old=OfficialConnection(factory)
+        for _ in range(11):old.prepare(observation(39,20));old.delivered()
+        old.reset()
+        fresh=OfficialConnection(factory)
+        for _ in range(11):
+            a=old.prepare(observation(39,20));old.delivered()
+            b=fresh.prepare(observation(39,20));fresh.delivered()
+            np.testing.assert_array_equal(a['action_chunk'],b['action_chunk'])
+            np.testing.assert_array_equal(old.session.rng,fresh.session.rng)
+            np.testing.assert_array_equal(old.session.initial_actions,fresh.session.initial_actions)
+            self.assertEqual(old.session.stage,fresh.session.stage)
+            self.assertEqual(list(old.session.history),list(fresh.session.history))
+        self.assertNotEqual(old.session.episode,fresh.session.episode)
+
     def test_chunk_single_control_and_real_ack_policy_are_identical(self):
         chunks=OfficialConnection(factory);single=OfficialConnection(factory)
         physical=factory('physical',0,'physical_ack');physical.begin()

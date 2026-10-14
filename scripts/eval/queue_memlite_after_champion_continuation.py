@@ -38,7 +38,7 @@ def validate_order(mem, champion, authorization, mem_source, champion_source):
     return mem, mm, champion, cm, authorization, root
 
 
-def replacement_queue(mem, champion_root, previous, name, authorization):
+def replacement_queue(mem, champion_root, previous, name, authorization, champion=None):
     if not re.fullmatch(r'queue-[A-Za-z0-9_-]+', name):
         raise ValueError('Queue basename required')
     previous, queue = Path(previous).resolve(), mem / name
@@ -46,12 +46,29 @@ def replacement_queue(mem, champion_root, previous, name, authorization):
         raise ValueError('Preserve the old queue; use a new directory inside the same MEM run')
     p = previous / 'status.json'; old = c.read(p)
     if (old.get('status') != 'needs_diagnosis' or not old.get('finished') or old.get('phases') != []
-            or old.get('mem_job') != str(mem) or old.get('champion_job') != str(champion_root)
-            or old.get('error') != "RuntimeError('Champion needs diagnosis; do not launch MEM or retry champion')"):
+            or old.get('mem_job') != str(mem)):
         raise ValueError('Only a dead never-launched champion-failure queue may be replaced')
     c.require_exited([old['pid']])
-    expected = [c.binding(mem / 'manifest.json'), c.binding(champion_root / 'manifest.json'),
-                c.binding(authorization), c.read(mem / 'manifest.json')['seal']]
+    if old.get('error') == "RuntimeError('Champion needs diagnosis; do not launch MEM or retry champion')":
+        if old['champion_job'] != str(champion_root):
+            raise ValueError('Previous queue used another champion root')
+        expected = [c.binding(mem / 'manifest.json'), c.binding(champion_root / 'manifest.json'),
+                    c.binding(authorization), c.read(mem / 'manifest.json')['seal']]
+    elif old.get('error') == "RuntimeError('Champion continuation needs diagnosis; do not start MEM or retry')":
+        old_champion = Path(old['champion_job']).resolve()
+        if (champion is None or c.read(Path(champion)/'manifest.json')['prior'] != str(old_champion)
+                or old['champion_root'] != str(champion_root)
+                or c.root_registration(old_champion)[0] != champion_root):
+            raise ValueError('Replacement must follow this exact stopped champion continuation')
+        ancestor = old['bindings'][-1]; c.check_binding(ancestor)
+        if Path(ancestor['path']).parent.parent != mem:
+            raise ValueError('Foreign queue ancestry')
+        c.require_exited([c.read(ancestor['path'])['pid']])
+        expected = [c.binding(mem/'manifest.json'), c.binding(old_champion/'manifest.json'),
+                    c.binding(authorization), c.read(mem/'manifest.json')['seal'],
+                    c.read(old_champion/'manifest.json')['seal'], c.binding(champion_root/'manifest.json'), ancestor]
+    else:
+        raise ValueError('Unclassified previous queue failure')
     if old.get('bindings') != expected:
         raise ValueError('Previous queue was bound to another run or authorization')
     if (mem / 'status.json').exists() or (mem / 'STOP').exists():
@@ -67,7 +84,7 @@ def mem_command(mem, mem_source):
 def run(mem, champion, authorization, mem_source, champion_source, previous_queue, queue_name, output_root):
     mem_source, champion_source = Path(mem_source).resolve(), Path(champion_source).resolve()
     mem, mm, champion, cm, auth, root = validate_order(mem, champion, authorization, mem_source, champion_source)
-    queue, old = replacement_queue(mem, root, previous_queue, queue_name, auth)
+    queue, old = replacement_queue(mem, root, previous_queue, queue_name, auth, champion)
     output_root = Path(output_root).resolve()
     if (not output_root.is_dir() or any((output_root / name).exists() for name in ('champion-results', 'mem-results'))
             or any(output_root.is_relative_to(p) for p in (mem, champion, root))):
@@ -76,7 +93,7 @@ def run(mem, champion, authorization, mem_source, champion_source, previous_queu
     c.frozen_source(c.REPO, commit)
     owner = (mem / 'queue-owner.lock').open('a'); fcntl.flock(owner, fcntl.LOCK_EX | fcntl.LOCK_NB)
     # Recheck after acquiring ownership, before creating or launching anything.
-    replacement_queue(mem, root, previous_queue, queue_name, auth)
+    replacement_queue(mem, root, previous_queue, queue_name, auth, champion)
     queue.mkdir()
     bindings = [c.binding(mem / 'manifest.json'), c.binding(champion / 'manifest.json'), c.binding(auth),
                 mm['seal'], cm['seal'], c.binding(root / 'manifest.json'), old]

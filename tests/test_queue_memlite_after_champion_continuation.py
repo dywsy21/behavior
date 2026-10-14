@@ -141,3 +141,27 @@ def test_queue_waits_audits_then_launches_only_original_mem_source(tmp_path, mon
 def test_terminal_gate_rejects_only_seven_completed_workers():
     state, summary=finished();state['completed_gpus'].pop()
     with pytest.raises(ValueError):m.pack.terminal_ready(state,summary)
+
+
+@pytest.mark.parametrize('bad',[None,'prior','phase','ancestor','live'])
+def test_replace_only_exact_dead_continuation_queue(tmp_path,monkeypatch,bad):
+    mem,champ,auth,ms,cs,old,root=fixture(tmp_path,monkeypatch)
+    previous=mem/'queue-after-resume';newchamp=tmp_path/'new-champ'
+    save(newchamp/'manifest.json',dict(prior=str(champ)))
+    row=dict(status='needs_diagnosis',finished=2,phases=[],pid=99999001,
+        mem_job=str(mem),champion_job=str(champ),champion_root=str(root),
+        error="RuntimeError('Champion continuation needs diagnosis; do not start MEM or retry')",
+        bindings=[m.c.binding(mem/'manifest.json'),m.c.binding(champ/'manifest.json'),m.c.binding(auth),
+            m.c.read(mem/'manifest.json')['seal'],m.c.read(champ/'manifest.json')['seal'],
+            m.c.binding(root/'manifest.json'),m.c.binding(old/'status.json')])
+    if bad=='prior':save(newchamp/'manifest.json',dict(prior=str(root)))
+    elif bad=='phase':row['phases']=[{'name':'remaining_mem'}]
+    elif bad=='ancestor':row['bindings'][-1]['sha256']='bad'
+    elif bad=='live':row['pid']=os.getpid()
+    save(previous/'status.json',row)
+    args=(mem,root,previous,'queue-resume-v2',auth,newchamp)
+    if bad:
+        with pytest.raises(ValueError):m.replacement_queue(*args)
+    else:
+        q,pin=m.replacement_queue(*args)
+        assert q==mem/'queue-resume-v2' and pin==m.c.binding(previous/'status.json')

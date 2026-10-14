@@ -114,7 +114,7 @@ def checked_parts(job, m, original):
     return parts
 
 
-def freeze(prior, runtime_source, output):
+def freeze(prior, runtime_source, output, *, precontrol_reset_certificate=None):
     prior, runtime_source, output = map(lambda p: Path(p).resolve(), (prior, runtime_source, output))
     if output.exists() or not output.parent.is_dir():
         raise ValueError('New stop receipt required')
@@ -125,9 +125,17 @@ def freeze(prior, runtime_source, output):
     root, original, pin = root_registration(prior); frozen_source(runtime_source, original['source_commit'])
     if m['schema'] == SCHEMA and str(runtime_source) != m['runtime_source']:
         raise ValueError('Original runtime path changed')
+    reset_certificate = None
+    if precontrol_reset_certificate is not None:
+        from champion_reset_timeout import verify_certificate
+        reset_certificate = verify_certificate(precontrol_reset_certificate)
+        if reset_certificate['job'] != str(prior):
+            raise ValueError('Certificate belongs to another run')
     records, errors, interrupted = [], [], []
     evidence = [binding(prior / n) for n in ('manifest.json', 'status.json', 'STOP')]
     evidence += [pin, binding(root / 'accepted-preflight.json')]
+    if reset_certificate:
+        evidence += [binding(precontrol_reset_certificate), *reset_certificate['evidence']]
     if m['schema'] == SCHEMA:
         sealed = read(m['seal']['path'])
         if sealed['prior'] != m['prior'] or sealed['manifest'] != m['prior_manifest']:
@@ -189,11 +197,16 @@ def freeze(prior, runtime_source, output):
             raise ValueError('Partial physical batch')
         rows = [dict(task=part['task'], instance_id=i, rollout_id=0, original_attempt=binding(a)) for i in attempt['instance_ids']]
         diagnosis = execution_error(text)
+        ledger = log.with_name(p.name + '-execution-errors.json')
+        if diagnosis is None and m.get('continue_on_batch_errors') is True and ledger.exists():
+            entries = read(ledger)
+            if entries and entries[0]['diagnosis']['kind'] == 'unclassified_operational_batch_error':
+                diagnosis = entries[0]['diagnosis']
+                evidence.append(validate_operational_error(diagnosis, log, a, part))
         if diagnosis:
             if diagnosis['scene_slot'] is not None and not 0 <= diagnosis['scene_slot'] < part['num_envs']:
                 raise ValueError('Failure slot outside batch')
             entries = [r | dict(diagnosis=diagnosis, log=binding(log), rerun_allowed=False) for r in rows]
-            ledger = log.with_name(p.name + '-execution-errors.json')
             if ledger.exists():
                 if read(ledger) != entries:
                     raise ValueError('Original error ledger changed')
@@ -201,6 +214,12 @@ def freeze(prior, runtime_source, output):
             elif w.get('part') != p.name:
                 raise ValueError('Unregistered historical execution error')
             errors.extend(entries); diagnosed.add(str(gpu))
+        elif (reset_certificate and reset_certificate['gpu'] == gpu
+              and reset_certificate['part'] == p.name and reset_certificate['original_attempt'] == binding(a)):
+            interrupted.extend(r | dict(log=binding(log), last_physical_status=binding(p/'status.json'),
+                reason=reset_certificate['reason'], rerun_allowed=True, best_of_n=False,
+                precontrol_reset_certificate=binding(precontrol_reset_certificate)) for r in rows)
+            diagnosed.add(str(gpu))
         else:
             ui = shared.nonfatal_property_ui(text, ps, attempt) if 'Traceback (most recent call last)' in text else None
             if (w.get('part') != p.name or w.get('error') != "InterruptedError('Administrative stop')"
@@ -224,12 +243,25 @@ def freeze(prior, runtime_source, output):
         source_commit=original['source_commit'], records=records, completed=len(records), execution_errors=errors,
         administrative_interruptions=interrupted, unstarted=1000-len(known), evidence=evidence,
         all_loaded_models_unchanged=True, original_outputs_unmodified=True,
-        policy='No reroll of scored or diagnosed failed attempts; explicit unrelated administrative restarts only')
+        policy='No reroll of scored or diagnosed failed attempts; explicit administrative restarts '
+               'or independently certified pre-control coordinator interruptions only')
     shared.remaining_parts(original, receipt); atomic_json(output, receipt)
     return receipt
 
 
-def prepare(prior, seal, runtime_source, job):
+def remaining_groups(original, receipt, isolate_batches=False):
+    if type(isolate_batches) is not bool:
+        raise ValueError('Explicit batch isolation boolean required')
+    groups = shared.remaining_parts(original, receipt)
+    if not isolate_batches:
+        return groups
+    return [dict(gpu=g['gpu'], parts=[p | dict(indices=indices,
+        id=f"{p['task']}-n{p['num_envs']}-i{indices[0]}")
+        for p in g['parts'] for start in range(0, len(p['indices']), p['num_envs'])
+        for indices in [p['indices'][start:start+p['num_envs']]]]) for g in groups]
+
+
+def prepare(prior, seal, runtime_source, job, *, isolate_batches=False, continue_on_errors=False):
     prior, seal, runtime_source, job = map(lambda p: Path(p).resolve(), (prior, seal, runtime_source, job))
     root, original, pin = root_registration(prior); receipt = read(seal)
     if (job.parent != ROOT / 'runs' or job.exists() or receipt['schema'] != 'champion_final_diagnosed_stop_v1'
@@ -247,7 +279,9 @@ def prepare(prior, seal, runtime_source, job):
         check_binding(item['metrics']); check_binding(item['video'])
     for case in original['cases']:
         check_binding(dict(path=case['instance_path'], sha256=case['instance_sha256']))
-    groups = shared.remaining_parts(original, receipt)
+    if type(continue_on_errors) is not bool or (continue_on_errors and not isolate_batches):
+        raise ValueError('Continuous failure isolation requires one physical batch per process')
+    groups = remaining_groups(original, receipt, isolate_batches)
     manifest = {k: original[k] for k in IDENTITY}
     manifest.update(schema=SCHEMA, created=time.time(), source_commit=commit,
         runtime_source=str(runtime_source), runtime_commit=original['source_commit'],
@@ -255,6 +289,7 @@ def prepare(prior, seal, runtime_source, job):
         groups=groups, inherited_completed=receipt['completed'], initial_execution_errors=len(receipt['execution_errors']),
         administrative_restarts=len(receipt['administrative_interruptions']), expected=1000,
         automatic_retries=False, policy_changed=False, optimizer_updates=0,
+        isolate_physical_batches=isolate_batches, continue_on_batch_errors=continue_on_errors,
         loader_admission='original_two_slots_fifo', numerical_notice='Administrative process restarts are explicit; '
         'not claimed bitwise equivalent to uninterrupted physics. Same policy, seeds, batches and official evaluator.')
     job.mkdir()
@@ -271,12 +306,53 @@ def registration(job, *, coordinator_source=None):
     frozen_source(m['runtime_source'], m['runtime_commit'])
     _, original, _ = root_registration(job)
     sealed = read(m['seal']['path'])
-    if (m['groups'] != shared.remaining_parts(original, sealed)
+    isolated = m.get('isolate_physical_batches', False); continuous = m.get('continue_on_batch_errors', False)
+    if type(continuous) is not bool or (continuous and not isolated):
+        raise ValueError('Invalid failure isolation mode')
+    if (m['groups'] != remaining_groups(original, sealed, isolated)
             or m['inherited_completed'] != len(sealed['records'])
             or m['initial_execution_errors'] != len(sealed['execution_errors'])
             or m['administrative_restarts'] != len(sealed['administrative_interruptions'])):
         raise ValueError('Remaining case plan/counts changed')
     return job, m
+
+
+def operational_batch_error(job, part, error, returncode, logpath):
+    """Consume one attempted physical batch, preserving uncertainty and originals.
+
+    Unattempted startup errors and uncommitted metrics still require diagnosis;
+    they never silently become scored failures or automatic policy rerolls.
+    """
+    output = job / 'parts' / part['id']
+    shared.require_no_uncommitted_metrics(output)
+    attempts = sorted((output/'attempts').glob('*.json'))
+    if len(attempts) != 1:
+        raise ValueError('Operational isolation needs one original physical attempt')
+    attempt = read(attempts[0])
+    if (attempt['status'] != 'running' or attempt['indices'] != part['indices']
+            or len(part['indices']) != part['num_envs']):
+        raise ValueError('Ambiguous operational batch boundary')
+    receipt = logpath.with_name(part['id'] + '-operational-error.json')
+    value = dict(schema='champion_operational_batch_error_v1', part=part, error=error,
+        returncode=returncode, log=binding(logpath), original_attempt=binding(attempts[0]),
+        physical_status=binding(output/'status.json'), command=binding(logpath.with_name(part['id']+'-command.json')),
+        policy_failure_claimed=False, official_score_available=False, rerun_allowed=False)
+    atomic_json(receipt, value)
+    return dict(kind='unclassified_operational_batch_error', scene_slot=None,
+        failure_phase='runtime_unknown_preserved_for_diagnosis', official_score_available=False,
+        policy_failure_claimed=False, operational_receipt=binding(receipt))
+
+
+def validate_operational_error(diagnosis, log, attempt, plan):
+    receipt = diagnosis['operational_receipt']; check_binding(receipt); row = read(receipt['path'])
+    for field in ('log', 'original_attempt', 'physical_status', 'command'):
+        check_binding(row[field])
+    if (row.get('schema') != 'champion_operational_batch_error_v1' or row['part'] != plan
+            or row['log'] != binding(log) or row['original_attempt'] != binding(attempt)
+            or row['official_score_available'] is not False or row['policy_failure_claimed'] is not False
+            or row['rerun_allowed'] is not False or not (row['error'] or row['returncode'])):
+        raise ValueError('Changed or unsupported operational error receipt')
+    return receipt
 
 
 def model_environment(m, gpu):
@@ -349,22 +425,28 @@ def worker(job, gpu):
                                        stderr=subprocess.STDOUT, start_new_session=True)
             atomic_json(path / (part['id'] + '-command.json'), dict(argv=command, official_commit=m['official_commit']))
             state.update(status='evaluating', sim_pid=sim.pid, part=part['id']); publish()
-            previous = None; last = time.monotonic()
+            previous = None; last = time.monotonic(); runtime_error = None
             while sim.poll() is None:
                 if loader is not None and (output / 'scene.ready').exists():
                     loader.close(); loader = None
                 if (job / 'STOP').exists():
                     raise InterruptedError('Administrative stop')
                 if model.poll() is not None or read(model_path / 'status.json')['status'] == 'failed_no_retry':
-                    raise RuntimeError('Frozen model service failed')
+                    if not m.get('continue_on_batch_errors', False):
+                        raise RuntimeError('Frozen model service failed')
+                    runtime_error = "RuntimeError('Frozen model service failed')"; break
                 events = model_path / 'events.jsonl'; progress = events.stat().st_size if events.exists() else 0
                 if progress != previous:
                     previous = progress; last = time.monotonic()
                 if time.monotonic()-last > 1800:
-                    raise TimeoutError('No model progress for 30 minutes')
+                    if not m.get('continue_on_batch_errors', False):
+                        raise TimeoutError('No model progress for 30 minutes')
+                    runtime_error = "TimeoutError('No model progress for 30 minutes')"; break
                 if shutil.disk_usage(job).free < 150 << 30:
                     raise RuntimeError('Disk safety reserve')
                 time.sleep(5)
+            if runtime_error:
+                shared.stop_child(sim)
             if loader is not None:
                 loader.close(); loader = None
             status = read(output / 'status.json')
@@ -376,7 +458,10 @@ def worker(job, gpu):
                 state['completed_parts'].append(part['id']); publish(); continue
             diagnosis = execution_error(logpath.read_text())
             if diagnosis is None:
-                raise RuntimeError('Unclassified champion failure: ' + part['id'])
+                if not m.get('continue_on_batch_errors', False):
+                    raise RuntimeError('Unclassified champion failure: ' + part['id'])
+                diagnosis = operational_batch_error(job, part, runtime_error or
+                    status.get('error') or 'Official physical batch incomplete', sim.returncode, logpath)
             if diagnosis['scene_slot'] is not None and not 0 <= diagnosis['scene_slot'] < part['num_envs']:
                 raise ValueError('Error slot outside batch')
             shared.require_no_uncommitted_metrics(output)
@@ -435,12 +520,26 @@ def supervise(job):
                 path = job / 'workers' / f'gpu_{gpu}' / 'status.json'; row = read(path) if path.exists() else {}
                 if p.returncode or row.get('status') not in ('completed', 'completed_with_execution_errors'):
                     state['failed_gpus'][str(gpu)] = row
-                    raise RuntimeError('Unknown worker failure; no automatic reroll')
+                    if not m.get('continue_on_batch_errors', False):
+                        raise RuntimeError('Unknown worker failure; no automatic reroll')
+                    # Quarantine only this worker; never send global STOP to healthy GPUs.
+                    del children[gpu]; atomic_json(job/'status.json', state); continue
                 state['completed_gpus'].append(gpu); del children[gpu]
-            result = report(job); state.update(completed=result['completed'], coverage=result['coverage'], updated=time.time())
+            try:
+                result = report(job)
+                state.update(completed=result['completed'], coverage=result['coverage'], updated=time.time())
+                state.pop('report_error', None)
+            except Exception as error:
+                if not m.get('continue_on_batch_errors', False):
+                    raise
+                state.update(report_error=repr(error), updated=time.time())
             atomic_json(job / 'status.json', state)
             if children:
                 time.sleep(30)
+        if state['failed_gpus']:
+            state.update(status='needs_isolated_worker_recovery', finished=time.time())
+            atomic_json(job/'status.json', state)
+            return
         result = report(job, final=True); state['status'] = result['status']
     except BaseException as error:
         state.update(status='needs_diagnosis', error=repr(error)); (job / 'STOP').touch(); raise
@@ -454,16 +553,19 @@ def supervise(job):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command', choices=('freeze', 'prepare', 'worker', 'supervise', 'report'))
-    for name in ('prior', 'runtime-source', 'output', 'seal', 'job'):
+    for name in ('prior', 'runtime-source', 'output', 'seal', 'job', 'precontrol-reset-certificate'):
         parser.add_argument('--'+name, type=Path)
     parser.add_argument('--gpu', type=int); parser.add_argument('--final', action='store_true')
+    parser.add_argument('--isolate-batches', action='store_true')
+    parser.add_argument('--continue-on-errors', action='store_true')
     a = parser.parse_args()
     if a.command == 'freeze':
-        r = freeze(a.prior, a.runtime_source, a.output)
+        r = freeze(a.prior, a.runtime_source, a.output, precontrol_reset_certificate=a.precontrol_reset_certificate)
         print(json.dumps(dict(completed=r['completed'], errors=len(r['execution_errors']),
                              interrupted=len(r['administrative_interruptions']), unstarted=r['unstarted'])))
     elif a.command == 'prepare':
-        r = prepare(a.prior, a.seal, a.runtime_source, a.job)
+        r = prepare(a.prior, a.seal, a.runtime_source, a.job,
+                    isolate_batches=a.isolate_batches, continue_on_errors=a.continue_on_errors)
         print(json.dumps(dict(job=str(a.job), remaining=sum(len(p['indices']) for g in r['groups'] for p in g['parts']))))
     elif a.command == 'worker':
         worker(a.job, a.gpu)

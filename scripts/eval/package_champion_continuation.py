@@ -34,7 +34,7 @@ def terminal_ready(state, summary):
 
 def accounted_summary(tasks, records, errors):
     result = c.shared.summary_from_rows(tasks, records, errors)
-    kinds = {'simulator_nonfinite_robot_pose', 'simulator_articulation_unavailable',
+    kinds = {'unclassified_operational_batch_error', 'simulator_nonfinite_robot_pose', 'simulator_articulation_unavailable',
              'simulator_missing_task_object_on_reset'}
     if result['unaccounted'] or not records:
         raise ValueError('All 1000 cases must be accounted for, with original results')
@@ -56,6 +56,7 @@ def audited_materials(job, manifest_sha256, coordinator_source):
     root, original, root_pin = c.root_registration(job)
     source = Path(m['runtime_source']); sealed = c.read(m['seal']['path'])
     lineage, admin_attempts, evidence = [], set(), []
+    checked_certificates = set()
     cursor = job
     while True:
         lineage.append(cursor); parent = c.read(cursor / 'manifest.json')
@@ -69,6 +70,13 @@ def audited_materials(job, manifest_sha256, coordinator_source):
             c.check_binding(item['original_attempt']); c.check_binding(item['log'])
             if item.get('rerun_allowed') is not True or item.get('best_of_n') is not False:
                 raise ValueError('Unregistered administrative restart')
+            if item.get('precontrol_reset_certificate'):
+                pin = item['precontrol_reset_certificate']; c.check_binding(pin)
+                if pin['path'] not in checked_certificates:
+                    from champion_reset_timeout import verify_certificate
+                    verify_certificate(pin['path']); checked_certificates.add(pin['path'])
+                if c.read(pin['path'])['original_attempt'] != item['original_attempt']:
+                    raise ValueError('Certificate does not authorize this exact interrupted attempt')
             admin_attempts.add(item['original_attempt']['path'])
         cursor = Path(parent['prior']).resolve()
 
@@ -163,11 +171,17 @@ def audited_materials(job, manifest_sha256, coordinator_source):
             c.check_binding(error[field])
         attempt = error['original_attempt']['path']; plan, row = running_attempts[attempt]
         log = Path(error['log']['path'])
+        operational = error['diagnosis']['kind'] == 'unclassified_operational_batch_error'
+        if operational:
+            run_manifest = c.read(Path(attempt).parent.parent.parent.parent / 'manifest.json')
+            if run_manifest.get('continue_on_batch_errors') is not True:
+                raise ValueError('Operational continuation was not registered')
+            evidence.append(c.validate_operational_error(error['diagnosis'], log, attempt, plan))
         expected_logs = [p for p in (Path(attempt).parent.parent.parent.parent / 'workers').glob(
             'gpu_*/' + Path(attempt).parent.parent.name + '.log')]
         if (expected_logs != [log] or error['task'] != plan['task'] or row['rollout'] != error['rollout_id']
                 or error['instance_id'] not in row['instance_ids']
-                or c.execution_error(log.read_text()) != error['diagnosis']):
+                or (not operational and c.execution_error(log.read_text()) != error['diagnosis'])):
             raise ValueError('Execution error does not match the original physical attempt/log')
         by_attempt.setdefault(attempt, []).append(error['instance_id'])
     for attempt, ids in by_attempt.items():

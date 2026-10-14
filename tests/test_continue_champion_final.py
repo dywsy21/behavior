@@ -182,13 +182,17 @@ def test_errors_do_not_create_official_json_or_full_score():
     assert result['fabricated_official_metrics']==0
 
 
-@pytest.mark.parametrize('unknown', [False, True])
-def test_worker_uses_original_entry_and_never_retries_failed_prefix(tmp_path,monkeypatch,unknown):
+@pytest.mark.parametrize('unknown,continuous', [(False,False),(True,False),(True,True)])
+def test_worker_uses_original_entry_and_never_retries_failed_prefix(tmp_path,monkeypatch,unknown,continuous):
     prior,runtime,seal,original=stopped(tmp_path,monkeypatch);m.freeze(prior,runtime,seal)
     job=prior.parent/'resume';manifest=m.prepare(prior,seal,runtime,job)
     # Exercise the coordinator with fake processes, not a claimed physical run.
     parts=[dict(task='task0',task_id=0,num_envs=4,indices=list(range(8)),id='task0-n4-i0'),
            dict(task='task0',task_id=0,num_envs=2,indices=[8,9],id='task0-n2-i8')]
+    if continuous:
+        parts=[parts[0]|dict(indices=list(range(4))),
+               parts[0]|dict(indices=list(range(4,8)),id='task0-n4-i4'),parts[1]]
+        manifest['continue_on_batch_errors']=True
     manifest['groups'][0]['parts']=parts
     monkeypatch.setattr(m,'registration',lambda _: (job,manifest))
     monkeypatch.setattr(m,'root_registration',lambda _: (prior,original,m.binding(prior/'manifest.json')))
@@ -229,7 +233,7 @@ def test_worker_uses_original_entry_and_never_retries_failed_prefix(tmp_path,mon
         receipt=m.read(prior/'workers/gpu_0/model/result.json')|dict(pid=pid)
         save(model.output/'result.json',receipt);save(model.output/'status.json',receipt)
     monkeypatch.setattr(m.subprocess,'Popen',Process);monkeypatch.setattr(m.os,'killpg',terminate)
-    if unknown:
+    if unknown and not continuous:
         with pytest.raises(RuntimeError,match='Unclassified'):m.worker(job,0)
     else:m.worker(job,0)
     simulations=[(a,k) for a,k in calls if a[0]=='bash']
@@ -238,15 +242,21 @@ def test_worker_uses_original_entry_and_never_retries_failed_prefix(tmp_path,mon
     model_calls=[a for a,_ in calls if a[0]=='/pinned/python']
     assert all(a[1]==str(runtime/'scripts/eval/serve_champion_official.py') for a in model_calls)
     worker=m.read(job/'workers/gpu_0/status.json')
-    if unknown:
+    if unknown and not continuous:
         assert len(simulations)==len(model_calls)==1 and worker['status']=='needs_diagnosis'
         assert not list((job/'workers/gpu_0').glob('*-execution-errors.json'))
     else:
-        assert [list(map(int,a[a.index('--indices')+1:])) for a,_ in simulations]==[list(range(8)),list(range(4,8)),[8,9]]
+        assert [list(map(int,a[a.index('--indices')+1:])) for a,_ in simulations]==[
+            list(range(4 if continuous else 8)),list(range(4,8)),[8,9]]
         assert len(model_calls)==2 and worker['status']=='completed_with_execution_errors'
         errors=m.read(job/'workers/gpu_0/task0-n4-i0-execution-errors.json')
         assert [r['instance_id'] for r in errors]==list(range(301,305))
         assert len(worker['model_generations'])==2
+        if continuous:
+            assert errors[0]['diagnosis']['policy_failure_claimed'] is False
+            m.validate_operational_error(errors[0]['diagnosis'],
+                job/'workers/gpu_0/task0-n4-i0.log', job/'parts/task0-n4-i0/attempts/00.json', parts[0])
+            assert not (job/'STOP').exists()
 
 
 def test_real_disk_safety_gate_runs_before_any_model_launch(tmp_path,monkeypatch):
@@ -260,3 +270,38 @@ def test_real_disk_safety_gate_runs_before_any_model_launch(tmp_path,monkeypatch
     monkeypatch.setattr(m.subprocess,'Popen',forbidden)
     with pytest.raises(RuntimeError,match='Disk safety reserve'):m.worker(job,0)
     assert m.read(job/'workers/gpu_0/status.json')['model_generations']==[]
+
+
+def test_isolated_schedule_keeps_every_original_slot_batch_and_registration(tmp_path,monkeypatch):
+    prior,runtime,seal,original=stopped(tmp_path,monkeypatch);receipt=m.freeze(prior,runtime,seal)
+    normal=m.remaining_groups(original,receipt)
+    isolated=m.remaining_groups(original,receipt,True)
+    flat=lambda groups:[(g['gpu'],p['task'],p['num_envs'],i) for g in groups for p in g['parts'] for i in p['indices']]
+    assert flat(normal)==flat(isolated)
+    assert all(len(p['indices'])==p['num_envs'] for g in isolated for p in g['parts'])
+    job=prior.parent/'isolated'
+    manifest=m.prepare(prior,seal,runtime,job,isolate_batches=True,continue_on_errors=True)
+    assert m.registration(job)[1]==manifest and manifest['configs']==original['configs']
+    with pytest.raises(ValueError):m.remaining_groups(original,receipt,'true')
+    with pytest.raises(ValueError):m.prepare(prior,seal,runtime,prior.parent/'bad',continue_on_errors=True)
+
+
+def test_supervisor_does_not_stop_healthy_cards_after_one_worker_error(tmp_path,monkeypatch):
+    job=tmp_path/'job';job.mkdir()
+    monkeypatch.setattr(m,'registration',lambda _: (job,{'continue_on_batch_errors':True}))
+    monkeypatch.setattr(m.subprocess,'check_output',lambda *a,**k:'')
+    calls=[]
+    class Process:
+        def __init__(self,argv,**kw):
+            self.gpu=int(argv[-1]);self.pid=99990000+self.gpu;self.returncode=None;calls.append(self)
+            save(job/f'workers/gpu_{self.gpu}/status.json',dict(status='needs_diagnosis' if self.gpu==0 else 'completed'))
+        def poll(self):
+            self.returncode=1 if self.gpu==0 else 0
+            assert not (job/'STOP').exists()
+            return self.returncode
+    monkeypatch.setattr(m.subprocess,'Popen',Process)
+    monkeypatch.setattr(m,'report',lambda *a,**kw:dict(completed=7,coverage=7))
+    m.supervise(job)
+    state=m.read(job/'status.json')
+    assert len(calls)==8 and state['completed_gpus']==list(range(1,8))
+    assert set(state['failed_gpus'])=={'0'} and not (job/'STOP').exists()
