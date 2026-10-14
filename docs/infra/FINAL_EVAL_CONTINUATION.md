@@ -2,6 +2,12 @@
 
 2026-10-13，负责人Codex / SUBMISSION-FULL-EVAL。用户要求优先内部评测，模型交付暂缓。本页不授权外部上传、换权重或新训练。
 
+## 冠军续评后的MEM依赖与原件收集
+
+独立`queue_memlite_after_champion_continuation.py`只替换已退出、零阶段、明确因原冠军故障停止的旧等待队列；必须绑定原用户优先级授权、原冠军root manifest、诊断封存、当前冠军续评和原MEM v7，不修改这些登记。通过外部checkout只读验证c978冠军协调源与ae86 MEM协调源；真正启动MEM仍执行ae86原入口/原51c actor。新队列独立名称、共用MEM owner文件锁，既有MEM status/STOP或GPU被占用一律拒绝接管。等待时不导入模型、不用GPU。
+
+冠军全部1000案例核账（真实有效原件＋明确缺失的执行异常）且八worker及各代模型退出、参数不变后，`package_champion_continuation.py`重审所有历史原命令/物理回执/seed/官方时限、原JSON和MP4 SHA/帧数、整批异常及行政中断。原字节ZIP只装真实官方JSON和原wrapper/robot/transport；缺失清单、固定1000分母统计、原配置和运行登记单独保留，不造JSON补零、不挑选重跑结果。归档完成且GPU实际空闲才启动原MEM576剩余，MEM终态亦调用原件收集工具；任何未知失败停止后继，无自动重试。此为内部资料收集，不是模型交付、视频托管或提交。实际部署、队列PID与双端测试见plan，不把合成测试称为真实全量完成。
+
 ## 2026-10-14 冠军：下一批实例恢复时物体不可用
 
 18:44:50 CST，原冠军切洋葱首四例已经各9600控制正常完结；305–308开始官方`load_fn → load_batch → _load_instance_state`时，`object_scope[tro_key]`对应对象为None，`obj.load_state(tro_state, serialized=False)`抛AttributeError。日志没有具体slot/物体，因此不猜测缺失对象原因，也不把它当FM推理失败。18:45保护停止全局及MEM依赖队列。八份终态权重均不变，原STOP和所有原件保留。

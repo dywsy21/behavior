@@ -263,11 +263,12 @@ def prepare(prior, seal, runtime_source, job):
     atomic_json(job / 'manifest.json', manifest); return manifest
 
 
-def registration(job):
+def registration(job, *, coordinator_source=None):
     job = Path(job).resolve(); m = read(job / 'manifest.json')
     if job.parent != ROOT / 'runs' or m['schema'] != SCHEMA:
         raise ValueError('Explicit champion continuation required')
-    frozen_source(REPO, m['source_commit']); frozen_source(m['runtime_source'], m['runtime_commit'])
+    frozen_source(REPO if coordinator_source is None else Path(coordinator_source), m['source_commit'])
+    frozen_source(m['runtime_source'], m['runtime_commit'])
     _, original, _ = root_registration(job)
     sealed = read(m['seal']['path'])
     if (m['groups'] != shared.remaining_parts(original, sealed)

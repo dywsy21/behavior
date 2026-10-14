@@ -621,11 +621,11 @@ def prepare(prior, seal, runtime_source, job):
     return manifest
 
 
-def registration(job):
+def registration(job, *, coordinator_source=None):
     job = Path(job).resolve(); m = read(job / 'manifest.json')
     if job.parent != ROOT / 'runs' or m['schema'] != 'memlite_final_explicit_continuation_v1':
         raise ValueError('Wrong continuation registration')
-    frozen_source(REPO, m['source_commit'])
+    frozen_source(REPO if coordinator_source is None else Path(coordinator_source), m['source_commit'])
     frozen_source(m['runtime_source'], m['runtime_commit'])
     for name in ('prior_manifest', 'seal'):
         check_binding(m[name])
