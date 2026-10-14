@@ -244,8 +244,10 @@ def freeze(prior, output):
     return result
 
 
-def remaining_parts(m, sealed):
+def remaining_parts(m, sealed, *, isolate_batches=False):
     """Preserve original task/slot batches, independent of success or Q."""
+    if type(isolate_batches) is not bool:
+        raise ValueError('Explicit batch isolation boolean required')
     expected = {key(r) for r in m['cases']}
     excluded_list = [key(r) for r in sealed['records'] + sealed['execution_errors']]
     if len(excluded_list) != len(set(excluded_list)) or not set(excluded_list) <= expected:
@@ -265,8 +267,10 @@ def remaining_parts(m, sealed):
                 buckets[len(indices)].extend(indices)
             for count, indices in buckets.items():
                 if indices:
-                    parts.append(dict(**task, num_envs=count, indices=indices,
-                                      id=f"{task['task']}-n{count}-i{indices[0]}"))
+                    batches = [indices[i:i+count] for i in range(0,len(indices),count)] if isolate_batches else [indices]
+                    for batch in batches:
+                        parts.append(dict(**task, num_envs=count, indices=batch,
+                                          id=f"{task['task']}-n{count}-i{batch[0]}"))
         groups.append(dict(gpu=group['gpu'], parts=parts))
     planned = [(p['task'], i + 301, 0) for g in groups for p in g['parts'] for i in p['indices']]
     if len(planned) != len(set(planned)) or set(planned) != expected - excluded:
@@ -526,6 +530,10 @@ def freeze_continuation(prior, output, *, authorization=None):
                     or binding(model_path / 'weights-final.json') not in worker['model_generations']):
                 raise ValueError('Rejected planner belongs to another worker/model generation')
         diagnosis = execution_error(text, model_path)
+        if (diagnosis is None and m.get('continue_on_batch_errors') is True and ledger
+                and ledger[0]['diagnosis']['kind']=='unclassified_operational_batch_error'):
+            diagnosis=ledger[0]['diagnosis']
+            evidence.append(validate_operational_error(diagnosis,log,attempt))
         pending_rows = [dict(task=part['task'], instance_id=i, rollout_id=row['rollout'],
                             original_attempt=binding(attempt)) for i in row['instance_ids']]
         if diagnosis:
@@ -576,7 +584,7 @@ def freeze_continuation(prior, output, *, authorization=None):
     return result
 
 
-def prepare(prior, seal, runtime_source, job):
+def prepare(prior, seal, runtime_source, job, *, isolate_batches=False, continue_on_errors=False):
     prior, seal, runtime_source, job = map(lambda p: Path(p).resolve(), (prior, seal, runtime_source, job))
     parent, receipt = read(prior / 'manifest.json'), read(seal)
     root, m, root_pin = root_registration(prior)
@@ -597,7 +605,9 @@ def prepare(prior, seal, runtime_source, job):
         check_binding(entry)
     for row in receipt['records']:
         check_binding(row['metrics']); check_binding(row['video'])
-    groups = remaining_parts(m, receipt)
+    if type(continue_on_errors) is not bool or (continue_on_errors and not isolate_batches):
+        raise ValueError('Continuous failure isolation requires one physical batch per process')
+    groups = remaining_parts(m, receipt, isolate_batches=isolate_batches)
     job.mkdir()
     for name in ('workers', 'parts'):
         (job / name).mkdir()
@@ -613,6 +623,7 @@ def prepare(prior, seal, runtime_source, job):
                     administrative_restarts=len(receipt['administrative_interruptions']),
                     loader_admission='fifo_two_slots_queue_wait_is_not_execution_timeout_v1',
                     expected=1000, automatic_retries=False, policy_changed=False, optimizer_updates=0,
+                    isolate_physical_batches=isolate_batches, continue_on_batch_errors=continue_on_errors,
                     error_policy='Record diagnosed physics-state or strict planner-rejection batches as missing official scores; '
                                  'restart model only for different unattempted cases; no score fabrication',
                     numerical_notice='Original model/official source/seed/batching unchanged; administrative '
@@ -633,6 +644,13 @@ def registration(job, *, coordinator_source=None):
         check_binding(m['root_manifest'])
     if sha256(m['config_path']) != m['config_sha256']:
         raise ValueError('Policy config changed')
+    isolated=m.get('isolate_physical_batches',False); continuous=m.get('continue_on_batch_errors',False)
+    if type(isolated) is not bool or type(continuous) is not bool or (continuous and not isolated):
+        raise ValueError('Invalid failure isolation mode')
+    if isolated:
+        _, original, _ = root_registration(job)
+        if m['groups'] != remaining_parts(original, read(m['seal']['path']), isolate_batches=True):
+            raise ValueError('Isolated physical schedule changed')
     return job, m
 
 
@@ -664,6 +682,40 @@ def require_no_uncommitted_metrics(output):
     known = {p for p, _ in completed_metrics(output)}
     if set((Path(output) / 'json').glob('*.json')) != known:
         raise ValueError('Uncommitted official case records require independent physical audit; do not label them errors')
+
+
+def operational_batch_error(job, part, error, returncode, logpath):
+    """Preserve one unknown runtime batch error, without inventing a score/cause."""
+    output=job/'parts'/part['id'];require_no_uncommitted_metrics(output)
+    attempts=sorted((output/'attempts').glob('*.json'))
+    if len(attempts)!=1:
+        raise ValueError('Need one original physical attempt for operational isolation')
+    attempt=read(attempts[0])
+    if (attempt['status']!='running' or attempt['indices']!=part['indices']
+            or len(part['indices'])!=part['num_envs']):
+        raise ValueError('Ambiguous operational batch boundary')
+    path=logpath.with_name(part['id']+'-operational-error.json')
+    row=dict(schema='memlite_operational_batch_error_v1',part=part,error=error,returncode=returncode,
+        log=binding(logpath),original_attempt=binding(attempts[0]),physical_status=binding(output/'status.json'),
+        command=binding(logpath.with_name(part['id']+'-command.json')),policy_failure_claimed=False,
+        official_score_available=False,rerun_allowed=False)
+    atomic_json(path,row)
+    return dict(kind='unclassified_operational_batch_error',scene_slot=None,
+        failure_phase='runtime_unknown_preserved_for_diagnosis',official_score_available=False,
+        policy_failure_claimed=False,operational_receipt=binding(path))
+
+
+def validate_operational_error(diagnosis,log,attempt):
+    pin=diagnosis['operational_receipt'];check_binding(pin);row=read(pin['path'])
+    for field in ('log','original_attempt','physical_status','command'):check_binding(row[field])
+    if (row.get('schema')!='memlite_operational_batch_error_v1' or row['log']!=binding(log)
+            or row['original_attempt']!=binding(attempt)
+            or row['part']['indices']!=read(attempt)['indices']
+            or row['part']['task']!=read(row['physical_status']['path'])['task']
+            or row['official_score_available'] is not False or row['policy_failure_claimed'] is not False
+            or row['rerun_allowed'] is not False or not (row['error'] or row['returncode'])):
+        raise ValueError('Changed operational error receipt')
+    return pin
 
 
 def worker(job, gpu):
@@ -733,7 +785,7 @@ def worker(job, gpu):
                     stdout=log, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, start_new_session=True)
             atomic_json(path / (part['id'] + '-command.json'), dict(argv=command, runtime_commit=m['runtime_commit']))
             state.update(status='evaluating', sim_pid=sim.pid, part=part['id']); publish()
-            previous = None; last = time.monotonic()
+            previous = None; last = time.monotonic(); runtime_error = None
             while sim.poll() is None:
                 if loader is not None and (output / 'scene.ready').exists():
                     loader.close(); loader = None
@@ -743,12 +795,24 @@ def worker(job, gpu):
                 # A broken connection after a physics exception can precede
                 # simulator teardown. Wait for that child and its actual log.
                 if service.get('status') == 'failed' or model.poll() is not None:
-                    sim.wait(timeout=120); break
+                    try:
+                        sim.wait(timeout=120)
+                    except subprocess.TimeoutExpired:
+                        if not m.get('continue_on_batch_errors',False):
+                            raise
+                        runtime_error="TimeoutError('Simulator did not exit after service failure')"
+                    break
                 if service.get('requests') != previous:
                     previous = service.get('requests'); last = time.monotonic()
-                if time.monotonic() - last > 1800 or shutil.disk_usage(job).free < 150 << 30:
+                if shutil.disk_usage(job).free < 150 << 30:
                     raise RuntimeError('Progress/disk safety stop')
+                if time.monotonic() - last > 1800:
+                    if not m.get('continue_on_batch_errors',False):
+                        raise RuntimeError('Progress/disk safety stop')
+                    runtime_error="TimeoutError('No model progress for 30 minutes')";break
                 time.sleep(5)
+            if runtime_error:
+                stop_child(sim)
             if loader is not None:
                 loader.close(); loader = None
             receipt = read(output / 'status.json') if (output / 'status.json').exists() else {}
@@ -763,7 +827,10 @@ def worker(job, gpu):
                 state['completed_parts'].append(part['id']); publish(); continue
             diagnosis = execution_error(logpath.read_text(), model_path)
             if diagnosis is None:
-                raise RuntimeError('Unclassified failure; preserve evidence for diagnosis: ' + part['id'])
+                if not m.get('continue_on_batch_errors',False):
+                    raise RuntimeError('Unclassified failure; preserve evidence for diagnosis: ' + part['id'])
+                diagnosis=operational_batch_error(job,part,runtime_error or receipt.get('error') or
+                    'Official physical batch incomplete',sim.returncode,logpath)
             if diagnosis['kind'] == 'planner_memory_recurrence_rejected':
                 # The service writes its final timestamp/weight receipt during
                 # teardown. Seal only the stable final service status/log.
@@ -874,13 +941,23 @@ def supervise(job):
                 row = read(path) if path.exists() else dict(status='missing')
                 if process.returncode or row['status'] not in ('completed', 'completed_with_execution_errors'):
                     state['failed_gpus'][str(gpu)] = row
-                    raise RuntimeError('Unclassified worker failure; needs diagnosis, never automatic reroll')
+                    if not m.get('continue_on_batch_errors',False):
+                        raise RuntimeError('Unclassified worker failure; needs diagnosis, never automatic reroll')
+                    del children[gpu];atomic_json(job/'status.json',state);continue
                 state['completed_gpus'].append(gpu); del children[gpu]
-            summary = report(job)
-            state.update(completed=summary['completed'], coverage=summary['coverage'], updated=time.time())
+            try:
+                summary = report(job)
+                state.update(completed=summary['completed'], coverage=summary['coverage'], updated=time.time())
+                state.pop('report_error',None)
+            except Exception as error:
+                if not m.get('continue_on_batch_errors',False):raise
+                state.update(report_error=repr(error),updated=time.time())
             atomic_json(job / 'status.json', state)
             if children:
                 time.sleep(30)
+        if state['failed_gpus']:
+            state.update(status='needs_isolated_worker_recovery',finished=time.time())
+            atomic_json(job/'status.json',state);return
         summary = report(job, final=True); state['status'] = summary['status']
     except BaseException as error:
         state.update(status='needs_diagnosis', error=repr(error)); (job / 'STOP').touch(); raise
@@ -897,6 +974,8 @@ if __name__ == '__main__':
     for name in ('prior', 'seal', 'runtime-source', 'job', 'output', 'authorization'):
         parser.add_argument('--' + name, type=Path)
     parser.add_argument('--gpu', type=int); parser.add_argument('--final', action='store_true')
+    parser.add_argument('--isolate-batches',action='store_true')
+    parser.add_argument('--continue-on-errors',action='store_true')
     args = parser.parse_args()
     if args.authorization is not None and args.command != 'freeze-continuation':
         parser.error('--authorization is only for a separately audited continuation priority stop')
@@ -906,7 +985,8 @@ if __name__ == '__main__':
         print(json.dumps(dict(completed=result['completed'], execution_errors=len(result['execution_errors']),
                               administrative_interruptions=len(result['administrative_interruptions']))))
     elif args.command == 'prepare':
-        result = prepare(args.prior, args.seal, args.runtime_source, args.job)
+        result = prepare(args.prior, args.seal, args.runtime_source, args.job,
+                         isolate_batches=args.isolate_batches,continue_on_errors=args.continue_on_errors)
         print(json.dumps(dict(job=str(args.job), cases=sum(len(p['indices']) for g in result['groups'] for p in g['parts']))))
     elif args.command == 'worker':
         worker(args.job, args.gpu)

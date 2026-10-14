@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 22:36 CST / Codex SUBMISSION-FULL-EVAL（MEM故障隔离准备完成）：** 本地补齐MEM独立物理batch、未知已尝试批次异常留证后继续、单worker异常不发全局STOP及只替换未启动等待队列的严格工具`pending_mem_upgrade.py`；249整体回归通过，新增fresh-vs-reset记忆/意图/observer回归4/4通过（整体合计250项，下次目标一并运行）。原batch分组/实例顺序/权重/控制时限不变，实际MEM仍v7/241922等待，尚未部署新源或停等待队列；冠军f7正常推理不热改。下一独立Git部署、准备与v7同576案例的v8，停旧等待器（不是冠军）、绑定新后继。
+
+- **2026-10-14 22:33 CST / Codex SUBMISSION-FULL-EVAL（重置恢复已实际步进）：** 原f7续评未动，书架301–304各2000实际控制、喷果树305–308各600实际控制，后者成功越过前轮卡住的加载路径；两个journal稳定前缀分别4独立epoch1，通过task/session/stage/vote/inpainting/动作交付时钟审计。证据`docs/infra/results/2026-10-14-champion-isolated-first-controls.json`。其余场景继续FIFO加载、八模型ready/无failed GPU；这不是完整成功率或物理逐位等价。根正在独立本地完善未启动MEM的同类batch/worker隔离和等待队列替换校验，尚未替换241922，不碰活跃冠军源码。
+
 - **2026-10-14 22:21 CST / Codex SUBMISSION-FULL-EVAL（冠军已恢复、MEM后继已挂）：** 新`champion_final100_20261014_resume_v2`实际supervisor241557/八worker241608–615，f7b72854独立编排，原9f actor/配置/官方物理/seed/4与2环境批次不改；首两模型加载、尚未确认新物理步。原304完整/4错误保留，30行政中断（其中4由终态零交付证书核准）＋662未启＝692剩余，拆为209个独立模拟器batch。目标232通过/1可选源路径跳过，本地233通过。MEM v7新`queue-after-champion-resume-v2`PID241922已waiting/零阶段，绑定原ae86/51c；旧run/STOP/失败队列不动。manifest a80d9602、seal a1ff634c、certificate ad6ec35b；证据`docs/infra/results/2026-10-14-champion-isolated-batch-launch.json`。下一验实际控制、连续故障隔离与MEM编排韧性；不能声称已完成全量/最终Q/SR或所有异常已自动修复。
 
 - **2026-10-14 22:16 CST / Codex SUBMISSION-FULL-EVAL（隔离编排本地验收）：** 独立batch、未知已尝试批次异常留证后继续、单worker安全故障不发全局STOP及新后继队列绑定已实现；233本机回归通过，包括新连接与reset的stage/history/inpainting/RNG相等（mock predictor，不冒称物理逐位相等）、未知批次不阻止下一批、单坏卡不停止其余七卡。预控制重置证书仅接受本次原journal SHA及完整尾部四个断开/关闭配对，目标真原件验收尚待。代码`continue_champion_final.py`/`champion_reset_timeout.py`及对应归档/队列，根自测非独立成员review；下一立即Git冻结部署/实际封存并恢复692剩余。

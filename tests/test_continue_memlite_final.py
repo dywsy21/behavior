@@ -31,6 +31,50 @@ def test_remaining_cases_never_include_completed_or_physics_failed():
     assert groups==m.remaining_parts(manifest,seal)
 
 
+def test_isolated_batches_preserve_original_gpu_task_slot_order():
+    original,seal=fixture();normal=m.remaining_parts(original,seal)
+    isolated=m.remaining_parts(original,seal,isolate_batches=True)
+    flatten=lambda gs:[(g['gpu'],p['task'],p['num_envs'],i) for g in gs for p in g['parts'] for i in p['indices']]
+    assert flatten(normal)==flatten(isolated)
+    assert all(len(p['indices'])==p['num_envs'] for g in isolated for p in g['parts'])
+    with pytest.raises(ValueError):m.remaining_parts(original,seal,isolate_batches=1)
+
+
+def test_operational_error_preserves_an_unknown_failure_without_claiming_policy_failure(tmp_path):
+    p=dict(id='task-n4-i0',task='task',task_id=0,num_envs=4,indices=[0,1,2,3])
+    output=tmp_path/'parts'/p['id'];(output/'attempts').mkdir(parents=True)
+    a=output/'attempts/00.json';a.write_text(json.dumps(dict(status='running',indices=p['indices'],
+        instance_ids=[301,302,303,304],rollout=0)))
+    (output/'status.json').write_text(json.dumps(dict(status='failed',task='task')))
+    log=tmp_path/'workers/gpu_0'/f"{p['id']}.log";log.parent.mkdir(parents=True);log.write_text('unknown failure')
+    log.with_name(p['id']+'-command.json').write_text(json.dumps(dict(argv=['frozen runtime'])))
+    diagnosis=m.operational_batch_error(tmp_path,p,'unknown failure',1,log)
+    assert diagnosis['official_score_available'] is False and diagnosis['policy_failure_claimed'] is False
+    m.validate_operational_error(diagnosis,log,a)
+    log.write_text('changed')
+    with pytest.raises(ValueError):m.validate_operational_error(diagnosis,log,a)
+
+
+def test_single_worker_failure_never_sends_global_stop_in_continuous_mode(tmp_path,monkeypatch):
+    job=tmp_path/'job';job.mkdir()
+    monkeypatch.setattr(m,'registration',lambda _: (job,{'continue_on_batch_errors':True}))
+    monkeypatch.setattr(m.subprocess,'check_output',lambda *a,**k:'')
+    class Process:
+        def __init__(self,argv,**kw):
+            self.gpu=int(argv[-1]);self.pid=99990000+self.gpu;self.returncode=None
+            path=job/f'workers/gpu_{self.gpu}/status.json';path.parent.mkdir(parents=True)
+            path.write_text(json.dumps(dict(status='needs_diagnosis' if self.gpu==0 else 'completed')))
+        def poll(self):
+            self.returncode=int(self.gpu==0)
+            assert not (job/'STOP').exists()
+            return self.returncode
+    monkeypatch.setattr(m.subprocess,'Popen',Process)
+    monkeypatch.setattr(m,'report',lambda *a,**kw:dict(completed=7,coverage=7))
+    m.supervise(job);state=m.read(job/'status.json')
+    assert state['completed_gpus']==list(range(1,8)) and set(state['failed_gpus'])=={'0'}
+    assert not (job/'STOP').exists()
+
+
 @pytest.mark.parametrize('bad',['partial','duplicate','foreign','overlap'])
 def test_case_exclusion_validation(bad):
     manifest,seal=fixture()

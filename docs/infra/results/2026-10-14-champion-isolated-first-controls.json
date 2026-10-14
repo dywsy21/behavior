@@ -1,0 +1,318 @@
+{
+  "schema": "champion_isolated_batch_first_controls_v1",
+  "observed_at": "2026-10-14T14:32:48.541129+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "status": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {},
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 304,
+    "coverage": 308,
+    "updated": 1791988365.1397107
+  },
+  "rows": [
+    {
+      "gpu": 1,
+      "part": "sorting_books_on_shelf-n4-i0",
+      "physical": {
+        "status": "running",
+        "pid": 252810,
+        "task": "sorting_books_on_shelf",
+        "task_id": 99,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "ef627f701aeaa3994aa701ad0837b875e83ddbd582a5c0ab8029ac52ec29d947",
+        "started": 1791987869.199785,
+        "optimizer_updates": 0,
+        "control_steps": [
+          2000,
+          2000,
+          2000,
+          2000
+        ],
+        "updated": 1791988367.4767704
+      },
+      "attempts": [
+        {
+          "status": "running",
+          "task": "sorting_books_on_shelf",
+          "indices": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "instance_ids": [
+            301,
+            302,
+            303,
+            304
+          ],
+          "rollout": 0,
+          "started": 1791988002.1973493,
+          "max_steps": 11609,
+          "policy_seed": 17,
+          "simulator_seed": 0
+        }
+      ],
+      "protocol": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 457672,
+        "prefix_sha256": "b600f1e00f9e1b1387f640ca83bb7803deb65f69da22e7810b30040d9ea79786",
+        "lines": 412,
+        "connections": 4,
+        "episodes": 4,
+        "closed_episodes": 0,
+        "active_connections": 4,
+        "deliveries": 404,
+        "delivered_controls": 8080,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          99
+        ],
+        "require_closed": false,
+        "session_summaries": [
+          {
+            "episode": "fe6ff0ea7d584ff1b294e5716d04a359/reset-1/task-99",
+            "connection": "fe6ff0ea7d584ff1b294e5716d04a359",
+            "epoch": 1,
+            "task": 99,
+            "deliveries": 101,
+            "stage": 2,
+            "votes": [
+              0,
+              0,
+              2
+            ],
+            "stages": 8,
+            "legacy": false,
+            "closed": false
+          },
+          {
+            "episode": "b138a05d807c4b7cb9f73ce0c0b81484/reset-1/task-99",
+            "connection": "b138a05d807c4b7cb9f73ce0c0b81484",
+            "epoch": 1,
+            "task": 99,
+            "deliveries": 101,
+            "stage": 2,
+            "votes": [
+              6,
+              2,
+              6
+            ],
+            "stages": 8,
+            "legacy": false,
+            "closed": false
+          },
+          {
+            "episode": "5450a9a212734942b30d3e7d2bdf0b08/reset-1/task-99",
+            "connection": "5450a9a212734942b30d3e7d2bdf0b08",
+            "epoch": 1,
+            "task": 99,
+            "deliveries": 101,
+            "stage": 2,
+            "votes": [
+              0,
+              0,
+              0
+            ],
+            "stages": 8,
+            "legacy": false,
+            "closed": false
+          },
+          {
+            "episode": "2e2a4f194254401aa8aa1d72185496ee/reset-1/task-99",
+            "connection": "2e2a4f194254401aa8aa1d72185496ee",
+            "epoch": 1,
+            "task": 99,
+            "deliveries": 101,
+            "stage": 2,
+            "votes": [
+              2,
+              6,
+              6
+            ],
+            "stages": 8,
+            "legacy": false,
+            "closed": false
+          }
+        ],
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/model-000/events.jsonl",
+        "captured_bytes": 457672,
+        "ignored_incomplete_tail_bytes": 0
+      }
+    },
+    {
+      "gpu": 2,
+      "part": "spraying_fruit_trees-n4-i4",
+      "physical": {
+        "status": "running",
+        "pid": 252737,
+        "task": "spraying_fruit_trees",
+        "task_id": 39,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+        "started": 1791987867.2030716,
+        "optimizer_updates": 0,
+        "control_steps": [
+          600,
+          600,
+          600,
+          600
+        ],
+        "updated": 1791988364.1454508
+      },
+      "attempts": [
+        {
+          "status": "running",
+          "task": "spraying_fruit_trees",
+          "indices": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "instance_ids": [
+            305,
+            306,
+            307,
+            308
+          ],
+          "rollout": 0,
+          "started": 1791988208.60813,
+          "max_steps": 12518,
+          "policy_seed": 17,
+          "simulator_seed": 0
+        }
+      ],
+      "protocol": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 149658,
+        "prefix_sha256": "be178e6efcd30a2136d9c22782d8a71c48292ccb86c6cdab4c653d3e7048b9b6",
+        "lines": 134,
+        "connections": 4,
+        "episodes": 4,
+        "closed_episodes": 0,
+        "active_connections": 4,
+        "deliveries": 126,
+        "delivered_controls": 2520,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          39
+        ],
+        "require_closed": false,
+        "session_summaries": [
+          {
+            "episode": "4ca452a5d328409a895e757aacaca96e/reset-1/task-39",
+            "connection": "4ca452a5d328409a895e757aacaca96e",
+            "epoch": 1,
+            "task": 39,
+            "deliveries": 32,
+            "stage": 1,
+            "votes": [
+              1,
+              1,
+              1
+            ],
+            "stages": 10,
+            "legacy": true,
+            "closed": false
+          },
+          {
+            "episode": "0b91820e4fb64be0b515dc3e5ffa55f9/reset-1/task-39",
+            "connection": "0b91820e4fb64be0b515dc3e5ffa55f9",
+            "epoch": 1,
+            "task": 39,
+            "deliveries": 32,
+            "stage": 1,
+            "votes": [
+              1,
+              1,
+              1
+            ],
+            "stages": 10,
+            "legacy": true,
+            "closed": false
+          },
+          {
+            "episode": "6822043328544fea9c5d61fc3cd60e91/reset-1/task-39",
+            "connection": "6822043328544fea9c5d61fc3cd60e91",
+            "epoch": 1,
+            "task": 39,
+            "deliveries": 31,
+            "stage": 0,
+            "votes": [
+              0,
+              0,
+              0
+            ],
+            "stages": 10,
+            "legacy": true,
+            "closed": false
+          },
+          {
+            "episode": "4daa0ac8f84845e29d4069617a22098e/reset-1/task-39",
+            "connection": "4daa0ac8f84845e29d4069617a22098e",
+            "epoch": 1,
+            "task": 39,
+            "deliveries": 31,
+            "stage": 0,
+            "votes": [
+              0,
+              0,
+              0
+            ],
+            "stages": 10,
+            "legacy": true,
+            "closed": false
+          }
+        ],
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_2/model-000/events.jsonl",
+        "captured_bytes": 149658,
+        "ignored_incomplete_tail_bytes": 0
+      }
+    }
+  ],
+  "meaning": "Successful physical stepping and recorded session isolation, not task success or bitwise-equivalent physical trajectories",
+  "model_policy_changed": false,
+  "other_gpus_stopped": false
+}

@@ -38,12 +38,18 @@ def validate_order(mem, champion, authorization, mem_source, champion_source):
     return mem, mm, champion, cm, authorization, root
 
 
-def replacement_queue(mem, champion_root, previous, name, authorization, champion=None):
+def replacement_queue(mem, champion_root, previous, name, authorization, champion=None, pending_mem_upgrade=None):
     if not re.fullmatch(r'queue-[A-Za-z0-9_-]+', name):
         raise ValueError('Queue basename required')
     previous, queue = Path(previous).resolve(), mem / name
-    if previous.parent != mem or previous == queue or queue.exists() or queue.is_symlink():
+    if previous == queue or queue.exists() or queue.is_symlink():
         raise ValueError('Preserve the old queue; use a new directory inside the same MEM run')
+    if pending_mem_upgrade is not None:
+        from pending_mem_upgrade import verify
+        verify(pending_mem_upgrade,previous,mem,champion,authorization)
+        return queue,c.binding(previous/'status.json')
+    if previous.parent != mem:
+        raise ValueError('A different pending MEM requires explicit audited supersession')
     p = previous / 'status.json'; old = c.read(p)
     if (old.get('status') != 'needs_diagnosis' or not old.get('finished') or old.get('phases') != []
             or old.get('mem_job') != str(mem)):
@@ -81,10 +87,11 @@ def mem_command(mem, mem_source):
             'supervise', '--job', str(mem)]
 
 
-def run(mem, champion, authorization, mem_source, champion_source, previous_queue, queue_name, output_root):
+def run(mem, champion, authorization, mem_source, champion_source, previous_queue, queue_name, output_root,
+        *, pending_mem_upgrade=None):
     mem_source, champion_source = Path(mem_source).resolve(), Path(champion_source).resolve()
     mem, mm, champion, cm, auth, root = validate_order(mem, champion, authorization, mem_source, champion_source)
-    queue, old = replacement_queue(mem, root, previous_queue, queue_name, auth, champion)
+    queue, old = replacement_queue(mem, root, previous_queue, queue_name, auth, champion,pending_mem_upgrade)
     output_root = Path(output_root).resolve()
     if (not output_root.is_dir() or any((output_root / name).exists() for name in ('champion-results', 'mem-results'))
             or any(output_root.is_relative_to(p) for p in (mem, champion, root))):
@@ -93,14 +100,18 @@ def run(mem, champion, authorization, mem_source, champion_source, previous_queu
     c.frozen_source(c.REPO, commit)
     owner = (mem / 'queue-owner.lock').open('a'); fcntl.flock(owner, fcntl.LOCK_EX | fcntl.LOCK_NB)
     # Recheck after acquiring ownership, before creating or launching anything.
-    replacement_queue(mem, root, previous_queue, queue_name, auth, champion)
+    replacement_queue(mem, root, previous_queue, queue_name, auth, champion,pending_mem_upgrade)
     queue.mkdir()
     bindings = [c.binding(mem / 'manifest.json'), c.binding(champion / 'manifest.json'), c.binding(auth),
                 mm['seal'], cm['seal'], c.binding(root / 'manifest.json'), old]
+    if pending_mem_upgrade is not None:
+        bindings.insert(-1,c.binding(pending_mem_upgrade))
     state = dict(status='waiting_for_champion_continuation', pid=os.getpid(), started=time.time(), phases=[],
         mem_job=str(mem), champion_job=str(champion), champion_root=str(root), bindings=bindings,
         mem_source=str(mem_source), champion_source=str(champion_source), queue_source=str(c.REPO),
         queue_source_commit=commit, automatic_retries=False, output_root=str(output_root))
+    if pending_mem_upgrade is not None:
+        state['pending_mem_upgrade']=c.binding(pending_mem_upgrade)
     def publish():
         state['updated'] = time.time(); c.atomic_json(queue / 'status.json', state)
     def unchanged():
@@ -153,6 +164,7 @@ if __name__ == '__main__':
                  'previous-queue', 'output-root'):
         p.add_argument('--' + name, type=Path, required=True)
     p.add_argument('--queue-name', required=True)
+    p.add_argument('--pending-mem-upgrade',type=Path)
     a = p.parse_args()
     run(a.mem_job, a.champion_job, a.authorization, a.mem_source, a.champion_source,
-        a.previous_queue, a.queue_name, a.output_root)
+        a.previous_queue, a.queue_name, a.output_root,pending_mem_upgrade=a.pending_mem_upgrade)

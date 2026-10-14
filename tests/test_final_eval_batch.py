@@ -95,6 +95,22 @@ def test_reset_requires_clean_end_and_cross_task_starts_empty(monkeypatch):
         assert json.loads(w.session.memory)==dict(task_name='wash dog toys',issued_command_history=[],verified_world_facts=[])
 
 
+def test_new_client_batch_matches_clean_reset_without_retaining_prior_memory(monkeypatch):
+    reused,_,_=setup(monkeypatch);fresh,_,_=setup(monkeypatch)
+    reused.begin(metadata(),'public_test');obs=[observation(1),observation(2)]
+    first,_=reused.infer(obs,[0,1]);acknowledge(reused,first,{0:16,1:7});reused.close([0,1],obs)
+    next_batch=metadata('wash_dog_toys','next-batch')
+    reused.begin(next_batch,'public_test');fresh.begin(next_batch,'public_test')
+    for _ in range(3):
+        a,_=reused.infer(obs,[0,1]);b,_=fresh.infer(obs,[0,1])
+        for slot in (0,1):
+            np.testing.assert_array_equal(a[slot]['action_chunk'],b[slot]['action_chunk'])
+            assert reused.sessions[slot].session.memory==fresh.sessions[slot].session.memory
+            assert reused.sessions[slot].session.previous_intent==fresh.sessions[slot].session.previous_intent
+            assert reused.sessions[slot].observer.seen==fresh.sessions[slot].observer.seen
+        acknowledge(reused,a,{0:16,1:16});acknowledge(fresh,b,{0:16,1:16})
+
+
 def test_privileged_actor_payload_and_reactivated_slot_rejected(monkeypatch):
     rt,_,_=setup(monkeypatch);rt.begin(metadata(),'public_test')
     obs=[observation(1),observation(2)]

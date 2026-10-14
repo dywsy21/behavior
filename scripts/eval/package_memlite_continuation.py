@@ -25,7 +25,7 @@ def accounted_summary(tasks, records, errors):
         if (error.get('rerun_allowed') is not False
                 or error['diagnosis'].get('official_score_available') is not False
                 or error['diagnosis']['kind'] not in
-                ('simulator_nonfinite_robot_pose', 'simulator_articulation_unavailable',
+                ('unclassified_operational_batch_error', 'simulator_nonfinite_robot_pose', 'simulator_articulation_unavailable',
                  'planner_memory_recurrence_rejected')):
             raise ValueError('Only explicitly diagnosed original execution errors may be missing')
     return result
@@ -142,6 +142,10 @@ def audited_materials(job, manifest_sha):
             c.check_binding(error[field])
         a = Path(error['original_attempt']['path']).resolve()
         attempt = c.read(a)
+        if error['diagnosis']['kind']=='unclassified_operational_batch_error':
+            if c.read(a.parent.parent.parent.parent/'manifest.json').get('continue_on_batch_errors') is not True:
+                raise ValueError('Operational isolation was not registered')
+            c.validate_operational_error(error['diagnosis'],error['log']['path'],a)
         if (a.parent.parent not in visited_parts or attempt['status'] != 'running'
                 or c.read(a.parent.parent / 'status.json')['task'] != error['task']
                 or error['instance_id'] not in attempt['instance_ids'] or attempt['rollout'] != error['rollout_id']):
