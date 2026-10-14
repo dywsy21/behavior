@@ -1,0 +1,675 @@
+{
+  "schema": "champion_isolated_pie_and_fruit8_originals_v1",
+  "observed_at": "2026-10-14T15:19:19.307632+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "batches": [
+    {
+      "part": "cook_a_frozen_pie-n4-i0",
+      "gpu": 0,
+      "records": [
+        {
+          "task": "cook_a_frozen_pie",
+          "instance_id": 301,
+          "rollout_id": 0,
+          "steps": 13002,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_a_frozen_pie-n4-i0/json/cook_a_frozen_pie_301_0.json",
+            "sha256": "72d52a216d4eb7197a5e66bddb33efe7cf8a74fb7ce4a3dd238a699bfe676161"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_a_frozen_pie-n4-i0/videos/cook_a_frozen_pie_301_0.mp4",
+            "sha256": "3cc5481ec221e6ee4fb0dac235abb47fc85b239ba24e871b3ef75457e7f809f7"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13002"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "cook_a_frozen_pie",
+          "instance_id": 302,
+          "rollout_id": 0,
+          "steps": 13002,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_a_frozen_pie-n4-i0/json/cook_a_frozen_pie_302_0.json",
+            "sha256": "d61c0ef2232a30a2be482fd2377bd9ee8b2334200577634cb01c1da54a552492"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_a_frozen_pie-n4-i0/videos/cook_a_frozen_pie_302_0.mp4",
+            "sha256": "cc2f939c8daf94dc3c2604aef9744bb0ca9456f69f56f349f88de0593cff8f24"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13002"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "cook_a_frozen_pie",
+          "instance_id": 303,
+          "rollout_id": 0,
+          "steps": 13002,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_a_frozen_pie-n4-i0/json/cook_a_frozen_pie_303_0.json",
+            "sha256": "16aa278ded42fd6ca29003c07ad7df98dad9d17fe84798605e07df8397e502a1"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_a_frozen_pie-n4-i0/videos/cook_a_frozen_pie_303_0.mp4",
+            "sha256": "8972dad7e4538eb0d0626f6c2e010455793f9c6a214ebc8283ecbf8c2162a795"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13002"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "cook_a_frozen_pie",
+          "instance_id": 304,
+          "rollout_id": 0,
+          "steps": 13002,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_a_frozen_pie-n4-i0/json/cook_a_frozen_pie_304_0.json",
+            "sha256": "a6457c15bf537443e3d1eaf9986da86e8f7b6360282268c5fdc93f5fd30fe342"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_a_frozen_pie-n4-i0/videos/cook_a_frozen_pie_304_0.mp4",
+            "sha256": "7a737da84454d57495cee74eb865d3256ee210ee4264c4844bf678fc71652891"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13002"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_a_frozen_pie-n4-i0/attempts/00.json",
+        "sha256": "7b2ffd0df9940be53a8a7035992d5bdbf6d79b1d4e45043e4bd1aaca253bd850"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "cook_a_frozen_pie",
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "instance_ids": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "rollout": 0,
+        "started": 1791988406.8226686,
+        "max_steps": 13001,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1791991107.972877,
+        "seconds": 2701.149429211393,
+        "actual_applied_controls": [
+          13002,
+          13002,
+          13002,
+          13002
+        ],
+        "unused_delivered_controls": {
+          "0": 18,
+          "1": 18,
+          "2": 18,
+          "3": 18
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 267405,
+        "task": "cook_a_frozen_pie",
+        "task_id": 72,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+        "started": 1791988212.6631193,
+        "optimizer_updates": 0,
+        "control_steps": [
+          13000,
+          13000,
+          13000,
+          13000
+        ],
+        "updated": 1791991106.8161552,
+        "finished": 1791991107.9756699,
+        "official_timeout": 13001,
+        "completed": 4
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 3010663,
+        "prefix_sha256": "ecce08d19344aec3ea500976dd4d214bf74770e479c1cd4620b6236fd1098ba6",
+        "lines": 2616,
+        "connections": 4,
+        "episodes": 4,
+        "closed_episodes": 4,
+        "active_connections": 0,
+        "deliveries": 2604,
+        "delivered_controls": 52080,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          72
+        ],
+        "require_closed": false,
+        "session_summaries": [
+          {
+            "episode": "7d629172e6b84a9a97a5def108aca49a/reset-1/task-72",
+            "connection": "7d629172e6b84a9a97a5def108aca49a",
+            "epoch": 1,
+            "task": 72,
+            "deliveries": 651,
+            "stage": 0,
+            "votes": [
+              4,
+              4,
+              4
+            ],
+            "stages": 9,
+            "legacy": false,
+            "closed": true
+          },
+          {
+            "episode": "e7fce78f87c54a12a8a046d8d39c936c/reset-1/task-72",
+            "connection": "e7fce78f87c54a12a8a046d8d39c936c",
+            "epoch": 1,
+            "task": 72,
+            "deliveries": 651,
+            "stage": 8,
+            "votes": [
+              5,
+              8,
+              8
+            ],
+            "stages": 9,
+            "legacy": false,
+            "closed": true
+          },
+          {
+            "episode": "fc0899a805c1467bba88ca11ab048fbf/reset-1/task-72",
+            "connection": "fc0899a805c1467bba88ca11ab048fbf",
+            "epoch": 1,
+            "task": 72,
+            "deliveries": 651,
+            "stage": 0,
+            "votes": [
+              8,
+              8,
+              8
+            ],
+            "stages": 9,
+            "legacy": false,
+            "closed": true
+          },
+          {
+            "episode": "90fc6037c51844d48c0826fc4370baef/reset-1/task-72",
+            "connection": "90fc6037c51844d48c0826fc4370baef",
+            "epoch": 1,
+            "task": 72,
+            "deliveries": 651,
+            "stage": 4,
+            "votes": [
+              4,
+              4,
+              4
+            ],
+            "stages": 9,
+            "legacy": false,
+            "closed": true
+          }
+        ],
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_0/model-000/events.jsonl",
+        "captured_bytes": 3010663,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241608,
+        "gpu": 0,
+        "started": 1791987613.766783,
+        "completed_parts": [
+          "cook_a_frozen_pie-n4-i0"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 244174,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_0/model-000",
+        "updated": 1791991115.4520879,
+        "sim_pid": 346028,
+        "part": "cook_a_frozen_pie-n4-i4"
+      },
+      "actual_controls": 52008,
+      "controls_per_second": 19.25402550394402
+    },
+    {
+      "part": "spraying_fruit_trees-n4-i4",
+      "gpu": 2,
+      "records": [
+        {
+          "task": "spraying_fruit_trees",
+          "instance_id": 305,
+          "rollout_id": 0,
+          "steps": 12519,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/spraying_fruit_trees-n4-i4/json/spraying_fruit_trees_305_0.json",
+            "sha256": "ddf84c444f17cabccd0ccd4517a71c5342f25c6773a72635de5e715c89356d88"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/spraying_fruit_trees-n4-i4/videos/spraying_fruit_trees_305_0.mp4",
+            "sha256": "4e0fad861c710314210f4ee356eec780cdd4c61b6a920004a35be2f090c1ea4b"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "12519"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "spraying_fruit_trees",
+          "instance_id": 306,
+          "rollout_id": 0,
+          "steps": 12519,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/spraying_fruit_trees-n4-i4/json/spraying_fruit_trees_306_0.json",
+            "sha256": "f8fdbcab550ef1d023ce44015c0e5276effab8bc2c98dd86f23e7edd82665adc"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/spraying_fruit_trees-n4-i4/videos/spraying_fruit_trees_306_0.mp4",
+            "sha256": "10ae6e7c120ba7b8e9e63c3f1d73987e596fb9590e89a0e443f0eb6412098760"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "12519"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "spraying_fruit_trees",
+          "instance_id": 307,
+          "rollout_id": 0,
+          "steps": 12519,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/spraying_fruit_trees-n4-i4/json/spraying_fruit_trees_307_0.json",
+            "sha256": "e258e4e85fd6271a06c4983b9c45c227a8a502ba6db8d8f46e904270954e9832"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/spraying_fruit_trees-n4-i4/videos/spraying_fruit_trees_307_0.mp4",
+            "sha256": "2be2b73b7f3e4c4d09b2e582f9a4215cb546c08edc0cfa9f13f9640f04887a4a"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "12519"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "spraying_fruit_trees",
+          "instance_id": 308,
+          "rollout_id": 0,
+          "steps": 12519,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/spraying_fruit_trees-n4-i4/json/spraying_fruit_trees_308_0.json",
+            "sha256": "c357a19820a991e849aa7537ea4c872a1f168d76a76167e48f0758f7742e5cb5"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/spraying_fruit_trees-n4-i4/videos/spraying_fruit_trees_308_0.mp4",
+            "sha256": "9278f5543eb0a32e854409c1b27978f092ffd3cd9bcd4f9c14c19fe8206b4e23"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "12519"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/spraying_fruit_trees-n4-i4/attempts/04.json",
+        "sha256": "b708dee32afab228762a547cb3cb7ded0cd6eed00c5a0ab440926aec81e01146"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "spraying_fruit_trees",
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "instance_ids": [
+          305,
+          306,
+          307,
+          308
+        ],
+        "rollout": 0,
+        "started": 1791988208.60813,
+        "max_steps": 12518,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1791991071.1620753,
+        "seconds": 2862.5509756812826,
+        "actual_applied_controls": [
+          12519,
+          12519,
+          12519,
+          12519
+        ],
+        "unused_delivered_controls": {
+          "0": 1,
+          "1": 1,
+          "2": 1,
+          "3": 1
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 252737,
+        "task": "spraying_fruit_trees",
+        "task_id": 39,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+        "started": 1791987867.2030716,
+        "optimizer_updates": 0,
+        "control_steps": [
+          12500,
+          12500,
+          12500,
+          12500
+        ],
+        "updated": 1791991066.5840628,
+        "finished": 1791991071.1648972,
+        "official_timeout": 12518,
+        "completed": 4
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 2959620,
+        "prefix_sha256": "821788673cc3ae377089aa084209844f0811113e5f7f5252aa21c33ea6f53a45",
+        "lines": 2516,
+        "connections": 4,
+        "episodes": 4,
+        "closed_episodes": 4,
+        "active_connections": 0,
+        "deliveries": 2504,
+        "delivered_controls": 50080,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          39
+        ],
+        "require_closed": false,
+        "session_summaries": [
+          {
+            "episode": "4ca452a5d328409a895e757aacaca96e/reset-1/task-39",
+            "connection": "4ca452a5d328409a895e757aacaca96e",
+            "epoch": 1,
+            "task": 39,
+            "deliveries": 626,
+            "stage": 5,
+            "votes": [
+              4,
+              3,
+              3
+            ],
+            "stages": 10,
+            "legacy": true,
+            "closed": true
+          },
+          {
+            "episode": "0b91820e4fb64be0b515dc3e5ffa55f9/reset-1/task-39",
+            "connection": "0b91820e4fb64be0b515dc3e5ffa55f9",
+            "epoch": 1,
+            "task": 39,
+            "deliveries": 626,
+            "stage": 1,
+            "votes": [
+              1,
+              2,
+              1
+            ],
+            "stages": 10,
+            "legacy": true,
+            "closed": true
+          },
+          {
+            "episode": "6822043328544fea9c5d61fc3cd60e91/reset-1/task-39",
+            "connection": "6822043328544fea9c5d61fc3cd60e91",
+            "epoch": 1,
+            "task": 39,
+            "deliveries": 626,
+            "stage": 0,
+            "votes": [
+              0,
+              0,
+              1
+            ],
+            "stages": 10,
+            "legacy": true,
+            "closed": true
+          },
+          {
+            "episode": "4daa0ac8f84845e29d4069617a22098e/reset-1/task-39",
+            "connection": "4daa0ac8f84845e29d4069617a22098e",
+            "epoch": 1,
+            "task": 39,
+            "deliveries": 626,
+            "stage": 3,
+            "votes": [
+              3,
+              3,
+              5
+            ],
+            "stages": 10,
+            "legacy": true,
+            "closed": true
+          }
+        ],
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_2/model-000/events.jsonl",
+        "captured_bytes": 2959620,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241610,
+        "gpu": 2,
+        "started": 1791987613.7338262,
+        "completed_parts": [
+          "spraying_fruit_trees-n4-i4"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 241664,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_2/model-000",
+        "updated": 1791991080.4318936,
+        "sim_pid": 345021,
+        "part": "spraying_fruit_trees-n2-i8"
+      },
+      "actual_controls": 50076,
+      "controls_per_second": 17.493487600891367
+    }
+  ],
+  "summary": {
+    "status": "running",
+    "expected": 1000,
+    "completed": 318,
+    "missing": 682,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.06952430867525206,
+    "completed_only_sr": 0.0220125786163522,
+    "coverage": 322,
+    "execution_errors": 4,
+    "unaccounted": 678,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.022108730158730154,
+    "conservative_sr_errors_and_missing_as_zero": 0.007,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0,
+    "tasks": {
+      "cook_a_frozen_pie": {
+        "completed": 4,
+        "expected": 10,
+        "q_score_sum": 0,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0
+      },
+      "spraying_fruit_trees": {
+        "completed": 8,
+        "expected": 10,
+        "q_score_sum": 0,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0
+      }
+    }
+  },
+  "supervisor": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {},
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 318,
+    "coverage": 322,
+    "updated": 1791991131.2989972
+  },
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 300108,
+    "started": 1791989042.9684465,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+        "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v2/status.json",
+        "sha256": "643cca0bd67296878a5518bd6de3d786d331fd9bebe00b777b0d7b68a50f2ec5"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-queue-isolation-20261014-v2",
+    "queue_source_commit": "9122b13726bf1862dbe2d6616c0da916822e2487",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "pending_mem_upgrade": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+      "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+    },
+    "updated": 1791989042.9684682
+  },
+  "manual_visual_review": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "validation_scope": "Original committed JSON, MP4 metadata/hash, physical controls, pinned identity/seed/horizon, and per-GPU journal recurrence; no image-content or RNG identity claim."
+}

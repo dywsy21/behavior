@@ -1,0 +1,334 @@
+{
+  "temporal_order_evidence": {
+    "previous_close_lines": [
+      1101,
+      1102
+    ],
+    "new_connection_lines": [
+      1103,
+      1104,
+      1105,
+      1106
+    ]
+  },
+  "schema": "champion_cross_task_fresh_simulator_session_audit_v1",
+  "observed_at": "2026-10-14T15:18:55.519733+00:00",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "gpu": 4,
+  "worker": {
+    "status": "evaluating",
+    "pid": 241612,
+    "gpu": 4,
+    "started": 1791987613.778339,
+    "completed_parts": [
+      "putting_shoes_on_rack-n2-i8"
+    ],
+    "diagnosed_failed_parts": [],
+    "model_generations": [],
+    "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "model_pid": 246626,
+    "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000",
+    "updated": 1791990135.6715064,
+    "sim_pid": 323847,
+    "part": "bringing_water-n4-i0"
+  },
+  "model": {
+    "status": "ready",
+    "pid": 246626,
+    "started": 1791987765.0126603,
+    "optimizer_updates": 0,
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+    "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+    "physical_execution_evidence": false,
+    "allowed_task_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99
+    ],
+    "memory_profiling": true,
+    "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+    "loaded": 1791987809.2177057
+  },
+  "physical": {
+    "status": "running",
+    "pid": 323847,
+    "task": "bringing_water",
+    "task_id": 17,
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+    "started": 1791990135.9173129,
+    "optimizer_updates": 0,
+    "control_steps": [
+      700,
+      700,
+      700,
+      700
+    ],
+    "updated": 1791991123.883069
+  },
+  "protocol_prefix": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 1450645,
+    "prefix_sha256": "9fe4afe12b82be4cac705bbe6e8309f4f2085d5424c2e58a6137b6676dc5bad3",
+    "lines": 1258,
+    "connections": 6,
+    "episodes": 6,
+    "closed_episodes": 2,
+    "active_connections": 4,
+    "deliveries": 1244,
+    "delivered_controls": 24880,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      17,
+      22
+    ],
+    "require_closed": false,
+    "session_summaries": [
+      {
+        "episode": "180f0cbc71c2455099bf8308b39445b0/reset-1/task-22",
+        "connection": "180f0cbc71c2455099bf8308b39445b0",
+        "epoch": 1,
+        "task": 22,
+        "deliveries": 580,
+        "stage": 5,
+        "votes": [
+          5,
+          5,
+          5
+        ],
+        "stages": 9,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "92f1b3cb8291492c844ad98ae5d762b8/reset-1/task-22",
+        "connection": "92f1b3cb8291492c844ad98ae5d762b8",
+        "epoch": 1,
+        "task": 22,
+        "deliveries": 516,
+        "stage": 8,
+        "votes": [
+          8,
+          8,
+          8
+        ],
+        "stages": 9,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "c4e6b72dfc4c433e9328795a9b8b42a6/reset-1/task-17",
+        "connection": "c4e6b72dfc4c433e9328795a9b8b42a6",
+        "epoch": 1,
+        "task": 17,
+        "deliveries": 37,
+        "stage": 0,
+        "votes": [
+          9,
+          0,
+          0
+        ],
+        "stages": 11,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "2b6b65aecb494888b83265bbaad66000/reset-1/task-17",
+        "connection": "2b6b65aecb494888b83265bbaad66000",
+        "epoch": 1,
+        "task": 17,
+        "deliveries": 37,
+        "stage": 1,
+        "votes": [
+          1,
+          1,
+          1
+        ],
+        "stages": 11,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "98d462ce99334f7d832986e3e08d5075/reset-1/task-17",
+        "connection": "98d462ce99334f7d832986e3e08d5075",
+        "epoch": 1,
+        "task": 17,
+        "deliveries": 37,
+        "stage": 0,
+        "votes": [
+          0,
+          0,
+          0
+        ],
+        "stages": 11,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "5e49311fd1ea4877a6ee0761a16aef34/reset-1/task-17",
+        "connection": "5e49311fd1ea4877a6ee0761a16aef34",
+        "epoch": 1,
+        "task": 17,
+        "deliveries": 37,
+        "stage": 1,
+        "votes": [
+          1
+        ],
+        "stages": 11,
+        "legacy": true,
+        "closed": false
+      }
+    ],
+    "original_outputs_modified": false,
+    "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000/events.jsonl",
+    "captured_bytes": 1450645,
+    "ignored_incomplete_tail_bytes": 0
+  },
+  "completed_predecessor_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_shoes_on_rack-n2-i8/attempts/08.json",
+    "sha256": "5d271a5db66602f55ef2be1dd876c5ee6c8a5661610d0c98787b1de3b50f2375"
+  },
+  "current_attempts": [
+    {
+      "status": "running",
+      "task": "bringing_water",
+      "indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "instance_ids": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "rollout": 0,
+      "started": 1791990882.9541926,
+      "max_steps": 14157,
+      "policy_seed": 17,
+      "simulator_seed": 0
+    }
+  ],
+  "preserves_same_model_process": true,
+  "fresh_connections_and_episode_state": true,
+  "previous_task_sessions_closed_before_new_task": true,
+  "original_outputs_modified": false,
+  "raw_image_action_rng_identity_proven": false,
+  "task_success_claimed": false
+}
