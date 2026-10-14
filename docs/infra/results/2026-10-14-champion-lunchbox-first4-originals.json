@@ -1,0 +1,159 @@
+{
+  "schema": "champion_lunchbox_first4_originals_v1",
+  "observed_at": "2026-10-14T13:47:00.838254+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/manifest.json",
+    "sha256": "b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46"
+  },
+  "records": [
+    {
+      "task": "preparing_lunch_box",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 12368,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/preparing_lunch_box-n4-i0/json/preparing_lunch_box_301_0.json",
+        "sha256": "bb455ebd619bf449e80deb96947b9340d8d144fcef437b990afc8d0f6c4c002d"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/preparing_lunch_box-n4-i0/videos/preparing_lunch_box_301_0.mp4",
+        "sha256": "b150c7bd1c78587345fe9724220e292d5ed2c2f8318f524b8620ca1d22a2bfe0"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "12368"
+      },
+      "success": false,
+      "q_score_final": 0.5
+    },
+    {
+      "task": "preparing_lunch_box",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 12368,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/preparing_lunch_box-n4-i0/json/preparing_lunch_box_302_0.json",
+        "sha256": "088d5366ed4d944704a8006d505e2b0f7c1c925a780e1eeda846e5a420811f8b"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/preparing_lunch_box-n4-i0/videos/preparing_lunch_box_302_0.mp4",
+        "sha256": "98073c229458fb34855667ecec48510453cc3fe668931cb8180ce7f31b410479"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "12368"
+      },
+      "success": false,
+      "q_score_final": 0.5
+    },
+    {
+      "task": "preparing_lunch_box",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 12368,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/preparing_lunch_box-n4-i0/json/preparing_lunch_box_303_0.json",
+        "sha256": "c037fa82a6d790f944c49be533ad367a240445c123fd86c5312f3274f1ef97ed"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/preparing_lunch_box-n4-i0/videos/preparing_lunch_box_303_0.mp4",
+        "sha256": "e44281f3f0f2feef6161b365aeb1d15324e54a8467c32fec45ec70390fcb0759"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "12368"
+      },
+      "success": false,
+      "q_score_final": 0.3333333333333333
+    },
+    {
+      "task": "preparing_lunch_box",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 12368,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/preparing_lunch_box-n4-i0/json/preparing_lunch_box_304_0.json",
+        "sha256": "0931454469248ff37e10c8ea5418c51f3d721bad4c6acc2059561cfd03b4b8d8"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/preparing_lunch_box-n4-i0/videos/preparing_lunch_box_304_0.mp4",
+        "sha256": "79712e34da72a1fd3cdbef1be2a4446db6c610cedc07ae6b7c44f85600011d9c"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "12368"
+      },
+      "success": false,
+      "q_score_final": 0.16666666666666666
+    }
+  ],
+  "physical_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/preparing_lunch_box-n4-i0/attempts/00.json",
+    "sha256": "0265551792d8889623aeb2ad51741df743fc9010b57323af45b5137180313ba1"
+  },
+  "attempt": {
+    "status": "completed",
+    "task": "preparing_lunch_box",
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "instance_ids": [
+      301,
+      302,
+      303,
+      304
+    ],
+    "rollout": 0,
+    "started": 1791981846.8299663,
+    "max_steps": 12367,
+    "policy_seed": 17,
+    "simulator_seed": 0,
+    "finished": 1791985584.5139322,
+    "seconds": 3737.683283195831,
+    "actual_applied_controls": [
+      12368,
+      12368,
+      12368,
+      12368
+    ],
+    "unused_delivered_controls": {
+      "0": 12,
+      "1": 12,
+      "2": 12,
+      "3": 12
+    },
+    "server_clock_kind": "policy_delivery",
+    "physical_ack_sent": false
+  },
+  "successful_instances": [],
+  "completed_q_sum": 1.5,
+  "actual_controls": 49472,
+  "controls_per_second": 13.236006438111033,
+  "manual_visual_review": false,
+  "full_task_all10_complete": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "supervisor_live": {
+    "pid": 50073,
+    "status": "running",
+    "alive": true
+  },
+  "queue_live": {
+    "pid": 127593,
+    "status": "waiting_for_champion_continuation",
+    "phases": [],
+    "alive": true
+  }
+}

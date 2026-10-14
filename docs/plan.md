@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 21:47 CST / Codex SUBMISSION-FULL-EVAL（午餐盒首4原件核验）：** preparing_lunch_box301–304自然各12368实际控制/帧，Q依次0.5/0.5/1/3/1/6，均未完整成功；4原JSON/MP4 SHA、30fps/672×448与完成物理回执一致，原seed17/sim0/12367时限未改，49472控制/3737.683s＝13.2360控制/s。证据`docs/infra/results/2026-10-14-champion-lunchbox-first4-originals.json`，累计唯一已审304，仅首4非该task全10/整个模型最终成绩，也非人工画面验收。50073/127593实活，GPU0此前已实际1300控制，其余继续；GPU2的重置/约21:54看门狗风险仍按下条原证据监控，尚未停机，不热改/伪造心跳。完整冠军→MEM及最终归档仍待，外部交付暂停。
+
 - **2026-10-14 21:43 CST / Codex SUBMISSION-FULL-EVAL（重置与模型看门狗耦合风险）：** 上一轮只读确认300有效/八卡与后继实活、六卡控制增加，为verified wait；本轮fetch/pull无新增。实读运行中c978协调源SHA `802569a4bded1d6302b9ec222a115ffc0631b15a388ed11adaab9fb1015ea0ca`，1800s看门狗仅比较模型events字节数，未区分官方场景重置。GPU2原127129/52568仍活，04实例305–308未完成；21:43:07模型日志mtime年龄1147.568s，按mtime约652s后（约21:54）可能触门，实际用私有monotonic计时/5s轮询，非精确承诺。3.002s内模拟器累计CPU增加4.35s，只说明CPU工作而非有用进展/排除活锁；21:30采样已证宏粒子删除/全局view重建路径。证据`docs/infra/results/2026-10-14-champion-reset-watchdog-risk.json`。尚未停机或出现新执行异常，不热改源/伪造事件续命/放宽参数；下一盯自然重置完成或真实保护终态，再据原件分类处理，MEM保持等待。
 
 - **2026-10-14 21:38 CST / Codex SUBMISSION-FULL-EVAL（收纳电池全10结果齐）：** store_batteries309–310各11557控制/帧、Q0/未成功，新两原JSON/MP4 SHA、30fps/672×448与完成物理回执一致，seed17/sim0/11556时限不变；23114控制/1397.236s＝16.5427控制/s。依据原manifest和实际各part原JSON SHA去重核齐全10有效/0异常/SR0/Q均值0；证据`docs/infra/results/2026-10-14-champion-batteries-all10-originals.json`，累计唯一已审300。21:37直接核50073/八worker/model/sim及127593等待队列实活；GPU0自然进入cook_a_frozen_pie，GPU1书架任务已有200控制，GPU2仍在21:24开始的下一批重置、旧12500快照未更新，未据此重启或伪记新控制。总300有效/4既有异常/696剩，6成功仅已完子集；继续原冠军→MEM，完整全量/最终归档仍待，外部交付暂停。
