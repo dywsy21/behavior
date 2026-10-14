@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 19:47 CST / Codex SUBMISSION-FULL-EVAL（冠军742剩余已实际恢复加载）：** c9780083独立源码目标145回归通过（仅pynvml弃用警告）；真实freeze核254完整/4重置异常/24行政中断/718未启，所有原JSON/视频SHA和帧数、八终态权重不变通过。封存SHA `2d196c19f4c6eb136044a0abf9d7aacb662ffff8e13289ed0bfb80b946dd1a08`；新`runs/champion_final100_20261014_resume_v1` manifest `b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46`登记742，未重跑254完整或4异常。本地同SHA副本已核。supervisor50073及八worker50107–50114实活，首两模型50220/50217正在加载、其余FIFO等槽；尚未验新实际控制。原9f actor/官方物理/配置/final8000不变；原MEM队列3812967已停且0阶段，**仍需新建绑定冠军续评的MEM后继和冠军续评结果打包**，不能称已有自动接续。证据`docs/infra/results/2026-10-14-champion-continuation-launch.json`。下一先核八模型/首实际控制并补上述依赖；不恢复模型交付。
+
 - **2026-10-14 19:39 CST / Codex SUBMISSION-FULL-EVAL（目标机测试夹具修正，生产安全门保留）：** 65197303独立Git源码已部署RTX `code/champion-final-continuation-20261014-v1`，目标回归142过/2失败均是fake worker使用`/tmp`仅41.9GB触发原150GiB保留门，尚未运行真实freeze/评测。真实`/run/ti`空闲4,993,916,243,968字节；未清盘/降门/改生产代码。测试改为显式模拟充足磁盘，并新增低于保留门不得启动模型回归，本机145通过；将经新冻结源码重跑目标验收再封存/启动，原故障现场保持不动。
 
 - **2026-10-14 19:34 CST / Codex SUBMISSION-FULL-EVAL（精确重置故障与续评实现，本机144测试过）：** 原切洋葱301–304完整回执为各9600控制，305–308刚进入官方`load_batch/_load_instance_state`即因`object_scope[tro_key]`对应对象None、调用`load_state`抛唯一AttributeError；日志未记具体物体/slot，不能断言为何丢失。八模型result均closed/参数SHA相同/0更新，八卡无人占用。新增独立`scripts/eval/continue_champion_final.py`封存原件/错误/行政中断、保持原任务/实例/seed/批量排程；模型服务与模拟器仍从原9f源码运行，原文件和STOP不改。只对精确错误签名隔离整批，无原JSON者不造分数；其他未知错误继续停机。测试含完整/错误互斥、行政中断的独立错误拒绝、未提交JSON拒绝、权重/实例/超时绑定，以及fake进程验证原入口＋只续未启动后缀；本机144通过，真实目标验收/封存/重启尚待。证据`docs/infra/results/2026-10-14-champion-onion-reset-diagnosis.json`；待恢复冠军后重接MEM依赖及续评打包，交付仍暂停。

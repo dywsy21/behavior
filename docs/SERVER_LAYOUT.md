@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 19:47 CST：冠军故障封存及独立续评
+
+- RTX仍`/run/ti/rl_memlite_stage1_20261006`。原`runs/champion_final100_20261013_v2`已停，原STOP/所有原件保留。254完整、4切洋葱305–308重置异常、24行政中断、718未开始；封存`runs/champion_final100_20261013_v2-diagnosed-stop-v1.json` SHA `2d196c19f4c6eb136044a0abf9d7aacb662ffff8e13289ed0bfb80b946dd1a08`。
+- 当前冠军`runs/champion_final100_20261014_resume_v1`，manifest SHA `b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46`，742剩余；tmux `champion-final100-resume-v1`，supervisor50073、八worker50107–50114，日志`supervisor.log`及`workers/gpu_i/`，模型代次`model-000`等。编排`code/champion-final-continuation-20261014-v2`=`c97800831339f63efef78bc9c5d84ee4fb0e3416`；实际模型/模拟器仍原`code/final-eval-continuation-20261013-v1`=9f6e75bd，不热改。
+- Git包`runs/final_eval_preparation_20261014/champion-continuation-v2.bundle` SHA `b41be3dea95afe12a3154c9db64a0f20e5523ae180209efcf37665a06884aa39`。本地`artifacts/final-eval-20261014/champion-continuation-v2/{source.bundle,parent-seal.json,manifest.json}`同SHA；大原件仍RTX。v1辅助源码仅用于首次目标测试，未启动真实评测；保留测试失败记录。
+- MEM `runs/memlite_final100_20261014_resume_v7/queue-after-champion`已因原冠军故障停止、无MEM阶段；须等待新依赖编排完成，不能再次执行旧队列或清旧STOP。交付仍暂停。
+
 ## 2026-10-14 15:40 CST：冠军爆米花成功原视频
 
 - RTX原件`/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_microwave_popcorn-n4-i0/{json,videos}/make_microwave_popcorn_304_0.{json,mp4}`，官方success=true/Q1/2549实际控制；JSON SHA `b27393f248be36ac4edd2e99aece4a658da4996c03bf619f07852e2587b7b69d`，MP4 SHA `36fc61f66fbefb19b1988f9c911fc1134b50e7fafddeda9d10138a15b8da313d`。
