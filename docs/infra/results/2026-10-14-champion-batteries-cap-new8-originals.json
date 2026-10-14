@@ -1,0 +1,310 @@
+{
+  "schema": "champion_new8_originals_v1",
+  "observed_at": "2026-10-14T13:13:16.511983+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/manifest.json",
+    "sha256": "b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46"
+  },
+  "batches": [
+    {
+      "task": "store_batteries",
+      "records": [
+        {
+          "task": "store_batteries",
+          "instance_id": 305,
+          "rollout_id": 0,
+          "steps": 11557,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/json/store_batteries_305_0.json",
+            "sha256": "93b3dfe0eb514db75ef3e36b09f32ea9a767d665ea2fdb6ce0f6da83877a7f5f"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/videos/store_batteries_305_0.mp4",
+            "sha256": "0392ae058adb0034300c8719f9645ae6dcc26a8b9ce63fd09e6b2d00de386a6b"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "11557"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "store_batteries",
+          "instance_id": 306,
+          "rollout_id": 0,
+          "steps": 11557,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/json/store_batteries_306_0.json",
+            "sha256": "686d5ab3683e1b9cb1ae4ea61734e13e700b743ee8e15b5fd3fbe50a3cb21206"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/videos/store_batteries_306_0.mp4",
+            "sha256": "fbe205ca4ecee99886fe6def34887b9098664395f9dd2a3189687bb809f6e44a"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "11557"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "store_batteries",
+          "instance_id": 307,
+          "rollout_id": 0,
+          "steps": 11557,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/json/store_batteries_307_0.json",
+            "sha256": "f114d1f8a71590692e4cea0f3baca20b41002b8f81bb5ca32cc96f8104a23279"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/videos/store_batteries_307_0.mp4",
+            "sha256": "02e2205dc3793271fe7db4481ec796695eb6754a2c118942cafa591ebdf0285b"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "11557"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "store_batteries",
+          "instance_id": 308,
+          "rollout_id": 0,
+          "steps": 11557,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/json/store_batteries_308_0.json",
+            "sha256": "6900193b4e9944def77affc525c4ce3da893770f5febe4c8a920c88567a8d025"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/videos/store_batteries_308_0.mp4",
+            "sha256": "92bf706d5efb54135c24d35f710600bb7331c11c41a3007f4e568040752f547b"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "11557"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/store_batteries-n4-i0/attempts/04.json",
+        "sha256": "3420327cf2de4f8629c19ee073cdd01e4c5a1bc3446236e1bad0098e78b33f4e"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "store_batteries",
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "instance_ids": [
+          305,
+          306,
+          307,
+          308
+        ],
+        "rollout": 0,
+        "started": 1791981116.9781508,
+        "max_steps": 11556,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1791983476.0615203,
+        "seconds": 2359.0829473221675,
+        "actual_applied_controls": [
+          11557,
+          11557,
+          11557,
+          11557
+        ],
+        "unused_delivered_controls": {
+          "0": 3,
+          "1": 3,
+          "2": 3,
+          "3": 3
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "successful_instances": [],
+      "completed_q_sum": 0,
+      "actual_controls": 46228,
+      "controls_per_second": 19.595750142009265
+    },
+    {
+      "task": "wash_a_baseball_cap",
+      "records": [
+        {
+          "task": "wash_a_baseball_cap",
+          "instance_id": 301,
+          "rollout_id": 0,
+          "steps": 12525,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/wash_a_baseball_cap-n4-i0/json/wash_a_baseball_cap_301_0.json",
+            "sha256": "8884c27d745c488daddc262c6381931b2e9ce40851f2f489bc5e33b884f397e0"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/wash_a_baseball_cap-n4-i0/videos/wash_a_baseball_cap_301_0.mp4",
+            "sha256": "db969a70de1121b296edb4387b7e9a935146f4b272fe838ddc8da078b93b4d34"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "12525"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "wash_a_baseball_cap",
+          "instance_id": 302,
+          "rollout_id": 0,
+          "steps": 12525,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/wash_a_baseball_cap-n4-i0/json/wash_a_baseball_cap_302_0.json",
+            "sha256": "6250fd931906742799e469ce10cd0d864fceca5aae339734b95d36d73400e1cb"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/wash_a_baseball_cap-n4-i0/videos/wash_a_baseball_cap_302_0.mp4",
+            "sha256": "c8e8cf530e9b3574505656beb99fe8461b30c24914883942faf91fda900aa168"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "12525"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "wash_a_baseball_cap",
+          "instance_id": 303,
+          "rollout_id": 0,
+          "steps": 12525,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/wash_a_baseball_cap-n4-i0/json/wash_a_baseball_cap_303_0.json",
+            "sha256": "448dbbe12b3f5e864cb1d8a1c87196c7d8a9191804a1bac6153cadf89e2d06fa"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/wash_a_baseball_cap-n4-i0/videos/wash_a_baseball_cap_303_0.mp4",
+            "sha256": "0da6d8f6adc7a61f30db85c1cb5427e0ae6a20ca90f040f3d154a45183e24f8a"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "12525"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "wash_a_baseball_cap",
+          "instance_id": 304,
+          "rollout_id": 0,
+          "steps": 12525,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/wash_a_baseball_cap-n4-i0/json/wash_a_baseball_cap_304_0.json",
+            "sha256": "dae9546992a173e3be2290b8634afcdaeb67a35cd340aca9d66f603b4593619e"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/wash_a_baseball_cap-n4-i0/videos/wash_a_baseball_cap_304_0.mp4",
+            "sha256": "3acdab8ef049763b9b02603eeb5354d91a0d660ccc4575c816aa9b17852179a4"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "12525"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/wash_a_baseball_cap-n4-i0/attempts/00.json",
+        "sha256": "3fcefe55d143117d0ea06a3a932f33292c4729aa81d7e1c1f436bef98066c904"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "wash_a_baseball_cap",
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "instance_ids": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "rollout": 0,
+        "started": 1791980239.2519743,
+        "max_steps": 12524,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1791983474.397595,
+        "seconds": 3235.1446266053244,
+        "actual_applied_controls": [
+          12525,
+          12525,
+          12525,
+          12525
+        ],
+        "unused_delivered_controls": {
+          "0": 15,
+          "1": 15,
+          "2": 15,
+          "3": 15
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "successful_instances": [],
+      "completed_q_sum": 0,
+      "actual_controls": 50100,
+      "controls_per_second": 15.486170104416791
+    }
+  ],
+  "manual_visual_review": false,
+  "full_tasks_all10_complete": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "summary": {
+    "status": "running",
+    "completed": 284,
+    "execution_errors": 4,
+    "unaccounted": 712,
+    "completed_only_q": 0.05711211714732841,
+    "completed_only_sr": 0.02112676056338028
+  },
+  "supervisor_live": {
+    "pid": 50073,
+    "status": "running",
+    "alive": true
+  },
+  "queue_live": {
+    "pid": 127593,
+    "status": "waiting_for_champion_continuation",
+    "phases": [],
+    "alive": true
+  }
+}

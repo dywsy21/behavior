@@ -1,0 +1,159 @@
+{
+  "schema": "champion_boxing_food_first4_originals_v1",
+  "observed_at": "2026-10-14T13:12:23.645642+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/manifest.json",
+    "sha256": "b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46"
+  },
+  "records": [
+    {
+      "task": "boxing_food_after_dinner",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 10047,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/boxing_food_after_dinner-n4-i0/json/boxing_food_after_dinner_301_0.json",
+        "sha256": "588065b4cac5e2c8844c0e0f6be1d5f313275af98872053b91a37e2f745a0331"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/boxing_food_after_dinner-n4-i0/videos/boxing_food_after_dinner_301_0.mp4",
+        "sha256": "e9f30db097dcf0f20163bc101192bfbf0bea1b6d011bc90cf7be993082dd404b"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "10047"
+      },
+      "success": false,
+      "q_score_final": 0.16666666666666666
+    },
+    {
+      "task": "boxing_food_after_dinner",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 10047,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/boxing_food_after_dinner-n4-i0/json/boxing_food_after_dinner_302_0.json",
+        "sha256": "3fd6b1ef226c599594b4cdf3176101e01ba007a2381800ed485c5bf621d9174a"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/boxing_food_after_dinner-n4-i0/videos/boxing_food_after_dinner_302_0.mp4",
+        "sha256": "5833934ee7314425d3c4c20a7831e92758265e1c811b6fe3fa3c86a7797bfe32"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "10047"
+      },
+      "success": false,
+      "q_score_final": 0.16666666666666666
+    },
+    {
+      "task": "boxing_food_after_dinner",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 10047,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/boxing_food_after_dinner-n4-i0/json/boxing_food_after_dinner_303_0.json",
+        "sha256": "994e8eb0380fa4bf5d6518487be1588bee3fdd23cf5c61df0d0ea9f85302654e"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/boxing_food_after_dinner-n4-i0/videos/boxing_food_after_dinner_303_0.mp4",
+        "sha256": "9dd7a8d94cb6952f185c5f727f1c970aa17c1904187da37a551d1693a274e88f"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "10047"
+      },
+      "success": false,
+      "q_score_final": 0
+    },
+    {
+      "task": "boxing_food_after_dinner",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 10047,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/boxing_food_after_dinner-n4-i0/json/boxing_food_after_dinner_304_0.json",
+        "sha256": "791b97b7fd09461ec3c879659f208c1e1cf3bd2ad1e861f42928d4452ce77a5a"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/boxing_food_after_dinner-n4-i0/videos/boxing_food_after_dinner_304_0.mp4",
+        "sha256": "798321d2251e806833605e981974cc40891722417bb101ce8afe78cae15fa07c"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "10047"
+      },
+      "success": false,
+      "q_score_final": 0
+    }
+  ],
+  "physical_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/boxing_food_after_dinner-n4-i0/attempts/00.json",
+    "sha256": "a42730070fed0794c39d24bec945abc8442890fcdab4d09e368e24d5f621fbe2"
+  },
+  "attempt": {
+    "status": "completed",
+    "task": "boxing_food_after_dinner",
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "instance_ids": [
+      301,
+      302,
+      303,
+      304
+    ],
+    "rollout": 0,
+    "started": 1791980201.997019,
+    "max_steps": 10046,
+    "policy_seed": 17,
+    "simulator_seed": 0,
+    "finished": 1791983207.1954992,
+    "seconds": 3005.19774734322,
+    "actual_applied_controls": [
+      10047,
+      10047,
+      10047,
+      10047
+    ],
+    "unused_delivered_controls": {
+      "0": 13,
+      "1": 13,
+      "2": 13,
+      "3": 13
+    },
+    "server_clock_kind": "policy_delivery",
+    "physical_ack_sent": false
+  },
+  "successful_instances": [],
+  "completed_q_sum": 0.3333333333333333,
+  "actual_controls": 40188,
+  "controls_per_second": 13.37283046865341,
+  "manual_visual_review": false,
+  "full_task_all10_complete": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "supervisor_live": {
+    "pid": 50073,
+    "status": "running",
+    "alive": true
+  },
+  "queue_live": {
+    "pid": 127593,
+    "status": "waiting_for_champion_continuation",
+    "phases": [],
+    "alive": true
+  }
+}
