@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 22:56 CST / Codex SUBMISSION-FULL-EVAL（八卡真实控制验收）：** 原241557/八worker/模型/模拟器全活、无failed GPU；各slot实控快照按GPU0–7为6600/9600/6800/3200/8700/3400/400/1100，喷果树已越过原重置故障，尚不是成功结论。八份journal稳定前缀/30独立会话全部通过task/session/stage/vote/inpainting/交付时钟审计，八份加载参数SHA均原2a5ce80b…、0更新；证据`docs/infra/results/2026-10-14-champion-isolated-eight-gpu-audit.json`。目标上另用真实固定官方network_utils路径补跑先前跳过的socket/重置/动作块消费用例，1通过；不冒称根自测为成员review。只读持续监控PID303366（本地exec session99149）跟踪新冠军v2→MEMv8/队列300108，七卡到八卡自然开始，无再停机；磁盘约4.97TB可用。304完整/4旧异常/692待仍是当前完整回执口径；两轮全量及最终归档仍待，外部交付暂停。
+
 - **2026-10-14 22:44 CST / Codex SUBMISSION-FULL-EVAL（双路线持续隔离已接好）：** 新MEM v8 `queue-after-champion-isolated-v1`PID300108真实waiting/零阶段，manifest7819b835，与旧v7严格同576实例/slot顺序/权重/原件，拆174独立物理batch；未来MEM编排79371d77、原actor51c，队列9122b137，目标249通过/1跳过＋队列修复42通过。原v7从未启动、旧等待器241922零阶段退出/保留STOP与原件。冠军原241557始终运行/未重启/无失败卡：六卡已真实推进，书架每例5800、喷果树3700，另两场景加载中。证据`docs/infra/results/2026-10-14-mem-isolated-queue-launch.json`；之后仍先冠军→MEM，异常逐batch记录/不伪造成绩，权重/物理/官方控制预算不改。下一继续全量监控/完整原件审计，完整Q/SR与归档仍未完成，外部交付暂缓。
 
 - **2026-10-14 22:41 CST / Codex SUBMISSION-FULL-EVAL（MEM等待器切换校验）：** 79371d77新MEM源目标249通过/1可选源跳过，v8已准备同576案例；按明示请求仅停止旧MEM241922等待器，冠军241557始终运行、未发STOP。旧等待器实际零阶段行政退出，但新verify正确阻止放行：文件系统STOP mtime比userspace请求created早0.253ms，其他绑定/PID/阶段均一致。只给文件系统边界加10ms容差，仍严核终态原因、零阶段、未启动MEM、同权重/实例/原件；42相关本地回归过，证据`docs/infra/results/2026-10-14-mem-queue-time-precision.json`。不热改793源或v8manifest，下一用新的独立队列工具源码验收并挂v8；当前MEM暂无线等待器，冠军不受影响。
