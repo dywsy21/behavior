@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 13:29 CST / Codex SUBMISSION-FULL-EVAL（续评与后继真实启动）：** 新MEM resume_v6/1177编排＋原51c actor已实际启动supervisor3778026与八worker3778054/56/57/58/60/61/64/67；GPU0/1加载原模型，其余FIFO等待，尚未新物理步，不能称模型效果恢复。冠军同原run/final8000/9f actor的新queue-resume-v6/PID3778032实活waiting，原两个TRAIN门只验签不重做，旧队列保留。390完整/34异常/576剩余按新b709 manifest保持；父seal/manifest复制本地并核SHA。下一核所有模型/场景首ACK，原件/旧STOP/仿真规则不动，模型交付仍暂停。
+
+- **2026-10-14 13:28 CST / Codex SUBMISSION-FULL-EVAL（真实封存通过，注册576剩余）：** RTX112回归通过（14.77s）；原resume_v5封存SHA `5dab6f67944072516b6760a8ca73f27529fff662fbbee1d97bac6c0b090ac274`实际390完整/34异常/26行政中断/550未启，八模型最终权重不变。新resume_v6 manifest `b709e4e7b21e700e489b448c548ff8d4885fb21f2a6dd9982f9695ae6831229d`已登记576剩余；GPU5只跑生火309/310，305–308不重试。13:28核八卡无计算进程，下一提交原51c actor＋独立1177编排和冠军后继；当前仍仅注册，不冒称实际控制已恢复。
+
+- **2026-10-14 13:27 CST / Codex SUBMISSION-FULL-EVAL（修复已冻结，真实封存进行中）：** 独立1177a469精确关节丢失分类/反例/续评/队列/FIFO/归档/trace共112本地回归通过，已commit/push；Git包ce3f300a…4823c双端同SHA，RTX新`code/final-eval-continuation-20261014-v2`已固定1177，不热改旧源。目标112回归及随后原resume_v5封存正在执行（session82839），不是已恢复评测；待真实seal核390完整与新错误/行政清单后只开剩余，冠军原final8000不重训/不重做TRAIN门。旧watch67414已确认为停机终止，不冒称仍在线。
+
 - **2026-10-14 13:26 CST / Codex SUBMISSION-FULL-EVAL（生火异常精确分类）：** 已定位唯一终止为官方post-step proprioception的关节位置视图返回None（entity_prim `.view`），先行PhysX无效方向/关节未初始化警告；不是K=3拒绝或OOM，具体slot未记。原四例末ACK各6448、末4动作未ACK；306最后块虽有限但绝对值达3.946e12，不能称控制合理或先断言策略/物理谁先坏。八份终态权重/observer均不变、0更新。独立续评代码新增严格组合分类和反例/封存回归，草稿同步新异常类别；第一次测试因两个文件名写错未运行，已纠正目标重新测。旧run/actor/物理未改，下一冻结新编排、真实封存并恢复；详`docs/infra/FINAL_EVAL_CONTINUATION.md`。
 
 - **2026-10-14 13:24 CST / Codex SUBMISSION-FULL-EVAL（新保护停机，正在定位）：** 上一goal轮完成八卡真实隔离审计与独立工具部署，为实质进展。本轮fetch/pull无新变更；13:22直接确认MEM3754600/八worker/各model/sim及冠军3754801均已退出、GPU实空，不把旧summary当运行。MEM于11:40:46 CST因GPU5 `setting_the_fire-n4-i4`未分类异常全局STOP；日志先有PhysX unitDir错误，具体终止栈待核，不能先归咎模型/串任务。390完整（新增produce309/310）/30已登记异常/580未归属，completed-only Q0.004074074/SR0，冠军仍0公共。下一根独自精确诊断、封存并只恢复真正未完成项；原件/STOP/actor/物理不改，模型交付继续暂缓。

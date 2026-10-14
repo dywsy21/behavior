@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 13:29 CST：当前MEM续评v6与冠军后继
+
+- RTX根`/run/ti/rl_memlite_stage1_20261006`，当前MEM `runs/memlite_final100_20261014_resume_v6`；manifest `b709e4e7b21e700e489b448c548ff8d4885fb21f2a6dd9982f9695ae6831229d`。独立编排/最新异常草稿工具`code/final-eval-continuation-20261014-v2`=`1177a4691a46a7929506f02fb079882ca8dae887`，实际actor仍原`code/memlite-final-eval-20261013-v4`=51c，禁止热改。tmux `memlite-final100-resume-v6`，supervisor3778026，日志`supervisor.log`/各卡`workers/`；13:29为模型加载中。
+- 父封存`runs/memlite_final100_20261014_resume_v5-diagnosed-stop-v1.json` SHA `5dab6f67944072516b6760a8ca73f27529fff662fbbee1d97bac6c0b090ac274`：390原完整/34异常/26行政/550未启，待续576。旧run和原JSON/MP4/STOP不动；新增生火305–308不可重跑。本地`artifacts/final-eval-20261014/continuation-v6/{parent-seal,manifest}.json`同SHA。
+- 冠军仍`runs/champion_final100_20261013_v2`/原9f actor/final8000，当前等待`queue-resume-v6/status.json`、`queue-resume-v6.log`，tmux `champion-final100-after-resume-v6`，PID3778032。旧queue-resume-v5已停止、零阶段，不再称其在线。
+- Git包`runs/final_eval_preparation_20261014/continuation-v6.bundle`与本地`artifacts/final-eval-20261014/continuation-v6/source.bundle` SHA `ce3f300adcb3dab2b043be02c98bd89d1deb0199c8784f8130ca6348eca4823c`；两端112回归通过。新1177归档工具增加生火诊断类别，旧37bc工具不替换/不谎称其识别新类别；任何真实终态草稿仍待完整覆盖。
+
 ## 2026-10-14 11:12 CST：独立内部结果归档工具
 
 - RTX根`/run/ti/rl_memlite_stage1_20261006`下新增`code/final-eval-packaging-20261014-v1`，独立Git源码固定`37bc2e5591ed99ed9e6e401fe559c1438f63752e`；不是运行中的编排/actor，不修改既有评测源。

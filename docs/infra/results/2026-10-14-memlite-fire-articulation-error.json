@@ -1,0 +1,235 @@
+{
+  "schema": "memlite_articulation_execution_error_audit_v1",
+  "owner": "Codex root",
+  "observed_at": "2026-10-14T13:31:00+08:00",
+  "prior_run": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5",
+  "actor_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+  "coordinator_commit": "1177a4691a46a7929506f02fb079882ca8dae887",
+  "counts": {
+    "completed": 390,
+    "execution_errors": 34,
+    "administrative_interruptions": 26,
+    "unstarted": 550,
+    "next_scheduled": 576
+  },
+  "seal_sha256": "5dab6f67944072516b6760a8ca73f27529fff662fbbee1d97bac6c0b090ac274",
+  "next_manifest_sha256": "b709e4e7b21e700e489b448c548ff8d4885fb21f2a6dd9982f9695ae6831229d",
+  "trace": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_5/model-000/events.jsonl",
+    "bytes": 20997479,
+    "sha256": "76ff0b2a47ba2bb58fd9ea2ab70a7f48ca25ac51ad3ed0a67b705686faca1314",
+    "offered_actions": 1616,
+    "acknowledged_chunks": 1612,
+    "unacknowledged_final_chunks": 4,
+    "all_recorded_actions_finite": true,
+    "max_absolute_raw23": 3945996222464,
+    "finite_does_not_imply_reasonable": true
+  },
+  "failure": {
+    "first_slot1_action_over_100": {
+      "step": 6416,
+      "max_abs": 3943819378688,
+      "raw23_dim": 17,
+      "chunk_offset": 15,
+      "value": -3943819378688
+    },
+    "slot1_action_tail": [
+      {
+        "step": 6336,
+        "max_abs": 1.527742862701416,
+        "raw23_dim": 4,
+        "chunk_offset": 0,
+        "value": -1.527742862701416
+      },
+      {
+        "step": 6352,
+        "max_abs": 1.529171347618103,
+        "raw23_dim": 4,
+        "chunk_offset": 4,
+        "value": -1.529171347618103
+      },
+      {
+        "step": 6368,
+        "max_abs": 1.5305594205856323,
+        "raw23_dim": 4,
+        "chunk_offset": 0,
+        "value": -1.5305594205856323
+      },
+      {
+        "step": 6384,
+        "max_abs": 1.5314717292785645,
+        "raw23_dim": 4,
+        "chunk_offset": 15,
+        "value": -1.5314717292785645
+      },
+      {
+        "step": 6400,
+        "max_abs": 1.532763957977295,
+        "raw23_dim": 4,
+        "chunk_offset": 0,
+        "value": -1.532763957977295
+      },
+      {
+        "step": 6416,
+        "max_abs": 3943819378688,
+        "raw23_dim": 17,
+        "chunk_offset": 15,
+        "value": -3943819378688
+      },
+      {
+        "step": 6432,
+        "max_abs": 3920943382528,
+        "raw23_dim": 17,
+        "chunk_offset": 15,
+        "value": -3920943382528
+      },
+      {
+        "step": 6448,
+        "max_abs": 3945996222464,
+        "raw23_dim": 17,
+        "chunk_offset": 15,
+        "value": -3945996222464
+      }
+    ],
+    "last_ack": {
+      "0": 6448,
+      "1": 6448,
+      "2": 6448,
+      "3": 6448
+    },
+    "new_errors": [
+      {
+        "task": "setting_the_fire",
+        "instance_id": 305,
+        "rollout_id": 0,
+        "original_attempt": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/parts/setting_the_fire-n4-i4/attempts/04.json",
+          "sha256": "fba4a67c043e38aba5416432c965fd8b95809a3af498bb43630b857bb33e5c35"
+        },
+        "diagnosis": {
+          "kind": "simulator_articulation_unavailable",
+          "scene_slot": null,
+          "exception": "AttributeError: 'NoneType' object has no attribute 'view'",
+          "official_score_available": false,
+          "failed_slot_known": false,
+          "invalid_query_messages": 1012,
+          "traceback_copies": 1,
+          "cause": "Official post-step proprioception received no articulation joint-position tensor after PhysX invalid-direction errors. Policy-versus-physics first cause and affected slot are unknown."
+        },
+        "log": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_5/setting_the_fire-n4-i4.log",
+          "sha256": "89b099872561c6e4500eb8a410280643c18e2e1256b5708924c28b442d403bd9"
+        },
+        "rerun_allowed": false
+      },
+      {
+        "task": "setting_the_fire",
+        "instance_id": 306,
+        "rollout_id": 0,
+        "original_attempt": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/parts/setting_the_fire-n4-i4/attempts/04.json",
+          "sha256": "fba4a67c043e38aba5416432c965fd8b95809a3af498bb43630b857bb33e5c35"
+        },
+        "diagnosis": {
+          "kind": "simulator_articulation_unavailable",
+          "scene_slot": null,
+          "exception": "AttributeError: 'NoneType' object has no attribute 'view'",
+          "official_score_available": false,
+          "failed_slot_known": false,
+          "invalid_query_messages": 1012,
+          "traceback_copies": 1,
+          "cause": "Official post-step proprioception received no articulation joint-position tensor after PhysX invalid-direction errors. Policy-versus-physics first cause and affected slot are unknown."
+        },
+        "log": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_5/setting_the_fire-n4-i4.log",
+          "sha256": "89b099872561c6e4500eb8a410280643c18e2e1256b5708924c28b442d403bd9"
+        },
+        "rerun_allowed": false
+      },
+      {
+        "task": "setting_the_fire",
+        "instance_id": 307,
+        "rollout_id": 0,
+        "original_attempt": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/parts/setting_the_fire-n4-i4/attempts/04.json",
+          "sha256": "fba4a67c043e38aba5416432c965fd8b95809a3af498bb43630b857bb33e5c35"
+        },
+        "diagnosis": {
+          "kind": "simulator_articulation_unavailable",
+          "scene_slot": null,
+          "exception": "AttributeError: 'NoneType' object has no attribute 'view'",
+          "official_score_available": false,
+          "failed_slot_known": false,
+          "invalid_query_messages": 1012,
+          "traceback_copies": 1,
+          "cause": "Official post-step proprioception received no articulation joint-position tensor after PhysX invalid-direction errors. Policy-versus-physics first cause and affected slot are unknown."
+        },
+        "log": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_5/setting_the_fire-n4-i4.log",
+          "sha256": "89b099872561c6e4500eb8a410280643c18e2e1256b5708924c28b442d403bd9"
+        },
+        "rerun_allowed": false
+      },
+      {
+        "task": "setting_the_fire",
+        "instance_id": 308,
+        "rollout_id": 0,
+        "original_attempt": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/parts/setting_the_fire-n4-i4/attempts/04.json",
+          "sha256": "fba4a67c043e38aba5416432c965fd8b95809a3af498bb43630b857bb33e5c35"
+        },
+        "diagnosis": {
+          "kind": "simulator_articulation_unavailable",
+          "scene_slot": null,
+          "exception": "AttributeError: 'NoneType' object has no attribute 'view'",
+          "official_score_available": false,
+          "failed_slot_known": false,
+          "invalid_query_messages": 1012,
+          "traceback_copies": 1,
+          "cause": "Official post-step proprioception received no articulation joint-position tensor after PhysX invalid-direction errors. Policy-versus-physics first cause and affected slot are unknown."
+        },
+        "log": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_5/setting_the_fire-n4-i4.log",
+          "sha256": "89b099872561c6e4500eb8a410280643c18e2e1256b5708924c28b442d403bd9"
+        },
+        "rerun_allowed": false
+      }
+    ],
+    "new_completed": [
+      {
+        "task": "store_produce",
+        "instance_id": 309,
+        "steps": 14284,
+        "success": false,
+        "q_score": {
+          "final": 0
+        }
+      },
+      {
+        "task": "store_produce",
+        "instance_id": 310,
+        "steps": 14284,
+        "success": false,
+        "q_score": {
+          "final": 0
+        }
+      }
+    ]
+  },
+  "first_cause": "Unknown; log identifies missing articulation data during official post-step observation, not whether policy/control semantics or simulator state diverged first.",
+  "eight_final_weight_receipts": {
+    "weights_unchanged": true,
+    "observer_unchanged": true,
+    "optimizer_updates": 0,
+    "common_sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271"
+  },
+  "validation": {
+    "local_tests": 112,
+    "target_tests": 112,
+    "original_full_task_successes": 0,
+    "failed_batch_rerun": false,
+    "actor_changed": false,
+    "physics_changed": false,
+    "independent_member_review": false
+  }
+}
