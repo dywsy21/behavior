@@ -1,0 +1,401 @@
+{
+  "schema": "memlite_stopped_run_ack_prefix_audit_v1",
+  "owner": "Codex root",
+  "observed_at": "2026-10-14T05:33:48.674281+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5",
+  "runtime_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+  "auditor_commit": "37bc2e5591ed99ed9e6e401fe559c1438f63752e",
+  "manifest_sha256": "966341edd2a0d05f1c1958707387f7db347fa689eeca11ac019fa53f0bc24a19",
+  "method": "Each original trace starts at byte zero; cut only at last complete-line barrier with no offered unacknowledged actions in the captured snapshot; no fake close or row filtering. Re-read same prefix hash.",
+  "scope": "All original stopped model traces from byte 0 through their last fully acknowledged continuous prefix. Trailing offered but unacknowledged actions are preserved and excluded; not a complete episode or a proof of correct physical action semantics.",
+  "total_applied_controls": 250584,
+  "total_exact_memory_plans": 1976,
+  "tasks_and_identity_checks_passed": true,
+  "physical_control_reasonableness_proven": false,
+  "full_task_success_proven": false,
+  "common_models": {
+    "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+    "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+    "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "reports": [
+    {
+      "gpu": 0,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_0/model-000/events.jsonl",
+      "prefix_bytes": 31421130,
+      "prefix_sha256": "e2a2bd8bb34e38ee143808db71437f8a171c8459d9cc48c0aa9f73a107e1fcab",
+      "snapshot_bytes": 31460755,
+      "omitted_unacknowledged_tail_bytes": 39625,
+      "episodes": 6,
+      "closed_episodes": 2,
+      "events": {
+        "begin": 6,
+        "plan": 300,
+        "observer": 2674,
+        "action": 2374,
+        "ack": 2374,
+        "close": 2
+      },
+      "applied_controls": 37976,
+      "tasks": [
+        "polishing shoes",
+        "store produce"
+      ],
+      "exact_memory_chain_plans": 300,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-polishing_shoes-301-r0",
+          "instance": 301,
+          "applied_controls": 2352
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-polishing_shoes-302-r0",
+          "instance": 302,
+          "applied_controls": 2352
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-polishing_shoes-303-r0",
+          "instance": 303,
+          "applied_controls": 2352
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-polishing_shoes-304-r0",
+          "instance": 304,
+          "applied_controls": 2352
+        }
+      ]
+    },
+    {
+      "gpu": 1,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_1/model-000/events.jsonl",
+      "prefix_bytes": 16496176,
+      "prefix_sha256": "34f947fb6ffb8b82a6a5fbc3c880159a04d861731996e6cb76c6bf06ff98d2ed",
+      "snapshot_bytes": 16536085,
+      "omitted_unacknowledged_tail_bytes": 39909,
+      "episodes": 4,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 4,
+        "plan": 156,
+        "observer": 1380,
+        "action": 1224,
+        "ack": 1224
+      },
+      "applied_controls": 19584,
+      "tasks": [
+        "turning out all lights before sleep"
+      ],
+      "exact_memory_chain_plans": 156,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-turning_out_all_lights_before_sleep-301-r0",
+          "instance": 301,
+          "applied_controls": 4896
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-turning_out_all_lights_before_sleep-302-r0",
+          "instance": 302,
+          "applied_controls": 4896
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-turning_out_all_lights_before_sleep-303-r0",
+          "instance": 303,
+          "applied_controls": 4896
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-turning_out_all_lights_before_sleep-304-r0",
+          "instance": 304,
+          "applied_controls": 4896
+        }
+      ]
+    },
+    {
+      "gpu": 2,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_2/model-000/events.jsonl",
+      "prefix_bytes": 42777278,
+      "prefix_sha256": "a921c39dcfda95a415ce23fca0ebf8ebcc77ac4763b98ef6e0f9df3cf6b32a89",
+      "snapshot_bytes": 42816585,
+      "omitted_unacknowledged_tail_bytes": 39307,
+      "episodes": 4,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 4,
+        "plan": 408,
+        "observer": 3656,
+        "action": 3248,
+        "ack": 3248
+      },
+      "applied_controls": 51968,
+      "tasks": [
+        "dispose of glass"
+      ],
+      "exact_memory_chain_plans": 408,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-dispose_of_glass-305-r0",
+          "instance": 305,
+          "applied_controls": 12992
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-dispose_of_glass-306-r0",
+          "instance": 306,
+          "applied_controls": 12992
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-dispose_of_glass-307-r0",
+          "instance": 307,
+          "applied_controls": 12992
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-dispose_of_glass-308-r0",
+          "instance": 308,
+          "applied_controls": 12992
+        }
+      ]
+    },
+    {
+      "gpu": 3,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_3/model-000/events.jsonl",
+      "prefix_bytes": 19924081,
+      "prefix_sha256": "c4a255a661ff94e731e475f9c3c59f2493d1aefdee2542f0383c7e71686472b9",
+      "snapshot_bytes": 19943810,
+      "omitted_unacknowledged_tail_bytes": 19729,
+      "episodes": 2,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 2,
+        "plan": 188,
+        "observer": 1684,
+        "action": 1496,
+        "ack": 1496
+      },
+      "applied_controls": 23936,
+      "tasks": [
+        "rearranging kitchen furniture"
+      ],
+      "exact_memory_chain_plans": 188,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-rearranging_kitchen_furniture-309-r0",
+          "instance": 309,
+          "applied_controls": 11968
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-rearranging_kitchen_furniture-310-r0",
+          "instance": 310,
+          "applied_controls": 11968
+        }
+      ]
+    },
+    {
+      "gpu": 4,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_4/model-000/events.jsonl",
+      "prefix_bytes": 16478824,
+      "prefix_sha256": "561b001f9fd5ecc92976d5f084dbfcca25c82f29d130711aa496e2df96d801db",
+      "snapshot_bytes": 16518045,
+      "omitted_unacknowledged_tail_bytes": 39221,
+      "episodes": 4,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 4,
+        "plan": 160,
+        "observer": 1408,
+        "action": 1248,
+        "ack": 1248
+      },
+      "applied_controls": 19968,
+      "tasks": [
+        "bringing water"
+      ],
+      "exact_memory_chain_plans": 160,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-bringing_water-305-r0",
+          "instance": 305,
+          "applied_controls": 4992
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-bringing_water-306-r0",
+          "instance": 306,
+          "applied_controls": 4992
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-bringing_water-307-r0",
+          "instance": 307,
+          "applied_controls": 4992
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-bringing_water-308-r0",
+          "instance": 308,
+          "applied_controls": 4992
+        }
+      ]
+    },
+    {
+      "gpu": 5,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_5/model-000/events.jsonl",
+      "prefix_bytes": 20959878,
+      "prefix_sha256": "b1f3196cc69db9b0c14025c30bd733c8df8229ed25089b2a9162475870c9f69d",
+      "snapshot_bytes": 20997479,
+      "omitted_unacknowledged_tail_bytes": 37601,
+      "episodes": 4,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 4,
+        "plan": 204,
+        "observer": 1816,
+        "action": 1612,
+        "ack": 1612
+      },
+      "applied_controls": 25792,
+      "tasks": [
+        "setting the fire"
+      ],
+      "exact_memory_chain_plans": 204,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-setting_the_fire-305-r0",
+          "instance": 305,
+          "applied_controls": 6448
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-setting_the_fire-306-r0",
+          "instance": 306,
+          "applied_controls": 6448
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-setting_the_fire-307-r0",
+          "instance": 307,
+          "applied_controls": 6448
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-setting_the_fire-308-r0",
+          "instance": 308,
+          "applied_controls": 6448
+        }
+      ]
+    },
+    {
+      "gpu": 6,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_6/model-000/events.jsonl",
+      "prefix_bytes": 36087462,
+      "prefix_sha256": "f8c69a425299b9e9834705ce6d7cb6898d0ff445a1af9496b3b1aa7706da02ad",
+      "snapshot_bytes": 36125977,
+      "omitted_unacknowledged_tail_bytes": 38515,
+      "episodes": 4,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 4,
+        "plan": 348,
+        "observer": 3116,
+        "action": 2768,
+        "ack": 2768
+      },
+      "applied_controls": 44288,
+      "tasks": [
+        "setting mousetraps"
+      ],
+      "exact_memory_chain_plans": 348,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-setting_mousetraps-301-r0",
+          "instance": 301,
+          "applied_controls": 11072
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-setting_mousetraps-302-r0",
+          "instance": 302,
+          "applied_controls": 11072
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-setting_mousetraps-303-r0",
+          "instance": 303,
+          "applied_controls": 11072
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-setting_mousetraps-304-r0",
+          "instance": 304,
+          "applied_controls": 11072
+        }
+      ]
+    },
+    {
+      "gpu": 7,
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v5/workers/gpu_7/model-000/events.jsonl",
+      "prefix_bytes": 22281362,
+      "prefix_sha256": "f41e72ceb238a81aa6435dac8b2b6ed9f7a0960f71c4c2f81ad799487723dee4",
+      "snapshot_bytes": 22320402,
+      "omitted_unacknowledged_tail_bytes": 39040,
+      "episodes": 4,
+      "closed_episodes": 0,
+      "events": {
+        "begin": 4,
+        "plan": 212,
+        "observer": 1904,
+        "action": 1692,
+        "ack": 1692
+      },
+      "applied_controls": 27072,
+      "tasks": [
+        "cook hot dogs"
+      ],
+      "exact_memory_chain_plans": 212,
+      "unclosed": [
+        {
+          "slot": 0,
+          "episode": "memlite_final100_20261014_resume_v5-cook_hot_dogs-301-r0",
+          "instance": 301,
+          "applied_controls": 6768
+        },
+        {
+          "slot": 1,
+          "episode": "memlite_final100_20261014_resume_v5-cook_hot_dogs-302-r0",
+          "instance": 302,
+          "applied_controls": 6768
+        },
+        {
+          "slot": 2,
+          "episode": "memlite_final100_20261014_resume_v5-cook_hot_dogs-303-r0",
+          "instance": 303,
+          "applied_controls": 6768
+        },
+        {
+          "slot": 3,
+          "episode": "memlite_final100_20261014_resume_v5-cook_hot_dogs-304-r0",
+          "instance": 304,
+          "applied_controls": 6768
+        }
+      ]
+    }
+  ]
+}

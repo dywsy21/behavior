@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 13:34 CST / Codex SUBMISSION-FULL-EVAL（停机尾部隔离复核）：** 只读补审旧resume_v5八份原trace从0到最后全ACK前缀，共32episode/2正常关闭、250,584真实控制/1,976高层plan；身份/空memory/精确K=3递推/previous intent与parent/高低层/observer/raw23 ACK均过，包括GPU0从produce切polishing_shoes。各尾部未ACK动作不伪造执行或close，记录精确边界/复读SHA，详`docs/infra/results/2026-10-14-memlite-stopped-v5-causal-prefixes.json`。此证据未发现记录内串环境，不能证明异常动作合理或排除物理/动作语义问题；生火306首超100块为6416、raw23第17维约-3.94e12，前6400块最大1.53。新resume_v6独立作业仍实活，13:32 GPU0/1已ready，后续在加载，未改当前模型。
+
 - **2026-10-14 13:29 CST / Codex SUBMISSION-FULL-EVAL（续评与后继真实启动）：** 新MEM resume_v6/1177编排＋原51c actor已实际启动supervisor3778026与八worker3778054/56/57/58/60/61/64/67；GPU0/1加载原模型，其余FIFO等待，尚未新物理步，不能称模型效果恢复。冠军同原run/final8000/9f actor的新queue-resume-v6/PID3778032实活waiting，原两个TRAIN门只验签不重做，旧队列保留。390完整/34异常/576剩余按新b709 manifest保持；父seal/manifest复制本地并核SHA。下一核所有模型/场景首ACK，原件/旧STOP/仿真规则不动，模型交付仍暂停。
 
 - **2026-10-14 13:28 CST / Codex SUBMISSION-FULL-EVAL（真实封存通过，注册576剩余）：** RTX112回归通过（14.77s）；原resume_v5封存SHA `5dab6f67944072516b6760a8ca73f27529fff662fbbee1d97bac6c0b090ac274`实际390完整/34异常/26行政中断/550未启，八模型最终权重不变。新resume_v6 manifest `b709e4e7b21e700e489b448c548ff8d4885fb21f2a6dd9982f9695ae6831229d`已登记576剩余；GPU5只跑生火309/310，305–308不重试。13:28核八卡无计算进程，下一提交原51c actor＋独立1177编排和冠军后继；当前仍仅注册，不冒称实际控制已恢复。
