@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 10:43 CST / Codex SUBMISSION-FULL-EVAL（安全交接点）：** 新只读watch67414已接续真实MEM3754600/冠军后继3754801，旧watch82347明确终止于原停机，不复用其旧状态。10:40–41已核GPU0/1/2/7原模型ready，其余依公平槽加载，尚未新仿真控制；未把加载当完成。原388条汇总复核覆盖44task（33task各10例齐），3,463,040真实控制、8条非零Q、0完整成功，completed-only Q0.004095074；非全量、非训练提升。总览`docs/infra/FULL_EVAL_20261012.md`已纠正过期run/冠军预检待办，并明确30异常不造官方JSON；当前不制作/上传交付包。下一核八模型/场景和新实际ACK，继续582→冠军1000；goal仍active，等待不是阻塞。
+
 - **2026-10-14 10:35 CST / Codex SUBMISSION-FULL-EVAL（真实加载与冠军后继已核）：** 原定582剩余已由supervisor3754600和八worker3754630–37实际启动；GPU0/1先加载原模型，其余公平排队，非已经恢复控制。新冠军queue-resume-v5/PID3754801实活waiting，原run19b/原9f/final8000与两次已过TRAIN预检保持，0公共/不重试。新parent seal9d41…d4bc3与manifest9663…24a19已复制本地artifacts并双端SHA一致；源码66b7已push。接下来等场景就绪与真实ACK，后续仍MEM→冠军；不停止/改写原件，不恢复模型交付。
 
 - **2026-10-14 10:34 CST / Codex SUBMISSION-FULL-EVAL（恢复已提交）：** 原停机seal SHA9d41cc44…d4bc3验签通过，新MEM `runs/memlite_final100_20261014_resume_v5` manifest966341ed…24a19，独立66b7编排/原51c actor；582剩余=26明确行政中断＋556未启，首GPU0只跑store_produce309/310，不重跑拒绝的305–308。确认八卡实空、无旧进程后提交tmux `memlite-final100-resume-v5`，仅记启动中，实际PID/加载/控制待核；冠军后继下一接回同原final8000与2/4已过预检。旧run/STOP/seal/全部结果均保留，无新训练或公网交付。
