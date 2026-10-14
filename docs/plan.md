@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 14:30 CST / Codex SUBMISSION-FULL-EVAL（成功视频已到本地，原队列继续）：** radio308完整原MP4已到`artifacts/final-eval-20261014/champion-public-videos/turning_on_radio_308_0.mp4`，本地SHA `d791fd2e8e1354d478b17aaf8070b890abcb6e27e83719e25660db60c2cba296`与服务器同，ffprobe确认2242帧/30fps/74.733333s/672×448；无剪辑、不入Git。14:29:34直接核原3787083、八worker/model/sim及MEM3812967实活，无worker/model错误；原summary已32完整/968待、1成功，completed-only Q0.046875/SR0.03125，逐原件完整审计目前仅覆盖上一条首20，不冒称32全审/最终成绩。冠军继续原1000、MEM仍waiting_for_champion且phases为空，未重启或改变顺序/模型；两条全量和终态权重/归档仍待，交付继续暂缓。
+
+- **2026-10-14 14:25 CST / Codex SUBMISSION-FULL-EVAL（首个官方完整成功＋八卡前缀审计）：** 冠军已20完整/1成功，radio308官方success=true、Q1、2242真实控制/2242视频帧；其余首20汇总completed-only Q0.075/SR0.05，非全量、非独立盲测。20原JSON/MP4 SHA、30fps/672×448帧数与五个物理batch回执逐项吻合，证据`…/2026-10-14-champion-first20-originals.json`。独立d67b3c85日志工具目标66通过/2可选参考源路径缺失跳过（本地68全部通过）；实际八卡32连接/48episode（20已关闭）/8051次交付的task/epoch/初始状态/投票/inpainting/交付时钟前缀审计全过，详`…/2026-10-14-champion-eight-gpu-protocol-audit.json`。首次整合包装器误要求“当前场景必须有步数”，radio已切n2加载而被拒；改为明确区分当前加载与已完成物理part证据后通过，未放宽逐事件校验/未改运行源。原件/模型不动，下一继续完整1000及后继MEM576；成功原视频正复制本地，不混入训练或挑优重跑。
+
 - **2026-10-14 14:20 CST / Codex SUBMISSION-FULL-EVAL（八卡全部真实执行，审计工具本地通过）：** 原3787083/八worker/model/sim、MEM3812967均实活，八场景全有物理控制，未改原源码；summary已有16完整，completed-only Q0.03125/SR0（原件扩展核验待），radio第二批部分slot先结束后其余仍运行，不能把缩小batch重新编号。新增只读冠军日志工具连同真实协议类/slot缩小/工程门/后继队列共68本地测试通过（4.35s），下一独立Git部署目标验证并审八卡原始前缀；不以测试代替真实轨迹或全量结论。
 
 - **2026-10-14 14:18 CST / Codex SUBMISSION-FULL-EVAL（独立日志审计工具）：** 原冠军3787083/八worker/反向队列3812967直接存活，上一goal轮首4原件与重置验收属于实质进展。本轮fetch/pull成功，原评测继续。新增纯CPU只读`audit_champion_public_trace.py`：固定原日志快照、只审完整换行前缀并复读SHA，逐连接/epoch/task核初始stage、投票递推、inpainting长度及交付计数，支持正常close与跨任务reset，异常/串身份/伪物理时钟拒绝。明确不证明原始图像/action/RNG值或物理成功；不导入模型、不改运行源，防止把此检查冒称完整1000验收。真实协议类合成预测器正反例已写，测试/独立部署与全八卡真实前缀验证待。

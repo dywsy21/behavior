@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 14:25 CST：独立冠军协议日志审计与首个成功原件
+
+- RTX独立CPU工具`/run/ti/rl_memlite_stage1_20261006/code/champion-trace-audit-20261014-v1`固定`d67b3c855af835ec0fe97512750e364ff1b0ce76`；不是运行中的1177编排或9f actor。Git包`runs/final_eval_preparation_20261014/champion-trace-audit-v1.bundle`及本地`artifacts/final-eval-20261014/champion-trace-audit-v1/source.bundle`，SHA `0fcb5bb4666ae0d430decdec98223ee47edbee00aa2b7eee92bf74eaa34c1799`。本地68测试通过，目标66通过/2可选源码路径缺失跳过。
+- 八卡原日志前缀审计`runs/final_eval_preparation_20261014/champion-protocol-audit-v1/{gpu_0…gpu_7,summary}.json`，逐前缀长度/SHA和会话结果保留；Git摘要`docs/infra/results/2026-10-14-champion-eight-gpu-protocol-audit.json`。这是记录层状态递推证明，不冒称原始action/RNG/图像值或全部物理执行核验。
+- 首个成功原件`runs/champion_final100_20261013_v2/parts/turning_on_radio-n4-i0/{json,videos}/turning_on_radio_308_0.{json,mp4}`；JSON SHA `7159d805028446a72d230ff0ab34b91f57a58a93bbc289cd7e93e1dba72fbbdd`，MP4 SHA `d791fd2e8e1354d478b17aaf8070b890abcb6e27e83719e25660db60c2cba296`，2242帧/30fps、6,356,276字节。首20原件核验清单`docs/infra/results/2026-10-14-champion-first20-originals.json`；这不是最终全量结果或提交包。
+- 14:30本地成功视频已验签：`/home/wsy/behavior/artifacts/final-eval-20261014/champion-public-videos/turning_on_radio_308_0.mp4`，同上MP4 SHA/帧数，74.733333秒；完整原件、无字幕重编码、Git忽略，不能作为可删缓存。
+
 ## 2026-10-14 14:01 CST：MEM剩余反向依赖已实际挂起
 
 - 冠军仍上方原run/1177编排＋9f actor，supervisor3787083，已经开始实际公共控制；不要再启动第二个冠军supervisor。MEM旧v6已停，**新等待MEM**`runs/memlite_final100_20261014_resume_v7`的manifest `a1709991df8902efeb5c0622baf7a0c9c7bd1038d7d290ca5802a8e780f4261a`，576剩余；尚未启动其supervisor/GPU模型。
