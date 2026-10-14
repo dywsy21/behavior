@@ -1,5 +1,10 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 15:40 CST：冠军爆米花成功原视频
+
+- RTX原件`/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_microwave_popcorn-n4-i0/{json,videos}/make_microwave_popcorn_304_0.{json,mp4}`，官方success=true/Q1/2549实际控制；JSON SHA `b27393f248be36ac4edd2e99aece4a658da4996c03bf619f07852e2587b7b69d`，MP4 SHA `36fc61f66fbefb19b1988f9c911fc1134b50e7fafddeda9d10138a15b8da313d`。
+- 本地`/home/wsy/behavior/artifacts/final-eval-20261014/champion-public-videos/make_microwave_popcorn_304_0.mp4`，6,310,220字节/2549帧/30fps/84.966667s/672×448，同SHA；未剪辑或重编码，不入Git。该批301–304全部原件/物理回执核验`docs/infra/results/2026-10-14-champion-popcorn-first4-originals.json`，其余三例失败同样保留。
+
 ## 2026-10-14 14:47 CST：冠军挂画成功原视频已收本地
 
 - 远端`/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/{json,videos}/hanging_pictures_306_0.{json,mp4}`；官方success=true/Q1/1427步。JSON SHA `dfe214a8e4dda515fc61bd2b04872a8732ed57b319805cdb524d2dcca6057b50`，MP4 SHA `6b7762b114dfa1d13a48a71e12c3f0a3b23a09744e3cc838fc639c087807e0e3`。

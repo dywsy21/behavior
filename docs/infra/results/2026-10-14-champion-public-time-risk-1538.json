@@ -1,0 +1,1852 @@
+{
+  "schema": "champion_remaining_work_public_rates_v1",
+  "observed_at": "2026-10-14T07:38:49.475830+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+  "manifest_sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297",
+  "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+  "completed": 120,
+  "missing": 880,
+  "successes": 3,
+  "completed_controls": 569176,
+  "completed_only_q": 0.0375,
+  "completed_only_sr": 0.025,
+  "per_task": {
+    "attach_a_camera_to_a_tripod": {
+      "completed": 10,
+      "successes": 0,
+      "q_sum": 0
+    },
+    "clean_a_keyboard": {
+      "completed": 10,
+      "successes": 0,
+      "q_sum": 0
+    },
+    "composting_waste": {
+      "completed": 10,
+      "successes": 0,
+      "q_sum": 0
+    },
+    "hanging_pictures": {
+      "completed": 10,
+      "successes": 1,
+      "q_sum": 1
+    },
+    "installing_a_fax_machine": {
+      "completed": 10,
+      "successes": 0,
+      "q_sum": 0.5
+    },
+    "installing_a_modem": {
+      "completed": 10,
+      "successes": 0,
+      "q_sum": 1
+    },
+    "installing_a_scanner": {
+      "completed": 4,
+      "successes": 0,
+      "q_sum": 0
+    },
+    "installing_smoke_detectors": {
+      "completed": 8,
+      "successes": 0,
+      "q_sum": 0
+    },
+    "make_cabinet_doors": {
+      "completed": 10,
+      "successes": 0,
+      "q_sum": 0
+    },
+    "make_microwave_popcorn": {
+      "completed": 4,
+      "successes": 1,
+      "q_sum": 1
+    },
+    "scrubbing_bathroom_floor": {
+      "completed": 10,
+      "successes": 0,
+      "q_sum": 0
+    },
+    "sweeping_garage": {
+      "completed": 4,
+      "successes": 0,
+      "q_sum": 0
+    },
+    "turning_on_radio": {
+      "completed": 10,
+      "successes": 1,
+      "q_sum": 1
+    },
+    "vacuuming_floors": {
+      "completed": 10,
+      "successes": 0,
+      "q_sum": 0
+    }
+  },
+  "statistics": {
+    "2": {
+      "batches": 10,
+      "episodes": 20,
+      "actual_controls": 94394,
+      "batch_seconds": 5844.889458267018,
+      "weighted_controls_per_second": 16.149834941102096,
+      "median_controls_per_second": 16.213741022183168,
+      "p25_controls_per_second": 15.382802947142753,
+      "min_controls_per_second": 13.55496605514204,
+      "max_controls_per_second": 18.057642204688875,
+      "loaded_parts": 11,
+      "median_setup_seconds": 191.85870814323425,
+      "p90_setup_seconds": 213.85925221443176,
+      "max_setup_seconds": 275.2444305419922
+    },
+    "4": {
+      "batches": 25,
+      "episodes": 100,
+      "actual_controls": 474782,
+      "batch_seconds": 26309.716204154305,
+      "weighted_controls_per_second": 18.045880704902164,
+      "median_controls_per_second": 19.254131769806968,
+      "p25_controls_per_second": 17.71274262317858,
+      "min_controls_per_second": 8.110293629638702,
+      "max_controls_per_second": 21.323007837857315,
+      "loaded_parts": 18,
+      "median_setup_seconds": 301.3819224834442,
+      "p90_setup_seconds": 448.06244449615485,
+      "max_setup_seconds": 1191.7298917770386
+    }
+  },
+  "batch_evidence": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/attach_a_camera_to_a_tripod-n2-i8/attempts/08.json",
+      "sha256": "a1c09c75c05b2f8c352bfb1a6e591c052fb67a684790b6597cc88092f936f92b",
+      "task": "attach_a_camera_to_a_tripod",
+      "num_envs": 2,
+      "seconds": 649.9187361765653,
+      "controls": 11736,
+      "instances": [
+        309,
+        310
+      ],
+      "max_steps": 5867
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/attach_a_camera_to_a_tripod-n4-i0/attempts/00.json",
+      "sha256": "e371fd5fd5104a022c55f17bc18c9dfc41d6088ecebdc47e6fe7f88bd8100297",
+      "task": "attach_a_camera_to_a_tripod",
+      "num_envs": 4,
+      "seconds": 1120.7347340397537,
+      "controls": 23472,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 5867
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/attach_a_camera_to_a_tripod-n4-i0/attempts/04.json",
+      "sha256": "99c9b5508976fc639de1eb75008496948d0590ca07f34c966dab6e68d16ba422",
+      "task": "attach_a_camera_to_a_tripod",
+      "num_envs": 4,
+      "seconds": 1100.7827872354537,
+      "controls": 23472,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "max_steps": 5867
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/clean_a_keyboard-n2-i8/attempts/08.json",
+      "sha256": "94b62b7be7853ae4c225977d259389c0148b0907537e006f18fa2299e6a78228",
+      "task": "clean_a_keyboard",
+      "num_envs": 2,
+      "seconds": 724.5673397863284,
+      "controls": 11630,
+      "instances": [
+        309,
+        310
+      ],
+      "max_steps": 5814
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/clean_a_keyboard-n4-i0/attempts/00.json",
+      "sha256": "e53d60371655131b5da96ff271032da103185e46753937b74ee7fc09b4785a25",
+      "task": "clean_a_keyboard",
+      "num_envs": 4,
+      "seconds": 1181.1361889028922,
+      "controls": 23260,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 5814
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/clean_a_keyboard-n4-i0/attempts/04.json",
+      "sha256": "7945294904a48a3801951d2fb554ffb24b0a8c3e933b98f1f8070a84bf49e52e",
+      "task": "clean_a_keyboard",
+      "num_envs": 4,
+      "seconds": 1244.6653887955472,
+      "controls": 23260,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "max_steps": 5814
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/composting_waste-n2-i8/attempts/08.json",
+      "sha256": "8356faf1d1bad72d452a47a0dc0dc8d0e4f8b523b1bbc2624833d36a73ed44e7",
+      "task": "composting_waste",
+      "num_envs": 2,
+      "seconds": 647.4713308308274,
+      "controls": 10916,
+      "instances": [
+        309,
+        310
+      ],
+      "max_steps": 5457
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/composting_waste-n4-i0/attempts/00.json",
+      "sha256": "3c2c6f376c7aa5f55cf00314ae0cd0dd79e87d2e09c05f432563a51eee0d6738",
+      "task": "composting_waste",
+      "num_envs": 4,
+      "seconds": 1075.9083615252748,
+      "controls": 21832,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 5457
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/composting_waste-n4-i0/attempts/04.json",
+      "sha256": "6d4f80f9b21646f19d1bb249c47f13515deb9c16f474fda03968a1c8271b705b",
+      "task": "composting_waste",
+      "num_envs": 4,
+      "seconds": 1069.7499023713171,
+      "controls": 21832,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "max_steps": 5457
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n2-i8/attempts/08.json",
+      "sha256": "9c2e8848a6faa7d67e22791a103ef7587dcef996ca17b5349d11fada0138aecb",
+      "task": "hanging_pictures",
+      "num_envs": 2,
+      "seconds": 472.5567306559533,
+      "controls": 7164,
+      "instances": [
+        309,
+        310
+      ],
+      "max_steps": 3581
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/attempts/00.json",
+      "sha256": "f262f09f53e7a1a43ae778e4ab5230989123eeebaa165502501c7fda3be8ed98",
+      "task": "hanging_pictures",
+      "num_envs": 4,
+      "seconds": 809.350630373694,
+      "controls": 14328,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 3581
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/hanging_pictures-n4-i0/attempts/04.json",
+      "sha256": "95f465d280fe769a794172b4c160ea0a7bddb229d01c8f20655a766ff1c513bb",
+      "task": "hanging_pictures",
+      "num_envs": 4,
+      "seconds": 773.7491744523868,
+      "controls": 12173,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "max_steps": 3581
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_fax_machine-n2-i8/attempts/08.json",
+      "sha256": "b7131a2ff7a9aeb933bbe7b6c9dd0931d58e985a2c34b4b8db05d8e7b034e9fb",
+      "task": "installing_a_fax_machine",
+      "num_envs": 2,
+      "seconds": 748.8035250110552,
+      "controls": 12232,
+      "instances": [
+        309,
+        310
+      ],
+      "max_steps": 6115
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_fax_machine-n4-i0/attempts/00.json",
+      "sha256": "73467cb1d34a2ef71d0a54e8356501af33173f9c638605c0294244adb45ffa9e",
+      "task": "installing_a_fax_machine",
+      "num_envs": 4,
+      "seconds": 1301.4437526147813,
+      "controls": 24464,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 6115
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_fax_machine-n4-i0/attempts/04.json",
+      "sha256": "5065ef8c023bd7e29e8e9c391bead7b396699a313bd2b00022ba5588a48d5506",
+      "task": "installing_a_fax_machine",
+      "num_envs": 4,
+      "seconds": 1263.9584796391428,
+      "controls": 24464,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "max_steps": 6115
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_modem-n2-i8/attempts/08.json",
+      "sha256": "9c73fd126a9bf686a86c341a36afdf21059d084e9a816625944bc916851bb7b6",
+      "task": "installing_a_modem",
+      "num_envs": 2,
+      "seconds": 438.7971013728529,
+      "controls": 7240,
+      "instances": [
+        309,
+        310
+      ],
+      "max_steps": 3619
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_modem-n4-i0/attempts/00.json",
+      "sha256": "d71090a0d8dd11edd12281c7f61d85a756d672b4f4f92684ca8c0e8e35f401b4",
+      "task": "installing_a_modem",
+      "num_envs": 4,
+      "seconds": 745.94711782597,
+      "controls": 14480,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 3619
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_modem-n4-i0/attempts/04.json",
+      "sha256": "1241ae37d6cb03e317d4a8c86c5df507c7aba73a1d8107ebf5d0180e04c357c0",
+      "task": "installing_a_modem",
+      "num_envs": 4,
+      "seconds": 736.2770159076899,
+      "controls": 14480,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "max_steps": 3619
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/attempts/00.json",
+      "sha256": "e0accfde3134d22ce95e1bd54696fac0ca33e9926fa96d1044c1449c28c3a76c",
+      "task": "installing_a_scanner",
+      "num_envs": 4,
+      "seconds": 1272.6366208801046,
+      "controls": 25552,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 6387
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n4-i0/attempts/00.json",
+      "sha256": "e9a6747425b0ee6eb68433671ebec5b359934d8d61fbba3333de7cb9dd4a9f0b",
+      "task": "installing_smoke_detectors",
+      "num_envs": 4,
+      "seconds": 848.7799213444814,
+      "controls": 15416,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 3853
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n4-i0/attempts/04.json",
+      "sha256": "1e5c7a693475f44dc8ac3f1a2232cf2a6e47ba9c70c1b6780e057bbb645d9c08",
+      "task": "installing_smoke_detectors",
+      "num_envs": 4,
+      "seconds": 870.3338792845607,
+      "controls": 15416,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "max_steps": 3853
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_cabinet_doors-n2-i8/attempts/08.json",
+      "sha256": "c8ed55b62892a60cf51a5854bfb487d7a39ca9e58f3adb80a4d600f7c69d6cd5",
+      "task": "make_cabinet_doors",
+      "num_envs": 2,
+      "seconds": 589.0470363954082,
+      "controls": 10328,
+      "instances": [
+        309,
+        310
+      ],
+      "max_steps": 5163
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_cabinet_doors-n4-i0/attempts/00.json",
+      "sha256": "9221482110e0b788b584940aedb2a6efd82bb91a02f98dec6f697a3a0c61c47d",
+      "task": "make_cabinet_doors",
+      "num_envs": 4,
+      "seconds": 984.5011541303247,
+      "controls": 20656,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 5163
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_cabinet_doors-n4-i0/attempts/04.json",
+      "sha256": "d127b48bfa26dd7cce5e4a73d660dafc45c4cceab0d7291af0f5270be61419dc",
+      "task": "make_cabinet_doors",
+      "num_envs": 4,
+      "seconds": 978.5997310485691,
+      "controls": 20656,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "max_steps": 5163
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_microwave_popcorn-n4-i0/attempts/00.json",
+      "sha256": "b6e6985cb8a0faf47cd194e59449acee6af446cc7b64ca161e006791cbfce646",
+      "task": "make_microwave_popcorn",
+      "num_envs": 4,
+      "seconds": 2110.8976791463792,
+      "controls": 17120,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 4856
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/scrubbing_bathroom_floor-n2-i8/attempts/08.json",
+      "sha256": "3fe8424090a64b7cfbf46d757ebb0760d2eebeeac6cd77ff0d3eb06bf65ea0eb",
+      "task": "scrubbing_bathroom_floor",
+      "num_envs": 2,
+      "seconds": 698.0467499149963,
+      "controls": 9462,
+      "instances": [
+        309,
+        310
+      ],
+      "max_steps": 4730
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/scrubbing_bathroom_floor-n4-i0/attempts/00.json",
+      "sha256": "0382d67e0594f198e68b1f18473b5e2c6fc53725a2789109aeff24a7c912f698",
+      "task": "scrubbing_bathroom_floor",
+      "num_envs": 4,
+      "seconds": 1278.0083785103634,
+      "controls": 18924,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 4730
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/scrubbing_bathroom_floor-n4-i0/attempts/04.json",
+      "sha256": "75dbe3b98124054b0075165c85c089182f28245a646496277108f3a41964a116",
+      "task": "scrubbing_bathroom_floor",
+      "num_envs": 4,
+      "seconds": 1262.9644620725885,
+      "controls": 18924,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "max_steps": 4730
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/attempts/00.json",
+      "sha256": "b34676cef7d43f15f8b3549a1216b1b0361ff358ca243ee55ec14640dc3ba0cf",
+      "task": "sweeping_garage",
+      "num_envs": 4,
+      "seconds": 1369.0390281202272,
+      "controls": 26840,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 6709
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/turning_on_radio-n2-i8/attempts/08.json",
+      "sha256": "4c7521dfb748c81e692bfc63d73a7319454c49e47af0fdf280dd15cfffc35b90",
+      "task": "turning_on_radio",
+      "num_envs": 2,
+      "seconds": 426.0189615841955,
+      "controls": 6450,
+      "instances": [
+        309,
+        310
+      ],
+      "max_steps": 3224
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/turning_on_radio-n4-i0/attempts/00.json",
+      "sha256": "35b505320d04d897f08cb81469bb0f9947cf79535cb5330e2163119339a20f3a",
+      "task": "turning_on_radio",
+      "num_envs": 4,
+      "seconds": 669.9860660675913,
+      "controls": 12900,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 3224
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/turning_on_radio-n4-i0/attempts/04.json",
+      "sha256": "0b7c8928660c499f6d88936d3af37e9045be47372e47288d93e6733887a7e4c3",
+      "task": "turning_on_radio",
+      "num_envs": 4,
+      "seconds": 702.8042333014309,
+      "controls": 11917,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "max_steps": 3224
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/vacuuming_floors-n2-i8/attempts/08.json",
+      "sha256": "517628be466187123d95a2d8e92155f38e5c473882aa1ff699d92ca3c76afe77",
+      "task": "vacuuming_floors",
+      "num_envs": 2,
+      "seconds": 449.66194653883576,
+      "controls": 7236,
+      "instances": [
+        309,
+        310
+      ],
+      "max_steps": 3617
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/vacuuming_floors-n4-i0/attempts/00.json",
+      "sha256": "2dc23086079e4f7b4cf94f310089765b1125dd46364b3e1e5eb359a5a4a9ea5a",
+      "task": "vacuuming_floors",
+      "num_envs": 4,
+      "seconds": 757.3893227996305,
+      "controls": 14472,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "max_steps": 3617
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/vacuuming_floors-n4-i0/attempts/04.json",
+      "sha256": "eebe1d2d0d99b0a68ebb61d852b62b9025362143e1b4fc362a9ce8d7dad3ca93",
+      "task": "vacuuming_floors",
+      "num_envs": 4,
+      "seconds": 780.0721937641501,
+      "controls": 14472,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "max_steps": 3617
+    }
+  ],
+  "remaining_by_gpu": [
+    {
+      "gpu": 0,
+      "remaining_cases": 106,
+      "remaining_parts": 22,
+      "pending_setups": 21,
+      "nominal_remaining_controls": 1877120,
+      "weighted_rate_median_setup_hours": 31.00581649289457,
+      "p25_rate_p90_setup_hours": 32.24026676686554,
+      "parts": [
+        {
+          "part": "sweeping_garage-n4-i0",
+          "remaining_cases": 4,
+          "max_controls": 26840,
+          "setup_pending": false
+        },
+        {
+          "part": "sweeping_garage-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 13420,
+          "setup_pending": true
+        },
+        {
+          "part": "cook_a_brisket-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 88024,
+          "setup_pending": true
+        },
+        {
+          "part": "cook_a_brisket-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 22006,
+          "setup_pending": true
+        },
+        {
+          "part": "store_batteries-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 92456,
+          "setup_pending": true
+        },
+        {
+          "part": "store_batteries-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 23114,
+          "setup_pending": true
+        },
+        {
+          "part": "cook_a_frozen_pie-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 104016,
+          "setup_pending": true
+        },
+        {
+          "part": "cook_a_frozen_pie-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 26004,
+          "setup_pending": true
+        },
+        {
+          "part": "store_produce-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 114272,
+          "setup_pending": true
+        },
+        {
+          "part": "store_produce-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 28568,
+          "setup_pending": true
+        },
+        {
+          "part": "polishing_shoes-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 128856,
+          "setup_pending": true
+        },
+        {
+          "part": "polishing_shoes-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 32214,
+          "setup_pending": true
+        },
+        {
+          "part": "putting_away_toys-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 135568,
+          "setup_pending": true
+        },
+        {
+          "part": "putting_away_toys-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 33892,
+          "setup_pending": true
+        },
+        {
+          "part": "tidying_living_room-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 150792,
+          "setup_pending": true
+        },
+        {
+          "part": "tidying_living_room-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 37698,
+          "setup_pending": true
+        },
+        {
+          "part": "putting_up_Christmas_decorations_inside-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 164632,
+          "setup_pending": true
+        },
+        {
+          "part": "putting_up_Christmas_decorations_inside-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 41158,
+          "setup_pending": true
+        },
+        {
+          "part": "slicing_vegetables-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 178144,
+          "setup_pending": true
+        },
+        {
+          "part": "slicing_vegetables-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 44536,
+          "setup_pending": true
+        },
+        {
+          "part": "assembling_gift_baskets-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 312728,
+          "setup_pending": true
+        },
+        {
+          "part": "assembling_gift_baskets-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 78182,
+          "setup_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 1,
+      "remaining_cases": 110,
+      "remaining_parts": 22,
+      "pending_setups": 21,
+      "nominal_remaining_controls": 1904630,
+      "weighted_rate_median_setup_hours": 31.429516328202112,
+      "p25_rate_p90_setup_hours": 32.67200704860191,
+      "parts": [
+        {
+          "part": "make_rose_centerpieces-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 54392,
+          "setup_pending": false
+        },
+        {
+          "part": "make_rose_centerpieces-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 13598,
+          "setup_pending": true
+        },
+        {
+          "part": "cook_bacon-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 92160,
+          "setup_pending": true
+        },
+        {
+          "part": "cook_bacon-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 23040,
+          "setup_pending": true
+        },
+        {
+          "part": "sorting_books_on_shelf-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 92880,
+          "setup_pending": true
+        },
+        {
+          "part": "sorting_books_on_shelf-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 23220,
+          "setup_pending": true
+        },
+        {
+          "part": "packing_meal_for_delivery-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 106320,
+          "setup_pending": true
+        },
+        {
+          "part": "packing_meal_for_delivery-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 26580,
+          "setup_pending": true
+        },
+        {
+          "part": "turning_out_all_lights_before_sleep-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 120080,
+          "setup_pending": true
+        },
+        {
+          "part": "turning_out_all_lights_before_sleep-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 30020,
+          "setup_pending": true
+        },
+        {
+          "part": "tidying_bedroom-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 132456,
+          "setup_pending": true
+        },
+        {
+          "part": "tidying_bedroom-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 33114,
+          "setup_pending": true
+        },
+        {
+          "part": "unloading_the_car-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 135888,
+          "setup_pending": true
+        },
+        {
+          "part": "unloading_the_car-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 33972,
+          "setup_pending": true
+        },
+        {
+          "part": "freeze_fruit-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 151432,
+          "setup_pending": true
+        },
+        {
+          "part": "freeze_fruit-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 37858,
+          "setup_pending": true
+        },
+        {
+          "part": "putting_away_Halloween_decorations-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 165464,
+          "setup_pending": true
+        },
+        {
+          "part": "putting_away_Halloween_decorations-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 41366,
+          "setup_pending": true
+        },
+        {
+          "part": "clean_your_rusty_garden_tools-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 181896,
+          "setup_pending": true
+        },
+        {
+          "part": "clean_your_rusty_garden_tools-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 45474,
+          "setup_pending": true
+        },
+        {
+          "part": "boxing_books_up_for_storage-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 290736,
+          "setup_pending": true
+        },
+        {
+          "part": "boxing_books_up_for_storage-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 72684,
+          "setup_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 2,
+      "remaining_cases": 110,
+      "remaining_parts": 22,
+      "pending_setups": 21,
+      "nominal_remaining_controls": 1918200,
+      "weighted_rate_median_setup_hours": 31.643302157619523,
+      "p25_rate_p90_setup_hours": 32.891263405194074,
+      "parts": [
+        {
+          "part": "organizing_art_supplies-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 74336,
+          "setup_pending": false
+        },
+        {
+          "part": "organizing_art_supplies-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 18584,
+          "setup_pending": true
+        },
+        {
+          "part": "halve_an_egg-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 76528,
+          "setup_pending": true
+        },
+        {
+          "part": "halve_an_egg-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 19132,
+          "setup_pending": true
+        },
+        {
+          "part": "spraying_fruit_trees-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 100152,
+          "setup_pending": true
+        },
+        {
+          "part": "spraying_fruit_trees-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 25038,
+          "setup_pending": true
+        },
+        {
+          "part": "dispose_of_glass-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 110344,
+          "setup_pending": true
+        },
+        {
+          "part": "dispose_of_glass-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 27586,
+          "setup_pending": true
+        },
+        {
+          "part": "re_shelving_library_books-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 114344,
+          "setup_pending": true
+        },
+        {
+          "part": "re_shelving_library_books-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 28586,
+          "setup_pending": true
+        },
+        {
+          "part": "chopping_wood-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 129024,
+          "setup_pending": true
+        },
+        {
+          "part": "chopping_wood-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 32256,
+          "setup_pending": true
+        },
+        {
+          "part": "can_meat-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 142168,
+          "setup_pending": true
+        },
+        {
+          "part": "can_meat-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 35542,
+          "setup_pending": true
+        },
+        {
+          "part": "rearrange_your_room-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 154264,
+          "setup_pending": true
+        },
+        {
+          "part": "rearrange_your_room-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 38566,
+          "setup_pending": true
+        },
+        {
+          "part": "cook_cabbage-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 169744,
+          "setup_pending": true
+        },
+        {
+          "part": "cook_cabbage-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 42436,
+          "setup_pending": true
+        },
+        {
+          "part": "cook_brussels_sprouts-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 187944,
+          "setup_pending": true
+        },
+        {
+          "part": "cook_brussels_sprouts-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 46986,
+          "setup_pending": true
+        },
+        {
+          "part": "canning_food-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 275712,
+          "setup_pending": true
+        },
+        {
+          "part": "canning_food-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 68928,
+          "setup_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 3,
+      "remaining_cases": 110,
+      "remaining_parts": 22,
+      "pending_setups": 21,
+      "nominal_remaining_controls": 1905550,
+      "weighted_rate_median_setup_hours": 31.444010282738887,
+      "p25_rate_p90_setup_hours": 32.68687188633697,
+      "parts": [
+        {
+          "part": "clean_a_trumpet-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 63688,
+          "setup_pending": false
+        },
+        {
+          "part": "clean_a_trumpet-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 15922,
+          "setup_pending": true
+        },
+        {
+          "part": "spraying_for_bugs-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 77760,
+          "setup_pending": true
+        },
+        {
+          "part": "spraying_for_bugs-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 19440,
+          "setup_pending": true
+        },
+        {
+          "part": "thawing_frozen_food-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 98760,
+          "setup_pending": true
+        },
+        {
+          "part": "thawing_frozen_food-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 24690,
+          "setup_pending": true
+        },
+        {
+          "part": "rearranging_kitchen_furniture-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 107320,
+          "setup_pending": true
+        },
+        {
+          "part": "rearranging_kitchen_furniture-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 26830,
+          "setup_pending": true
+        },
+        {
+          "part": "collecting_aluminum_cans-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 122440,
+          "setup_pending": true
+        },
+        {
+          "part": "collecting_aluminum_cans-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 30610,
+          "setup_pending": true
+        },
+        {
+          "part": "bringing_paper_to_recycling-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 134576,
+          "setup_pending": true
+        },
+        {
+          "part": "bringing_paper_to_recycling-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 33644,
+          "setup_pending": true
+        },
+        {
+          "part": "putting_dirty_dishes_in_sink-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 145784,
+          "setup_pending": true
+        },
+        {
+          "part": "putting_dirty_dishes_in_sink-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 36446,
+          "setup_pending": true
+        },
+        {
+          "part": "clearing_food_from_table_into_fridge-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 156824,
+          "setup_pending": true
+        },
+        {
+          "part": "clearing_food_from_table_into_fridge-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 39206,
+          "setup_pending": true
+        },
+        {
+          "part": "laying_tile_floors-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 172216,
+          "setup_pending": true
+        },
+        {
+          "part": "laying_tile_floors-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 43054,
+          "setup_pending": true
+        },
+        {
+          "part": "getting_organized_for_work-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 188056,
+          "setup_pending": true
+        },
+        {
+          "part": "getting_organized_for_work-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 47014,
+          "setup_pending": true
+        },
+        {
+          "part": "clean_up_your_desk-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 257016,
+          "setup_pending": true
+        },
+        {
+          "part": "clean_up_your_desk-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 64254,
+          "setup_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 4,
+      "remaining_cases": 106,
+      "remaining_parts": 22,
+      "pending_setups": 21,
+      "nominal_remaining_controls": 1876328,
+      "weighted_rate_median_setup_hours": 30.99287356034435,
+      "p25_rate_p90_setup_hours": 32.226858199780054,
+      "parts": [
+        {
+          "part": "installing_a_scanner-n4-i0",
+          "remaining_cases": 4,
+          "max_controls": 25552,
+          "setup_pending": false
+        },
+        {
+          "part": "installing_a_scanner-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 12776,
+          "setup_pending": true
+        },
+        {
+          "part": "hiding_Easter_eggs-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 91440,
+          "setup_pending": true
+        },
+        {
+          "part": "hiding_Easter_eggs-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 22860,
+          "setup_pending": true
+        },
+        {
+          "part": "putting_shoes_on_rack-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 92720,
+          "setup_pending": true
+        },
+        {
+          "part": "putting_shoes_on_rack-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 23180,
+          "setup_pending": true
+        },
+        {
+          "part": "bringing_water-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 113264,
+          "setup_pending": true
+        },
+        {
+          "part": "bringing_water-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 28316,
+          "setup_pending": true
+        },
+        {
+          "part": "sorting_bottles_cans_and_paper-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 123168,
+          "setup_pending": true
+        },
+        {
+          "part": "sorting_bottles_cans_and_paper-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 30792,
+          "setup_pending": true
+        },
+        {
+          "part": "wash_dog_toys-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 134680,
+          "setup_pending": true
+        },
+        {
+          "part": "wash_dog_toys-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 33670,
+          "setup_pending": true
+        },
+        {
+          "part": "freeze_pies-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 149464,
+          "setup_pending": true
+        },
+        {
+          "part": "freeze_pies-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 37366,
+          "setup_pending": true
+        },
+        {
+          "part": "bringing_in_wood-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 162432,
+          "setup_pending": true
+        },
+        {
+          "part": "bringing_in_wood-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 40608,
+          "setup_pending": true
+        },
+        {
+          "part": "organizing_school_stuff-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 175104,
+          "setup_pending": true
+        },
+        {
+          "part": "organizing_school_stuff-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 43776,
+          "setup_pending": true
+        },
+        {
+          "part": "sorting_household_items-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 189696,
+          "setup_pending": true
+        },
+        {
+          "part": "sorting_household_items-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 47424,
+          "setup_pending": true
+        },
+        {
+          "part": "storing_food-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 238432,
+          "setup_pending": true
+        },
+        {
+          "part": "storing_food-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 59608,
+          "setup_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 5,
+      "remaining_cases": 112,
+      "remaining_parts": 23,
+      "pending_setups": 22,
+      "nominal_remaining_controls": 1926518,
+      "weighted_rate_median_setup_hours": 31.869207374721366,
+      "p25_rate_p90_setup_hours": 33.16476984886332,
+      "parts": [
+        {
+          "part": "installing_smoke_detectors-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 7708,
+          "setup_pending": false
+        },
+        {
+          "part": "set_up_a_coffee_station_in_your_kitchen-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 75200,
+          "setup_pending": true
+        },
+        {
+          "part": "set_up_a_coffee_station_in_your_kitchen-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 18800,
+          "setup_pending": true
+        },
+        {
+          "part": "chop_an_onion-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 76800,
+          "setup_pending": true
+        },
+        {
+          "part": "chop_an_onion-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 19200,
+          "setup_pending": true
+        },
+        {
+          "part": "preparing_lunch_box-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 98944,
+          "setup_pending": true
+        },
+        {
+          "part": "preparing_lunch_box-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 24736,
+          "setup_pending": true
+        },
+        {
+          "part": "setting_the_fire-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 109424,
+          "setup_pending": true
+        },
+        {
+          "part": "setting_the_fire-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 27356,
+          "setup_pending": true
+        },
+        {
+          "part": "outfit_a_basic_toolbox-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 127656,
+          "setup_pending": true
+        },
+        {
+          "part": "outfit_a_basic_toolbox-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 31914,
+          "setup_pending": true
+        },
+        {
+          "part": "put_together_a_basic_pruning_kit-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 135176,
+          "setup_pending": true
+        },
+        {
+          "part": "put_together_a_basic_pruning_kit-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 33794,
+          "setup_pending": true
+        },
+        {
+          "part": "cleaning_up_branches_and_twigs-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 150328,
+          "setup_pending": true
+        },
+        {
+          "part": "cleaning_up_branches_and_twigs-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 37582,
+          "setup_pending": true
+        },
+        {
+          "part": "cleaning_up_plates_and_food-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 164360,
+          "setup_pending": true
+        },
+        {
+          "part": "cleaning_up_plates_and_food-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 41090,
+          "setup_pending": true
+        },
+        {
+          "part": "moving_boxes_to_storage-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 175160,
+          "setup_pending": true
+        },
+        {
+          "part": "moving_boxes_to_storage-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 43790,
+          "setup_pending": true
+        },
+        {
+          "part": "stacking_wood-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 191280,
+          "setup_pending": true
+        },
+        {
+          "part": "stacking_wood-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 47820,
+          "setup_pending": true
+        },
+        {
+          "part": "loading_the_car-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 230720,
+          "setup_pending": true
+        },
+        {
+          "part": "loading_the_car-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 57680,
+          "setup_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 6,
+      "remaining_cases": 110,
+      "remaining_parts": 22,
+      "pending_setups": 21,
+      "nominal_remaining_controls": 1898980,
+      "weighted_rate_median_setup_hours": 31.340504542188235,
+      "p25_rate_p90_setup_hours": 32.58071755598984,
+      "parts": [
+        {
+          "part": "cook_broccolini-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 55416,
+          "setup_pending": false
+        },
+        {
+          "part": "cook_broccolini-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 13854,
+          "setup_pending": true
+        },
+        {
+          "part": "store_honey-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 81208,
+          "setup_pending": true
+        },
+        {
+          "part": "store_honey-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 20302,
+          "setup_pending": true
+        },
+        {
+          "part": "wash_a_baseball_cap-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 100200,
+          "setup_pending": true
+        },
+        {
+          "part": "wash_a_baseball_cap-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 25050,
+          "setup_pending": true
+        },
+        {
+          "part": "clean_up_broken_glass-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 104304,
+          "setup_pending": true
+        },
+        {
+          "part": "clean_up_broken_glass-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 26076,
+          "setup_pending": true
+        },
+        {
+          "part": "setting_mousetraps-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 122360,
+          "setup_pending": true
+        },
+        {
+          "part": "setting_mousetraps-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 30590,
+          "setup_pending": true
+        },
+        {
+          "part": "carrying_out_garden_furniture-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 132712,
+          "setup_pending": true
+        },
+        {
+          "part": "carrying_out_garden_furniture-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 33178,
+          "setup_pending": true
+        },
+        {
+          "part": "clean_a_patio-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 144856,
+          "setup_pending": true
+        },
+        {
+          "part": "clean_a_patio-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 36214,
+          "setup_pending": true
+        },
+        {
+          "part": "setup_a_bar_for_a_cocktail_party-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 161032,
+          "setup_pending": true
+        },
+        {
+          "part": "setup_a_bar_for_a_cocktail_party-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 40258,
+          "setup_pending": true
+        },
+        {
+          "part": "dispose_of_batteries-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 173144,
+          "setup_pending": true
+        },
+        {
+          "part": "dispose_of_batteries-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 43286,
+          "setup_pending": true
+        },
+        {
+          "part": "setting_the_table-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 213704,
+          "setup_pending": true
+        },
+        {
+          "part": "setting_the_table-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 53426,
+          "setup_pending": true
+        },
+        {
+          "part": "make_pizza-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 230248,
+          "setup_pending": true
+        },
+        {
+          "part": "make_pizza-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 57562,
+          "setup_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 7,
+      "remaining_cases": 116,
+      "remaining_parts": 24,
+      "pending_setups": 23,
+      "nominal_remaining_controls": 1937332,
+      "weighted_rate_median_setup_hours": 32.08874663919826,
+      "p25_rate_p90_setup_hours": 33.39348405540706,
+      "parts": [
+        {
+          "part": "make_microwave_popcorn-n4-i0",
+          "remaining_cases": 4,
+          "max_controls": 19428,
+          "setup_pending": false
+        },
+        {
+          "part": "make_microwave_popcorn-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 9714,
+          "setup_pending": true
+        },
+        {
+          "part": "picking_up_trash-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 63216,
+          "setup_pending": true
+        },
+        {
+          "part": "picking_up_trash-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 15804,
+          "setup_pending": true
+        },
+        {
+          "part": "boxing_food_after_dinner-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 80376,
+          "setup_pending": true
+        },
+        {
+          "part": "boxing_food_after_dinner-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 20094,
+          "setup_pending": true
+        },
+        {
+          "part": "clean_boxing_gloves-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 98832,
+          "setup_pending": true
+        },
+        {
+          "part": "clean_boxing_gloves-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 24708,
+          "setup_pending": true
+        },
+        {
+          "part": "cook_hot_dogs-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 109744,
+          "setup_pending": true
+        },
+        {
+          "part": "cook_hot_dogs-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 27436,
+          "setup_pending": true
+        },
+        {
+          "part": "make_gift_bags_for_baby_showers-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 115816,
+          "setup_pending": true
+        },
+        {
+          "part": "make_gift_bags_for_baby_showers-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 28954,
+          "setup_pending": true
+        },
+        {
+          "part": "putting_dishes_away_after_cleaning-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 131448,
+          "setup_pending": true
+        },
+        {
+          "part": "putting_dishes_away_after_cleaning-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 32862,
+          "setup_pending": true
+        },
+        {
+          "part": "sorting_vegetables-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 142848,
+          "setup_pending": true
+        },
+        {
+          "part": "sorting_vegetables-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 35712,
+          "setup_pending": true
+        },
+        {
+          "part": "tidying_bathroom-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 156040,
+          "setup_pending": true
+        },
+        {
+          "part": "tidying_bathroom-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 39010,
+          "setup_pending": true
+        },
+        {
+          "part": "carrying_in_groceries-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 171304,
+          "setup_pending": true
+        },
+        {
+          "part": "carrying_in_groceries-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 42826,
+          "setup_pending": true
+        },
+        {
+          "part": "picking_up_toys-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 226688,
+          "setup_pending": true
+        },
+        {
+          "part": "picking_up_toys-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 56672,
+          "setup_pending": true
+        },
+        {
+          "part": "collecting_childrens_toys-n4-i0",
+          "remaining_cases": 8,
+          "max_controls": 230240,
+          "setup_pending": true
+        },
+        {
+          "part": "collecting_childrens_toys-n2-i8",
+          "remaining_cases": 2,
+          "max_controls": 57560,
+          "setup_pending": true
+        }
+      ]
+    }
+  ],
+  "remaining_nominal_controls": 15244658,
+  "critical_path_weighted_rate_median_setup_hours": 32.08874663919826,
+  "critical_path_p25_rate_p90_setup_hours": 33.39348405540706,
+  "originals_modified": false,
+  "final_model_score": false,
+  "caveats": [
+    "Registered official horizons plus one; all remaining cases assumed to time out.",
+    "Ongoing incomplete batches are not credited partial progress, making remaining nominal work conservative in that respect only.",
+    "Completed samples are biased to earlier shorter tasks; these are workload scenarios, not a confidence interval or guaranteed ETA.",
+    "Batch seconds include stock evaluator.run, simulator steps, policy inference, video and reset as actually measured; excludes initial scene setup.",
+    "Setup measured from part start to first attempt, including currently running scenes; additional shared FIFO waiting, later shutdown, archive finalization and new faults are not modelled.",
+    "Per-card scheduling preserves original partitions; no restart, shortened horizon, policy change, or model selection.",
+    "The first slow popcorn batch is now in the sample, but future heavy tasks can still take longer; the scenario endpoints are not an upper bound.",
+    "MEM estimate is still the earlier same-schedule public-throughput scenario; handoff reload, final archive time and deferred model delivery are not included."
+  ],
+  "mem_remainder_scenario": {
+    "hours": 32.993627439066145,
+    "evidence": "docs/infra/results/2026-10-14-full-eval-time-risk.json",
+    "binding": {
+      "observed_at": "2026-10-14T07:21:38.878422+00:00",
+      "prior": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6/manifest.json",
+      "prior_sha256": "b709e4e7b21e700e489b448c548ff8d4885fb21f2a6dd9982f9695ae6831229d",
+      "queued": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/manifest.json",
+      "queued_sha256": "a1709991df8902efeb5c0622baf7a0c9c7bd1038d7d290ca5802a8e780f4261a",
+      "same_remaining_schedule_and_model": {
+        "groups": true,
+        "cases": true,
+        "root_manifest": true,
+        "config_path": true,
+        "config_sha256": true,
+        "pack": true,
+        "pack_manifest_sha256": true,
+        "tasks": true,
+        "inherited_completed": true,
+        "initial_execution_errors": true,
+        "runtime_source": true,
+        "runtime_commit": true
+      },
+      "inherited_completed": 390,
+      "initial_execution_errors": 34
+    },
+    "remaining_cases": 576
+  },
+  "deadline": {
+    "official": "2026-10-16 11:59 PM AoE",
+    "utc": "2026-10-17T11:59:00Z",
+    "cst": "2026-10-17T19:59:00+08:00",
+    "source": "https://behavior.stanford.edu/challenge/updates.html",
+    "announcement_dates": [
+      "2026-10-09",
+      "2026-09-28"
+    ],
+    "checked_at": "2026-10-14T15:21:00+08:00"
+  },
+  "slow_popcorn_batch_evidence": "docs/infra/results/2026-10-14-champion-popcorn-first4-originals.json",
+  "slow_popcorn_batch_included": true,
+  "calendar_scenarios": {
+    "champion_central_cst": "2026-10-15T23:44:08.962+08:00",
+    "champion_slower_cst": "2026-10-16T01:02:26.017+08:00",
+    "then_mem_central_cst": "2026-10-17T08:43:46.021+08:00",
+    "then_mem_slower_cst": "2026-10-17T10:02:03.076+08:00",
+    "central_margin_hours": 11.253882866180035,
+    "slower_margin_hours": 9.94914544997124
+  }
+}
