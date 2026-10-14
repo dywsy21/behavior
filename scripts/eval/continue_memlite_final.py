@@ -1,7 +1,7 @@
 """Explicit, outcome-independent continuation with immutable policy runtime.
 
 Completed originals are referenced by SHA, never copied over or rerolled. A
-diagnosed nonfinite-pose simulator failure consumes its whole physical batch
+diagnosed nonfinite-pose or strict planner rejection consumes its whole batch
 as execution errors (NOT fabricated official JSON). Only unrelated global-stop
 interruptions may restart. New physics failures are isolated to their batch.
 All inference and physics still run from the original frozen source checkout.
@@ -74,6 +74,52 @@ def physics_error(text):
                 robot_link=matches[0][2], exception=matches[0][0], traceback_copies=len(matches),
                 official_score_available=False,
                 cause='Undetermined: finite model actions do not prove stable physics or correct action semantics')
+
+
+def planner_rejection(text, model_path):
+    """Classify one exact rejected decode, not a repair or a model reroll.
+
+    Require independent matching client traceback, model traceback and terminal
+    service state. The original server did not persist the offending texts, so
+    neither a failed slot nor the exact wrong memory may be inferred here.
+    Unknown grammar, CUDA, identity or infrastructure failures still stop.
+    """
+    if model_path is None:
+        return None
+    model_path = Path(model_path)
+    status = model_path / 'status.json'
+    log = model_path.parent / (model_path.name + '.log')
+    if not status.is_file() or not log.is_file():
+        return None
+    message = 'planner generation violates causal K=3 memory recurrence'
+    error = repr(ValueError(message))
+    state = read(status)
+    if state.get('status') != 'failed' or state.get('error') != error:
+        return None
+    sim = re.sub(r'\x1b\[[0-9;]*m', '', text)
+    model = re.sub(r'\x1b\[[0-9;]*m', '', log.read_text())
+    signatures = ((sim, 'RuntimeError: Model service: ' + error,
+                   ('memlite_final/client.py', 'in rpc')),
+                  (model, 'ValueError: ' + message,
+                   ('memlite_final/batch_runtime.py', 'in plan_many',
+                    'g05_policy_memlite_planner_outcome.py', 'in _parse_target_free_planner_event')))
+    for content, expected, frames in signatures:
+        exceptions = re.findall(r'\b[A-Za-z_][\w.]*(?:Error|Exception): [^\r\n]+', content)
+        if (not exceptions or any(e.strip() != expected for e in exceptions)
+                or 'Traceback (most recent call last)' not in content
+                or not all(frame in content for frame in frames)
+                or re.search(r'CUDA out of memory|CUDA error:|device-side assert', content, re.I)):
+            return None
+    return dict(kind='planner_memory_recurrence_rejected', scene_slot=None,
+        exception=message, official_score_available=False,
+        model_status=binding(status), model_log=binding(log),
+        failed_slot_known=False, rejected_text_saved=False, invalid_proposal_executed=False,
+        cause='Decoded memory failed the exact causal K=3 rule; offending text/slot were not persisted. '
+              'This does not establish cross-session contamination or its absence.')
+
+
+def execution_error(text, model_path=None):
+    return physics_error(text) or planner_rejection(text, model_path)
 
 
 def exact_frozen_weights(value):
@@ -394,13 +440,29 @@ def freeze_continuation(prior, output):
         attempt, row = unfinished[0]
         if len(row['instance_ids']) != part['num_envs']:
             raise ValueError('Partial physical batch identity')
-        diagnosis = physics_error(text)
+        model_path = worker.get('model_path') if worker.get('part') == part['id'] else None
+        ledger_path = prior / 'workers' / f'gpu_{gpu}' / (part['id'] + '-execution-errors.json')
+        ledger = read(ledger_path) if ledger_path.exists() else None
+        if ledger and ledger[0]['diagnosis']['kind'] == 'planner_memory_recurrence_rejected':
+            # A prior rejected generation may already have been retired. Bind
+            # its original receipt, never the current model for another task.
+            pinned = ledger[0]['diagnosis']['model_status']; check_binding(pinned)
+            model_path = Path(pinned['path']).parent
+            if (model_path.parent != prior / 'workers' / f'gpu_{gpu}'
+                    or binding(model_path / 'weights-final.json') not in worker['model_generations']):
+                raise ValueError('Rejected planner belongs to another worker/model generation')
+        diagnosis = execution_error(text, model_path)
         pending_rows = [dict(task=part['task'], instance_id=i, rollout_id=row['rollout'],
                             original_attempt=binding(attempt)) for i in row['instance_ids']]
         if diagnosis:
-            if not 0 <= diagnosis['scene_slot'] < part['num_envs']:
+            if diagnosis['scene_slot'] is not None and not 0 <= diagnosis['scene_slot'] < part['num_envs']:
                 raise ValueError('Exception slot is outside the physical batch')
-            errors.extend(r | dict(diagnosis=diagnosis, log=binding(log), rerun_allowed=False) for r in pending_rows)
+            diagnosed_rows = [r | dict(diagnosis=diagnosis, log=binding(log), rerun_allowed=False) for r in pending_rows]
+            if ledger is not None:
+                if ledger != diagnosed_rows:
+                    raise ValueError('Original execution-error ledger differs from audited evidence')
+                evidence.append(binding(ledger_path))
+            errors.extend(diagnosed_rows)
             if worker.get('part') == part['id']:
                 newly_diagnosed.add(str(gpu))
             elif part['id'] not in worker['diagnosed_failed_parts']:
@@ -473,7 +535,7 @@ def prepare(prior, seal, runtime_source, job):
                     administrative_restarts=len(receipt['administrative_interruptions']),
                     loader_admission='fifo_two_slots_queue_wait_is_not_execution_timeout_v1',
                     expected=1000, automatic_retries=False, policy_changed=False, optimizer_updates=0,
-                    error_policy='Record diagnosed nonfinite-pose batches as missing official scores; '
+                    error_policy='Record diagnosed nonfinite-pose or strict planner-rejection batches as missing official scores; '
                                  'restart model only for different unattempted cases; no score fabrication',
                     numerical_notice='Original model/official source/seed/batching unchanged; administrative '
                                      'process restarts are explicit and not claimed bitwise-equivalent physics')
@@ -621,10 +683,17 @@ def worker(job, gpu):
                     if not video.is_file() or video.stat().st_size < 1000:
                         raise ValueError('Missing original video')
                 state['completed_parts'].append(part['id']); publish(); continue
-            diagnosis = physics_error(logpath.read_text())
+            diagnosis = execution_error(logpath.read_text(), model_path)
             if diagnosis is None:
                 raise RuntimeError('Unclassified failure; preserve evidence for diagnosis: ' + part['id'])
-            if not 0 <= diagnosis['scene_slot'] < part['num_envs']:
+            if diagnosis['kind'] == 'planner_memory_recurrence_rejected':
+                # The service writes its final timestamp/weight receipt during
+                # teardown. Seal only the stable final service status/log.
+                retire_model()
+                diagnosis = execution_error(logpath.read_text(), model_path)
+                if diagnosis is None or diagnosis['kind'] != 'planner_memory_recurrence_rejected':
+                    raise ValueError('Planner rejection evidence changed during shutdown')
+            if diagnosis['scene_slot'] is not None and not 0 <= diagnosis['scene_slot'] < part['num_envs']:
                 raise ValueError('Exception slot is outside the physical batch')
             require_no_uncommitted_metrics(output)
             attempts = [(p, read(p)) for p in sorted((output / 'attempts').glob('*.json'))]

@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 10:29 CST / Codex SUBMISSION-FULL-EVAL（定位为生成拒绝，非物理NaN）：** 原GPU0 `store_produce`305–308各ACK10240后，高层生成触发K=3 memory recurrence校验，客户端/模型栈/服务终态一致，原service未记录失败文本所以不能定位具体slot或声称串任务；终态权重均未变。已在本地独立续评编排增加精确三方证据分类并保留未知异常STOP，严格校验本身/actor/物理不改；本批将记模型拒绝的执行异常而非行政重跑。新增停机trace显式不完整审计，不能假造close。首75项回归过，旧代模型账本补测与目标机封存/恢复仍待；证据原日志SHA0389dcff…693c8、模型日志102733a3…45242，说明`docs/infra/FINAL_EVAL_CONTINUATION.md`。模型交付继续暂缓。
+
+- **2026-10-14 10:24 CST / Codex SUBMISSION-FULL-EVAL（续接发现保护停机）：** 最新用户明确先完成自己的评测，模型交付、公网服务资格暂缓。已fetch/pull本分支（无新变更），RTX实查MEM resume_v4的supervisor/八worker均已退出、八卡无计算进程；status为needs_diagnosis，GPU0 `store_produce-n4-i0`未分类错误触发全局STOP，冠军queue-resume-v4也已退出且phases为空，不再称两者仍运行。388完整/26已登记执行异常/586未覆盖，completed-only Q0.004095074/SR0，summary中的running是停机前快照而非活进程。根先查原日志/attempt与权重终态，封存后仅显式续未完成部分；已有完整/真正物理异常不重跑，不改actor或官方物理。新异常精确分类、行政中断清单与恢复尚待；goal保持active。
+
 - **2026-10-13 23:06 CST / Codex SUBMISSION-FULL-EVAL（持续原全量）：** 23:05:55直接检查原supervisor3599503、八worker3599518–25与冠军后继3603438均实活；累计218完整/22既有执行异常/760未覆盖，completed-only Q0.001783894、SR0，仍只有此前两条非零Q，未见完整成功。原readonly watch82347持续，无新增异常/全局STOP/新训练/权重或物理改动，冠军仍waiting，等待本身不是阻塞。2071fa51摘要推送曾两次TLS握手中断，随后单次HTTP1.1/TLS1.2重推已成功、分支与远端同HEAD；未关闭证书校验或修改全局网络。上一轮隔离/新原件和跨任务核验已完成，本轮继续核实等待；完整MEM1000与冠军1000都未完成，goal保持active，模型交付暂缓。
 
 - **2026-10-13 22:46 CST / Codex SUBMISSION-FULL-EVAL（210完整，第二条非零Q）：** 原run210完整/22执行异常/768未覆盖，completed-only Q0.00185185、SR0；新增彩蛋302原终局Q2/9、success=false、11430步，原JSON/video/committed attempt步数与帧数核同，不能把随任务组成变化的均值上升称训练收益。根对GPU4同一model000进程“扫描仪6例→彩蛋4例”连续69,232,537B前缀实审：10条/84,048控制/5260 ACK，跨task空memory、完整身份/slot、当前高低层意图、observer时钟及raw23 ACK digest均过，10原JSON/MP4 SHA与帧数一致；只覆盖这个已闭合前缀，不冒称活跃尾部或整模型权重已封存。证据`docs/infra/results/2026-10-13-memlite-eggs-cross-task-causal-audit.json`；仅两条非零Q（咖啡305/彩蛋302），暂无完整成功。22:41 GPU5新洋葱301–304各384真实控制，原监督/后继直接实活；其他卡已按原排程转新任务，无异常重跑/全局重启，继续MEM→冠军，交付仍暂缓。

@@ -69,6 +69,105 @@ def test_callback_nan_wrapped_repeated_finger_link_is_one_physical_failure():
         assert m.physics_error(bad) is None
 
 
+def planner_rejection_fixture(path):
+    path.mkdir(parents=True, exist_ok=True)
+    message='planner generation violates causal K=3 memory recurrence'
+    (path/'status.json').write_text(json.dumps(dict(status='failed',error=repr(ValueError(message)))))
+    (path.parent/(path.name+'.log')).write_text(
+        'Traceback (most recent call last):\n'
+        'File "/frozen/scripts/eval/memlite_final/batch_runtime.py", line 39, in plan_many\n'
+        'File "/frozen/src/g05/models/g05/g05_policy_memlite_planner_outcome.py", line 388, in _parse_target_free_planner_event\n'
+        'ValueError: '+message+'\n')
+    return ('Traceback (most recent call last):\n'
+        'File "/frozen/scripts/eval/memlite_final/client.py", line 44, in rpc\n'
+        'RuntimeError: Model service: '+repr(ValueError(message))+'\n')
+
+
+def test_planner_rejection_is_not_physics_or_an_administrative_retry(tmp_path):
+    model=tmp_path/'model-000';text=planner_rejection_fixture(model)
+    r=m.execution_error(text,model)
+    assert r['kind']=='planner_memory_recurrence_rejected' and r['scene_slot'] is None
+    assert not r['failed_slot_known'] and not r['rejected_text_saved'] and not r['invalid_proposal_executed']
+    assert not r['official_score_available'] and m.physics_error(text) is None
+    assert r['model_status']==m.binding(model/'status.json')
+    assert r['model_log']==m.binding(tmp_path/'model-000.log')
+
+
+@pytest.mark.parametrize('bad',['no_model','missing_log','ready','wrong_error','extra_model_error',
+    'extra_client_error','wrong_stack','foreign_client','cuda','physics_mix'])
+def test_planner_rejection_requires_exact_paired_evidence(tmp_path,bad):
+    model=tmp_path/'model-000';text=planner_rejection_fixture(model)
+    if bad=='no_model':model=None
+    elif bad=='missing_log':(tmp_path/'model-000.log').unlink()
+    elif bad in ('ready','wrong_error'):
+        s=m.read(model/'status.json');s['status' if bad=='ready' else 'error']='unknown'
+        (model/'status.json').write_text(json.dumps(s))
+    elif bad=='extra_model_error':
+        with (tmp_path/'model-000.log').open('a') as f:f.write('\nValueError: wrong session identity')
+    elif bad=='extra_client_error':text+='\nRuntimeError: connection lost'
+    elif bad=='wrong_stack':
+        p=tmp_path/'model-000.log';p.write_text(p.read_text().replace('in _parse_target_free_planner_event','in another_function'))
+    elif bad=='foreign_client':text=text.replace('memlite_final/client.py','other/client.py')
+    elif bad=='cuda':text+='\nCUDA out of memory'
+    elif bad=='physics_mix':text+='\nAssertionError: invalid quaternion'
+    assert m.execution_error(text,model) is None
+
+
+def test_freeze_planner_rejected_batch_is_preserved_and_excluded(tmp_path,monkeypatch):
+    prior,seal=stopped_continuation(tmp_path,monkeypatch)
+    worker=prior/'workers/gpu_5';model=worker/'model-000'
+    text=planner_rejection_fixture(model)
+    s=m.read(model/'status.json');s.update(config_sha256='config',manifest_sha256='pack',source_commit='actor')
+    (model/'status.json').write_text(json.dumps(s))
+    s=m.read(worker/'status.json');s['model_path']=str(model)
+    (worker/'status.json').write_text(json.dumps(s))
+    (worker/'task5-n4-i0.log').write_text(text)
+    result=m.freeze_continuation(prior,seal)
+    assert result['completed']==8 and len(result['execution_errors'])==8
+    rejected=[r for r in result['execution_errors'] if r['task']=='task5']
+    assert len(rejected)==4 and all(not r['rerun_allowed'] for r in rejected)
+    assert all(r['diagnosis']['kind']=='planner_memory_recurrence_rejected' for r in rejected)
+    assert all(r['task']!='task5' for r in result['administrative_interruptions'])
+    original=m.read(tmp_path/'original/manifest.json')
+    parts=[p for g in m.remaining_parts(original,result) for p in g['parts'] if p['task']=='task5']
+    assert [i for p in parts for i in p['indices']]==list(range(4,10))
+
+
+def test_freeze_retired_planner_uses_its_bound_generation_not_current_model(tmp_path,monkeypatch):
+    prior,first_seal=stopped_continuation(tmp_path,monkeypatch)
+    worker=prior/'workers/gpu_5';old=worker/'model-000'
+    text=planner_rejection_fixture(old)
+    s=m.read(old/'status.json');s.update(config_sha256='config',manifest_sha256='pack',source_commit='actor')
+    (old/'status.json').write_text(json.dumps(s))
+    ws=m.read(worker/'status.json');ws['model_path']=str(old)
+    (worker/'status.json').write_text(json.dumps(ws))
+    (worker/'task5-n4-i0.log').write_text(text)
+    sealed=m.freeze_continuation(prior,first_seal)
+    rows=[r for r in sealed['execution_errors'] if r['task']=='task5']
+    ledger=worker/'task5-n4-i0-execution-errors.json';ledger.write_text(json.dumps(rows))
+    # Another task/model is now current; its normal state is not evidence of
+    # the older rejected batch. GPU1 independently failed with the same NaN.
+    other=worker/'model-001';other.mkdir()
+    (other/'status.json').write_text(json.dumps(dict(config_sha256='config',manifest_sha256='pack',source_commit='actor')))
+    (other/'weights-final.json').write_text((old/'weights-final.json').read_text())
+    (other/'events.jsonl').write_text('')
+    ws.update(part='another-unstarted-part',model_path=str(other),error="InterruptedError('Administrative stop')",
+        diagnosed_failed_parts=['task5-n4-i0'])
+    ws['model_generations'].append(m.binding(other/'weights-final.json'))
+    (worker/'status.json').write_text(json.dumps(ws))
+    state=m.read(prior/'status.json');state['failed_gpus']={'1':{}}
+    (prior/'status.json').write_text(json.dumps(state))
+    log=prior/'workers/gpu_1/task1-n4-i0.log'
+    log.write_text('Traceback (most recent call last):\nFile "rigid_dynamic_prim.py"\n'
+        'AssertionError: /World/scene_1/controllable__r1pro__robot_r1/base_link '
+        'orientation tensor([nan, nan, nan, nan]) is not a unit quaternion.')
+    result=m.freeze_continuation(prior,tmp_path/'second-seal.json')
+    assert len(result['execution_errors'])==12
+    assert [r for r in result['execution_errors'] if r['task']=='task5']==rows
+    rows[0]['diagnosis']['model_status']['sha256']='changed';ledger.write_text(json.dumps(rows))
+    with pytest.raises(ValueError):m.freeze_continuation(prior,tmp_path/'bad-seal.json')
+
+
 def test_summary_cannot_fabricate_official_scores_for_execution_errors():
     manifest,_=fixture()
     records=[r|dict(success=False,q_score={'final':0.2}) for r in manifest['cases'][:-4]]

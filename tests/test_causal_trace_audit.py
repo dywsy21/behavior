@@ -30,6 +30,19 @@ def test_partial_final_chunk_and_fresh_task_session_pass():
     assert audit(fixture())['applied_controls']==1
 
 
+def test_stopped_trace_must_explicitly_disclose_unclosed_episodes():
+    rows=fixture()[:-1]
+    with pytest.raises(ValueError,match='Incomplete trace'):audit(rows)
+    result=audit(rows,allow_incomplete=True)
+    assert result['status']=='incomplete_causal_trace_audit'
+    assert result['episodes']==1 and result['closed_episodes']==0
+    assert result['unclosed_episodes'][0]['applied_controls']==1
+    assert result['proves_full_task_success'] is False
+    with pytest.raises(ValueError,match='unacknowledged'):audit(rows[:-1],allow_incomplete=True)
+    rows[3]['raw_actions'][0][0]=999
+    with pytest.raises(ValueError):audit(rows,allow_incomplete=True)
+
+
 @pytest.mark.parametrize('bad',['identity','memory','low_goal','observer','raw_action','unfinished'])
 def test_actual_cross_session_and_action_corruption_rejected(bad):
     r=fixture()

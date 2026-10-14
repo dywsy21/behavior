@@ -11,7 +11,7 @@ sys.path.insert(0,str(REPO/'scripts/rl/memlite_online/code'))
 from recovery_corpus import digest
 
 
-def audit(rows):
+def audit(rows, *, allow_incomplete=False):
     sessions={};slots={};counts=Counter();tokens=set();models=None
     for r in rows:
         kind=r['kind'];identity=r['identity'];episode=identity['episode'];slot=r['slot'];counts[kind]+=1
@@ -61,8 +61,14 @@ def audit(rows):
                 raise ValueError('Unacknowledged or foreign episode close')
             s['closed']=True;del slots[slot]
         else:raise ValueError('Unknown trace event')
-    if not sessions or slots or any(not s['closed'] for s in sessions.values()):raise ValueError('Incomplete trace')
-    return dict(status='complete_causal_trace_audit',episodes=len(sessions),events=dict(counts),
+    incomplete = bool(slots) or any(not s['closed'] for s in sessions.values())
+    if not sessions or (incomplete and not allow_incomplete):raise ValueError('Incomplete trace')
+    if allow_incomplete and any(s['pending'] is not None for s in sessions.values()):
+        raise ValueError('Incomplete trace still has unacknowledged actions')
+    return dict(status='incomplete_causal_trace_audit' if incomplete else 'complete_causal_trace_audit',
+        episodes=len(sessions),closed_episodes=sum(s['closed'] for s in sessions.values()),
+        unclosed_episodes=[dict(identity=s['identity'],slot=s['slot'],applied_controls=s['step'])
+            for s in sessions.values() if not s['closed']],events=dict(counts),
         applied_controls=sum(s['step'] for s in sessions.values()),models=models,
         tasks=sorted({s['identity']['task'] for s in sessions.values()}),
         checks=['fresh empty per-episode memory','full identity and fixed slot on every event',
