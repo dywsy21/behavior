@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 14:38 CST / Codex SUBMISSION-FULL-EVAL（真实跨任务边界通过）：** 同原GPU1 model3787333从radio task0的10已闭合episode进入compost task90的4新连接，独立d67工具只读原journal 1,751,790字节/SHA `b71dfbb5137c52a14d0d28adcf80f04bc6667fbdae6697c426d950fb033c0634`前缀并复读一致；新连接首次stage0/inpainting0/交付前时钟0及后续各19交付递推均过，task0 legacy=true未串到task90 legacy=false。证据`docs/infra/results/2026-10-14-champion-first-cross-task-reset.json`；仅证明记录中的连接/显示状态/交付时钟，不把缓存长度推为缓存原值相等或交付步数当物理执行。14:39原supervisor/八worker/model/sim与MEM队列均实活、52完整/948待、无错误；14:40再核9f actor/1177编排/ae86队列/d67审计源码HEAD准确且Git干净。继续冠军1000和之后MEM576，不新增rollout/修改原件。
+
+- **2026-10-14 14:35 CST / Codex SUBMISSION-FULL-EVAL（首个完整任务结果）：** 上一goal轮完成独立日志工具部署/八卡前缀审计、首20原件核验及首成功视频本地验签，属实质进展；本轮fetch/pull无新增，14:33直接核原3787083/八worker/model与MEM3812967实活，42完整/958待、无新增异常。radio301–310现在10例全部结束，逐原JSON/完整视频SHA/30fps帧数/物理回执均过，308成功2242步、其余9例3225步失败，task-only平均Q0.10/SR1/10；非全100模型成绩、非独立盲测，全部原件保留不挑优。证据`docs/infra/results/2026-10-14-champion-radio10-originals.json`；GPU1已切composting_waste加载，下一只读查首次跨任务重置及继续原1000→MEM576，模型交付仍暂缓。
+
 - **2026-10-14 14:30 CST / Codex SUBMISSION-FULL-EVAL（成功视频已到本地，原队列继续）：** radio308完整原MP4已到`artifacts/final-eval-20261014/champion-public-videos/turning_on_radio_308_0.mp4`，本地SHA `d791fd2e8e1354d478b17aaf8070b890abcb6e27e83719e25660db60c2cba296`与服务器同，ffprobe确认2242帧/30fps/74.733333s/672×448；无剪辑、不入Git。14:29:34直接核原3787083、八worker/model/sim及MEM3812967实活，无worker/model错误；原summary已32完整/968待、1成功，completed-only Q0.046875/SR0.03125，逐原件完整审计目前仅覆盖上一条首20，不冒称32全审/最终成绩。冠军继续原1000、MEM仍waiting_for_champion且phases为空，未重启或改变顺序/模型；两条全量和终态权重/归档仍待，交付继续暂缓。
 
 - **2026-10-14 14:25 CST / Codex SUBMISSION-FULL-EVAL（首个官方完整成功＋八卡前缀审计）：** 冠军已20完整/1成功，radio308官方success=true、Q1、2242真实控制/2242视频帧；其余首20汇总completed-only Q0.075/SR0.05，非全量、非独立盲测。20原JSON/MP4 SHA、30fps/672×448帧数与五个物理batch回执逐项吻合，证据`…/2026-10-14-champion-first20-originals.json`。独立d67b3c85日志工具目标66通过/2可选参考源路径缺失跳过（本地68全部通过）；实际八卡32连接/48episode（20已关闭）/8051次交付的task/epoch/初始状态/投票/inpainting/交付时钟前缀审计全过，详`…/2026-10-14-champion-eight-gpu-protocol-audit.json`。首次整合包装器误要求“当前场景必须有步数”，radio已切n2加载而被拒；改为明确区分当前加载与已完成物理part证据后通过，未放宽逐事件校验/未改运行源。原件/模型不动，下一继续完整1000及后继MEM576；成功原视频正复制本地，不混入训练或挑优重跑。

@@ -1,0 +1,285 @@
+{
+  "schema": "champion_protocol_prefix_audit_v1",
+  "source_recheck": {
+    "observed_at": "2026-10-14T06:40:07.045143+00:00",
+    "sources": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1",
+        "commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "git_clean": true
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261014-v2",
+        "commit": "1177a4691a46a7929506f02fb079882ca8dae887",
+        "git_clean": true
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-priority-20261014-v1",
+        "commit": "ae869bfb13ce51084f0ee500306596d4391d823c",
+        "git_clean": true
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/code/champion-trace-audit-20261014-v1",
+        "commit": "d67b3c855af835ec0fe97512750e364ff1b0ce76",
+        "git_clean": true
+      }
+    ],
+    "running_sources_modified": false
+  },
+  "prefix_bytes": 1751790,
+  "prefix_sha256": "b71dfbb5137c52a14d0d28adcf80f04bc6667fbdae6697c426d950fb033c0634",
+  "lines": 1677,
+  "connections": 10,
+  "episodes": 14,
+  "closed_episodes": 10,
+  "active_connections": 4,
+  "deliveries": 1647,
+  "delivered_controls": 32940,
+  "physically_confirmed_controls": null,
+  "task_ids": [
+    0,
+    90
+  ],
+  "require_closed": false,
+  "session_summaries": [
+    {
+      "episode": "7f6739dfba5b48cd9e94f5fa24701c33/reset-1/task-0",
+      "connection": "7f6739dfba5b48cd9e94f5fa24701c33",
+      "epoch": 1,
+      "task": 0,
+      "deliveries": 162,
+      "stage": 2,
+      "votes": [
+        2,
+        2
+      ],
+      "stages": 5,
+      "legacy": true,
+      "closed": true
+    },
+    {
+      "episode": "2d3f45495084417dae8c10b604916588/reset-1/task-0",
+      "connection": "2d3f45495084417dae8c10b604916588",
+      "epoch": 1,
+      "task": 0,
+      "deliveries": 162,
+      "stage": 1,
+      "votes": [
+        4,
+        4,
+        4
+      ],
+      "stages": 5,
+      "legacy": true,
+      "closed": true
+    },
+    {
+      "episode": "c029737bd0cb49cf8bdccac459c746ad/reset-1/task-0",
+      "connection": "c029737bd0cb49cf8bdccac459c746ad",
+      "epoch": 1,
+      "task": 0,
+      "deliveries": 162,
+      "stage": 3,
+      "votes": [
+        3,
+        3,
+        3
+      ],
+      "stages": 5,
+      "legacy": true,
+      "closed": true
+    },
+    {
+      "episode": "4f0b77ee01964bf4b825266ad2652cd6/reset-1/task-0",
+      "connection": "4f0b77ee01964bf4b825266ad2652cd6",
+      "epoch": 1,
+      "task": 0,
+      "deliveries": 162,
+      "stage": 3,
+      "votes": [
+        3,
+        3,
+        3
+      ],
+      "stages": 5,
+      "legacy": true,
+      "closed": true
+    },
+    {
+      "episode": "7f6739dfba5b48cd9e94f5fa24701c33/reset-2/task-0",
+      "connection": "7f6739dfba5b48cd9e94f5fa24701c33",
+      "epoch": 2,
+      "task": 0,
+      "deliveries": 162,
+      "stage": 1,
+      "votes": [
+        1,
+        1,
+        1
+      ],
+      "stages": 5,
+      "legacy": true,
+      "closed": true
+    },
+    {
+      "episode": "2d3f45495084417dae8c10b604916588/reset-2/task-0",
+      "connection": "2d3f45495084417dae8c10b604916588",
+      "epoch": 2,
+      "task": 0,
+      "deliveries": 162,
+      "stage": 4,
+      "votes": [],
+      "stages": 5,
+      "legacy": true,
+      "closed": true
+    },
+    {
+      "episode": "c029737bd0cb49cf8bdccac459c746ad/reset-2/task-0",
+      "connection": "c029737bd0cb49cf8bdccac459c746ad",
+      "epoch": 2,
+      "task": 0,
+      "deliveries": 162,
+      "stage": 3,
+      "votes": [
+        3,
+        3,
+        3
+      ],
+      "stages": 5,
+      "legacy": true,
+      "closed": true
+    },
+    {
+      "episode": "4f0b77ee01964bf4b825266ad2652cd6/reset-2/task-0",
+      "connection": "4f0b77ee01964bf4b825266ad2652cd6",
+      "epoch": 2,
+      "task": 0,
+      "deliveries": 113,
+      "stage": 3,
+      "votes": [
+        3,
+        3,
+        3
+      ],
+      "stages": 5,
+      "legacy": true,
+      "closed": true
+    },
+    {
+      "episode": "7fa2faa274f44b228a6c9a61b68a1e17/reset-1/task-0",
+      "connection": "7fa2faa274f44b228a6c9a61b68a1e17",
+      "epoch": 1,
+      "task": 0,
+      "deliveries": 162,
+      "stage": 2,
+      "votes": [
+        4,
+        4,
+        1
+      ],
+      "stages": 5,
+      "legacy": true,
+      "closed": true
+    },
+    {
+      "episode": "a9048b170b554df99daee49d5038f23d/reset-1/task-0",
+      "connection": "a9048b170b554df99daee49d5038f23d",
+      "epoch": 1,
+      "task": 0,
+      "deliveries": 162,
+      "stage": 3,
+      "votes": [
+        3,
+        3,
+        3
+      ],
+      "stages": 5,
+      "legacy": true,
+      "closed": true
+    },
+    {
+      "episode": "593179c2cd8b49409e81bad36cb679f1/reset-1/task-90",
+      "connection": "593179c2cd8b49409e81bad36cb679f1",
+      "epoch": 1,
+      "task": 90,
+      "deliveries": 19,
+      "stage": 0,
+      "votes": [
+        0,
+        0,
+        0
+      ],
+      "stages": 5,
+      "legacy": false,
+      "closed": false
+    },
+    {
+      "episode": "58ca693c1c0c4f0ca65080ed8794a49f/reset-1/task-90",
+      "connection": "58ca693c1c0c4f0ca65080ed8794a49f",
+      "epoch": 1,
+      "task": 90,
+      "deliveries": 19,
+      "stage": 0,
+      "votes": [
+        0,
+        0,
+        0
+      ],
+      "stages": 5,
+      "legacy": false,
+      "closed": false
+    },
+    {
+      "episode": "b38f0db505bb49a38e8f05e861febd0c/reset-1/task-90",
+      "connection": "b38f0db505bb49a38e8f05e861febd0c",
+      "epoch": 1,
+      "task": 90,
+      "deliveries": 19,
+      "stage": 0,
+      "votes": [
+        3,
+        3,
+        3
+      ],
+      "stages": 5,
+      "legacy": false,
+      "closed": false
+    },
+    {
+      "episode": "84e1768570204119995379724c77c308/reset-1/task-90",
+      "connection": "84e1768570204119995379724c77c308",
+      "epoch": 1,
+      "task": 90,
+      "deliveries": 19,
+      "stage": 0,
+      "votes": [
+        0,
+        0,
+        0
+      ],
+      "stages": 5,
+      "legacy": false,
+      "closed": false
+    }
+  ],
+  "original_outputs_modified": false,
+  "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+  "does_not_prove": [
+    "raw observation/action/RNG values",
+    "physical execution",
+    "success",
+    "events beyond this exact prefix"
+  ],
+  "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/workers/gpu_1/model/events.jsonl",
+  "captured_bytes": 1751790,
+  "ignored_incomplete_tail_bytes": 0,
+  "observed_at": "2026-10-14T06:37:47.741549+00:00",
+  "gpu": 1,
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+  "worker_pid": 3787169,
+  "model_pid": 3787333,
+  "current_part": "composting_waste-n4-i0",
+  "manifest_sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297",
+  "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+  "config_sha256": "ef627f701aeaa3994aa701ad0837b875e83ddbd582a5c0ab8029ac52ec29d947"
+}
