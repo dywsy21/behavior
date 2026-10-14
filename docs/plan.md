@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 23:32 CST / Codex SUBMISSION-FULL-EVAL（解冻新增4原件验收）：** 原冠军241557/八worker与MEM300108等待器均实活、无failed GPU，累计322完整/4继承异常/674待。解冻305–308四例均12345实际控制、Q2/9、success=false，原JSON/MP4 SHA、672×448/30fps帧数=实控、注册seed/horizon/配置身份及四会话闭合递推已验，证据`docs/infra/results/2026-10-14-champion-thawing305308-originals.json`；该任务仅8/10完成，不能报全任务SR。GPU3自然进入309–310，未停其他卡或改actor；取水、下一冻饼/果树均实际推进。资源快照磁盘约4.97TB可用、RAM约566GB available、单卡显存17–29/73GB，无清理/重启必要。下一继续原件核验与单卡异常处理，双路线全量和最终内部归档仍待，外部交付暂停。
+
 - **2026-10-14 23:20 CST / Codex SUBMISSION-FULL-EVAL（原重置受阻批次完整完成）：** 冠军累计318完整/4继承工程异常/678待、八worker正常；冻饼301–304均13002实控/Q0，原经精确pre-control证书续评的果树305–308均12519实控/Q0。八份原JSON/MP4 SHA、672×448/30fps/帧数=实控、原种子/官方horizon/配置身份和两模型journal闭会话通过，证据`docs/infra/results/2026-10-14-champion-isolated-pie-fruit-originals.json`；这是故障后的完整执行，不是任务成功或策略提升。两卡自动切冻饼305–308/果树309–310，未停其他卡、未改变冻结actor或权重；MEM300108仍waiting。跨任务会话证据见下条，下一继续全量监控/核原件，终态Q/SR及最终内部归档仍未齐。
 
 - **2026-10-14 23:19 CST / Codex SUBMISSION-FULL-EVAL（跨任务独立会话实证）：** GPU4保持同一原模型PID246626/model-000，放鞋两会话在journal1101–1102行关闭，取水四新连接随后1103–1106行建立；精确稳定前缀通过task22→17、stage/vote/交付时钟与首块inpainting清零审计，四个取水实例已真实各700控制。只读证明协议可观察的跨任务状态隔离，不冒称原图/动作/RNG内容同一性或成功；证据`docs/infra/results/2026-10-14-champion-cross-task-isolated-sessions.json`。八worker/MEM等待器仍实活，未为加载或审计停止/改写任一任务；新完成批次随后核原件，完整全量/归档仍待。

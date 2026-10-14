@@ -1,0 +1,390 @@
+{
+  "schema": "champion_isolated_thawing305308_originals_v1",
+  "observed_at": "2026-10-14T15:31:53.029575+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "batches": [
+    {
+      "part": "thawing_frozen_food-n4-i4",
+      "gpu": 3,
+      "records": [
+        {
+          "task": "thawing_frozen_food",
+          "instance_id": 305,
+          "rollout_id": 0,
+          "steps": 12345,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/thawing_frozen_food-n4-i4/json/thawing_frozen_food_305_0.json",
+            "sha256": "d069fccda74bfd84bc8f1ff2ad9d74ea58bcd080952444b35404ebca7f2aa390"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/thawing_frozen_food-n4-i4/videos/thawing_frozen_food_305_0.mp4",
+            "sha256": "ebfb1efef4b7de6747c546d5fe37d968160a6ff0f1f8ceca4a42b1e1efed0a88"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "12345"
+          },
+          "success": false,
+          "q_score_final": 0.2222222222222222
+        },
+        {
+          "task": "thawing_frozen_food",
+          "instance_id": 306,
+          "rollout_id": 0,
+          "steps": 12345,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/thawing_frozen_food-n4-i4/json/thawing_frozen_food_306_0.json",
+            "sha256": "695fe2d958fd3fb3048b428966f5c965e84db1f48d3e8c6abc35e148f87f7a59"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/thawing_frozen_food-n4-i4/videos/thawing_frozen_food_306_0.mp4",
+            "sha256": "0bd5b51c6febe1db8fa563004425fcc70bb085a88b6368df1e884c7d4d3e3793"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "12345"
+          },
+          "success": false,
+          "q_score_final": 0.2222222222222222
+        },
+        {
+          "task": "thawing_frozen_food",
+          "instance_id": 307,
+          "rollout_id": 0,
+          "steps": 12345,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/thawing_frozen_food-n4-i4/json/thawing_frozen_food_307_0.json",
+            "sha256": "69202bbf40a94d8ff9e65ec19e286fef4e691c9d888d8e0fdebea12419e38990"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/thawing_frozen_food-n4-i4/videos/thawing_frozen_food_307_0.mp4",
+            "sha256": "45c779ed8f18dedbb0e345a5b62226d3a74f887f04577de5d4e4ca75607b3797"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "12345"
+          },
+          "success": false,
+          "q_score_final": 0.2222222222222222
+        },
+        {
+          "task": "thawing_frozen_food",
+          "instance_id": 308,
+          "rollout_id": 0,
+          "steps": 12345,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/thawing_frozen_food-n4-i4/json/thawing_frozen_food_308_0.json",
+            "sha256": "983a17c0c46f81ee675149b45281f6095cbce80881b3938ae4bae95f9da626ba"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/thawing_frozen_food-n4-i4/videos/thawing_frozen_food_308_0.mp4",
+            "sha256": "e63fcee82715452aa38441b160c4af339e3d680ab11f4660945e2d5e7d2e77a4"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "12345"
+          },
+          "success": false,
+          "q_score_final": 0.2222222222222222
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/thawing_frozen_food-n4-i4/attempts/04.json",
+        "sha256": "2cd4ca61f010ec1e5b7700c6fddedd4d326461b5d4e3853e2b8009ec19c9657a"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "thawing_frozen_food",
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "instance_ids": [
+          305,
+          306,
+          307,
+          308
+        ],
+        "rollout": 0,
+        "started": 1791988973.8020582,
+        "max_steps": 12344,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1791991823.9499598,
+        "seconds": 2850.147060997784,
+        "actual_applied_controls": [
+          12345,
+          12345,
+          12345,
+          12345
+        ],
+        "unused_delivered_controls": {
+          "0": 15,
+          "1": 15,
+          "2": 15,
+          "3": 15
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 282871,
+        "task": "thawing_frozen_food",
+        "task_id": 70,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "78067a2510a97b7874a3550d2a759f5716351c33c5c1fc671e41fb2e2e290e9d",
+        "started": 1791988595.3459687,
+        "optimizer_updates": 0,
+        "control_steps": [
+          12300,
+          12300,
+          12300,
+          12300
+        ],
+        "updated": 1791991813.1904824,
+        "finished": 1791991823.952263,
+        "official_timeout": 12344,
+        "completed": 4
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 2857236,
+        "prefix_sha256": "50fd5209305f3daf4a47dcfee29b5713b6cc13c8a23c4b70ed070da339707455",
+        "lines": 2484,
+        "connections": 4,
+        "episodes": 4,
+        "closed_episodes": 4,
+        "active_connections": 0,
+        "deliveries": 2472,
+        "delivered_controls": 49440,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          70
+        ],
+        "require_closed": false,
+        "session_summaries": [
+          {
+            "episode": "252c28db4ce04ce1a82f7bfa38c8962f/reset-1/task-70",
+            "connection": "252c28db4ce04ce1a82f7bfa38c8962f",
+            "epoch": 1,
+            "task": 70,
+            "deliveries": 618,
+            "stage": 4,
+            "votes": [
+              4
+            ],
+            "stages": 9,
+            "legacy": false,
+            "closed": true
+          },
+          {
+            "episode": "f6eb4dd2f76a4eaa83935ed966bd6e53/reset-1/task-70",
+            "connection": "f6eb4dd2f76a4eaa83935ed966bd6e53",
+            "epoch": 1,
+            "task": 70,
+            "deliveries": 618,
+            "stage": 5,
+            "votes": [
+              3,
+              2,
+              2
+            ],
+            "stages": 9,
+            "legacy": false,
+            "closed": true
+          },
+          {
+            "episode": "dbfd495f05e74521a49201b508ff86df/reset-1/task-70",
+            "connection": "dbfd495f05e74521a49201b508ff86df",
+            "epoch": 1,
+            "task": 70,
+            "deliveries": 618,
+            "stage": 4,
+            "votes": [
+              4,
+              3,
+              3
+            ],
+            "stages": 9,
+            "legacy": false,
+            "closed": true
+          },
+          {
+            "episode": "5b8fe7999670420092299475e5455533/reset-1/task-70",
+            "connection": "5b8fe7999670420092299475e5455533",
+            "epoch": 1,
+            "task": 70,
+            "deliveries": 618,
+            "stage": 3,
+            "votes": [
+              3,
+              3,
+              3
+            ],
+            "stages": 9,
+            "legacy": false,
+            "closed": true
+          }
+        ],
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_3/model-000/events.jsonl",
+        "captured_bytes": 2857236,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241611,
+        "gpu": 3,
+        "started": 1791987613.7789094,
+        "completed_parts": [
+          "thawing_frozen_food-n4-i4"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 246666,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_3/model-000",
+        "updated": 1791991833.2357824,
+        "sim_pid": 363295,
+        "part": "thawing_frozen_food-n2-i8"
+      },
+      "actual_controls": 49380,
+      "controls_per_second": 17.32542179164361
+    }
+  ],
+  "summary": {
+    "status": "running",
+    "expected": 1000,
+    "completed": 322,
+    "missing": 678,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.07142117716651876,
+    "completed_only_sr": 0.021739130434782608,
+    "coverage": 326,
+    "execution_errors": 4,
+    "unaccounted": 674,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.02299761904761904,
+    "conservative_sr_errors_and_missing_as_zero": 0.007,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0,
+    "tasks": {
+      "thawing_frozen_food": {
+        "completed": 8,
+        "expected": 10,
+        "q_score_sum": 1.7777777777777781,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0.1777777777777778,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0.22222222222222227
+      }
+    }
+  },
+  "supervisor": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {},
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 322,
+    "coverage": 326,
+    "updated": 1791991882.971618
+  },
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 300108,
+    "started": 1791989042.9684465,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+        "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v2/status.json",
+        "sha256": "643cca0bd67296878a5518bd6de3d786d331fd9bebe00b777b0d7b68a50f2ec5"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-queue-isolation-20261014-v2",
+    "queue_source_commit": "9122b13726bf1862dbe2d6616c0da916822e2487",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "pending_mem_upgrade": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+      "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+    },
+    "updated": 1791989042.9684682
+  },
+  "manual_visual_review": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "validation_scope": "Original committed JSON, MP4 metadata/hash, physical controls, pinned identity/seed/horizon, and per-GPU journal recurrence; no image-content or RNG identity claim."
+}
