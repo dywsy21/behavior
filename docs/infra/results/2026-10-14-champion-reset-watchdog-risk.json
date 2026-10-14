@@ -1,0 +1,116 @@
+{
+  "schema": "champion_reset_model_only_watchdog_readonly_v1",
+  "observed_at": "2026-10-14T13:43:07.977403+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "worker": {
+    "pid": 50109,
+    "part": "spraying_fruit_trees-n4-i0",
+    "model_pid": 52568,
+    "sim_pid": 127129,
+    "status": "evaluating"
+  },
+  "coordinator_source": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/champion-final-continuation-20261014-v2/scripts/eval/continue_champion_final.py",
+    "sha256": "802569a4bded1d6302b9ec222a115ffc0631b15a388ed11adaab9fb1015ea0ca",
+    "snippet_start_line": 355,
+    "snippet": [
+      "                if (job / 'STOP').exists():",
+      "                    raise InterruptedError('Administrative stop')",
+      "                if model.poll() is not None or read(model_path / 'status.json')['status'] == 'failed_no_retry':",
+      "                    raise RuntimeError('Frozen model service failed')",
+      "                events = model_path / 'events.jsonl'; progress = events.stat().st_size if events.exists() else 0",
+      "                if progress != previous:",
+      "                    previous = progress; last = time.monotonic()",
+      "                if time.monotonic()-last > 1800:",
+      "                    raise TimeoutError('No model progress for 30 minutes')",
+      "                if shutil.disk_usage(job).free < 150 << 30:",
+      "                    raise RuntimeError('Disk safety reserve')",
+      "                time.sleep(5)"
+    ]
+  },
+  "events": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/workers/gpu_2/model-000/events.jsonl",
+    "size": 4027383,
+    "mtime": 1791984240.4097083,
+    "observed_mtime_age_seconds": 1147.5675752162933
+  },
+  "watchdog": {
+    "no_model_growth_seconds": 1800,
+    "approximate_seconds_until_size_staleness_gate": 652.4324247837067,
+    "exact_supervisor_last_monotonic_not_observable": true
+  },
+  "sim_cpu": {
+    "first": {
+      "pid": 127129,
+      "state": "R",
+      "user_ticks": 1437194,
+      "system_ticks": 116315,
+      "start_ticks": 537438335
+    },
+    "second": {
+      "pid": 127129,
+      "state": "R",
+      "user_ticks": 1437620,
+      "system_ticks": 116324,
+      "start_ticks": 537438335
+    },
+    "elapsed_seconds": 3.0021565379574895,
+    "cpu_seconds_delta": 4.35
+  },
+  "part_snapshot": {
+    "status": "running",
+    "control_steps": [
+      12500,
+      12500,
+      12500,
+      12500
+    ],
+    "task": "spraying_fruit_trees",
+    "pid": 127129
+  },
+  "attempt_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/spraying_fruit_trees-n4-i0/attempts/04.json",
+  "attempt_snapshot": {
+    "status": "running",
+    "task": "spraying_fruit_trees",
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "instance_ids": [
+      305,
+      306,
+      307,
+      308
+    ],
+    "rollout": 0,
+    "started": 1791984245.416154,
+    "max_steps": 12518,
+    "policy_seed": 17,
+    "simulator_seed": 0
+  },
+  "model_live": {
+    "pid": 52568,
+    "state": "S",
+    "user_ticks": 57783,
+    "system_ticks": 13683,
+    "start_ticks": 537213497
+  },
+  "supervisor_live": {
+    "pid": 50073,
+    "state": "S",
+    "user_ticks": 505,
+    "system_ticks": 86,
+    "start_ticks": 537204434
+  },
+  "queue_live": {
+    "pid": 127593,
+    "state": "S",
+    "user_ticks": 44,
+    "system_ticks": 6,
+    "start_ticks": 537439810
+  },
+  "modified_source_or_limits": false,
+  "interpretation": "Model-event byte growth is the watchdog signal, not simulator CPU work or reset completion. Event mtime gives an approximate deadline only, because supervisor uses a private monotonic timer and polls every five seconds. CPU tick growth is not proof of useful reset progress or absence of a live lock."
+}
