@@ -1,0 +1,198 @@
+{
+  "schema": "champion_bacon_second4_originals_v1",
+  "observed_at": "2026-10-14T12:58:13.721997+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/manifest.json",
+    "sha256": "b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46"
+  },
+  "records": [
+    {
+      "task": "cook_bacon",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 11520,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/cook_bacon-n4-i4/json/cook_bacon_305_0.json",
+        "sha256": "1554784efa4d18b6453a9cd27d9165f3dac85dcfb9503519bac4910d1c0669b7"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/cook_bacon-n4-i4/videos/cook_bacon_305_0.mp4",
+        "sha256": "a7cdf946af847e99ea7e945ef2eb07470f2519b53d0d010d2a05aac47f9a98d9"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11520"
+      },
+      "success": false,
+      "q_score_final": 0
+    },
+    {
+      "task": "cook_bacon",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 11520,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/cook_bacon-n4-i4/json/cook_bacon_306_0.json",
+        "sha256": "a3a1fc1d75ed05e82a6f670adfb3840a54c0824542a01a20713b32747edc0f19"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/cook_bacon-n4-i4/videos/cook_bacon_306_0.mp4",
+        "sha256": "75db1fbe14ffee0fb765578c7d35d87f6400bc310bcf5d1daf383fe8f76f15b4"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11520"
+      },
+      "success": false,
+      "q_score_final": 0
+    },
+    {
+      "task": "cook_bacon",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 11520,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/cook_bacon-n4-i4/json/cook_bacon_307_0.json",
+        "sha256": "18f7e102b7b9792f724d8be5a4e0d803c9c5ae130e98e5ab65305922c2967085"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/cook_bacon-n4-i4/videos/cook_bacon_307_0.mp4",
+        "sha256": "8d1691534c43168be483b7c34443d5174d3d65571670629a93dd821d8fcab285"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11520"
+      },
+      "success": false,
+      "q_score_final": 0
+    },
+    {
+      "task": "cook_bacon",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 11520,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/cook_bacon-n4-i4/json/cook_bacon_308_0.json",
+        "sha256": "b680b47e178b4be90caa3cb048b5b2bd1da03b9bee2e881ad4bd68497875940a"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/cook_bacon-n4-i4/videos/cook_bacon_308_0.mp4",
+        "sha256": "a7211493770d4e5f57723b4f389f46b76aad85a6c0a019c87b0ad1fc9b7668d0"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11520"
+      },
+      "success": false,
+      "q_score_final": 0
+    }
+  ],
+  "physical_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/cook_bacon-n4-i4/attempts/04.json",
+    "sha256": "d18a928ebe2b94157561df5d4c9d7267094d1c03efaf6423b726ad097e89dda9"
+  },
+  "attempt": {
+    "status": "completed",
+    "task": "cook_bacon",
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "instance_ids": [
+      305,
+      306,
+      307,
+      308
+    ],
+    "rollout": 0,
+    "started": 1791979238.629951,
+    "max_steps": 11519,
+    "policy_seed": 17,
+    "simulator_seed": 0,
+    "finished": 1791982567.6366103,
+    "seconds": 3329.005571851507,
+    "actual_applied_controls": [
+      11520,
+      11520,
+      11520,
+      11520
+    ],
+    "unused_delivered_controls": {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    "server_clock_kind": "policy_delivery",
+    "physical_ack_sent": false
+  },
+  "successful_instances": [],
+  "completed_q_sum": 0,
+  "actual_controls": 46080,
+  "controls_per_second": 13.841971425229996,
+  "previously_verified_parent_metrics": [
+    {
+      "instance_id": 301,
+      "success": false,
+      "q_score_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_bacon-n4-i0/json/cook_bacon_301_0.json",
+        "sha256": "7b70ffac98f98b4376b534116e61b1b0b7db31b2e94558e6f4a301ff85f5857d"
+      }
+    },
+    {
+      "instance_id": 302,
+      "success": false,
+      "q_score_final": 0.7142857142857143,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_bacon-n4-i0/json/cook_bacon_302_0.json",
+        "sha256": "4fb50aff3452a7601e208c6ba8e6a1fff925145a6747cb382ac2f7222aa583c4"
+      }
+    },
+    {
+      "instance_id": 303,
+      "success": false,
+      "q_score_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_bacon-n4-i0/json/cook_bacon_303_0.json",
+        "sha256": "fb3b74e242bceca5b9829aa1e02f76ad8776ad7def56f7943f024905660ced3f"
+      }
+    },
+    {
+      "instance_id": 304,
+      "success": false,
+      "q_score_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_bacon-n4-i0/json/cook_bacon_304_0.json",
+        "sha256": "11c08058632bae8fed70c805e1e09b02fc2291db4ae4bcc52034c831b1203836"
+      }
+    }
+  ],
+  "task_partial_completed": 8,
+  "task_partial_successes": 0,
+  "task_partial_q_sum": 0.7142857142857143,
+  "manual_visual_review": false,
+  "full_task_all10_complete": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "supervisor_live": {
+    "pid": 50073,
+    "status": "running"
+  },
+  "queue_live": {
+    "pid": 127593,
+    "status": "waiting_for_champion_continuation",
+    "phases": []
+  }
+}

@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 20:59 CST / Codex SUBMISSION-FULL-EVAL（新增培根4原件＋提前结束后下一批重置）：** cook_bacon305–308原batch正常完成，各11520控制/帧、Q0/未成功；4原JSON/MP4 SHA/30fps/672×448和实际物理回执通过，46080控制/3329.006s＝13.8420控制/s，原worker已加载309–310。原父run301–304有效记录沿封存SHA关联，task现8有效/0成功/Q和0.7142857，未冒称全10；证据`docs/infra/results/2026-10-14-champion-bacon305308-originals.json`，累计唯一已审272，4异常仍不变。另独立d67核GPU4下一批原日志3242791字节/SHA `36abd257c7fba15b1ba2124f2e724e0925326ec15ad7a55f7424dc4900e507f6`，旧前缀复读未变；四旧epoch已关闭，同四连接各新epoch2从input-stage0/inpainting0/交付时钟0开始，2799次记录递推全过，305–308仍进行中。证据`…/2026-10-14-champion-shoes-next-batch-reset.json`，只证明可见协议状态，非原图/action/RNG字节证明。原50073/127593均实活，当前272有效/4异常/724待、6成功只是子集；继续冠军→MEM，不重启、不热改/训练/交付。
+
 - **2026-10-14 20:54 CST / Codex SUBMISSION-FULL-EVAL（补齐已完268原件核验）：** 上一goal轮完成放鞋缩批状态核验/首4原件及成功视频归档，为实质进展。本轮fetch/pull无新增，原50073/八worker与127593后继直接实活。只读补审尚未增量验收的store_batteries301–304：各11557控制/Q0/未成功，四原JSON/MP4 SHA、30fps/672×448帧数与物理回执全合；整批46228控制/2285.54s约20.2263控制/s，未剪辑改分。证据`docs/infra/results/2026-10-14-champion-batteries-first4-originals.json`；累计唯一已审268，4既有异常保留，不以失败结果触发重跑/改策略。煎培根当前10900/原11519时限仍活跃，等待闭合再入账，MEM仍零阶段等待冠军。
 
 - **2026-10-14 20:51 CST / Codex SUBMISSION-FULL-EVAL（放鞋成功完整原视频到本地）：** `artifacts/final-eval-20261014/champion-public-videos/putting_shoes_on_rack_302_0.mp4`与远端SHA `34d864d6ea996677ac77cf22f0a41ab5b5caf27d00233a239c1f1b440777827b`相同，18,931,842字节/7895帧/30fps/263.166667秒/672×448，未剪辑重编码、Git忽略；对应官方成功Q1，不是MEM-Lite结果。验收元数据已补入首4原件摘要；原冠军/后继继续，无新训练、模型变更或对外上传。

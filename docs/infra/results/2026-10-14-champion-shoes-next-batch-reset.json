@@ -1,0 +1,270 @@
+{
+  "schema": "champion_same_connection_next_batch_reset_prefix_v1",
+  "observed_at": "2026-10-14T12:59:29.191910+00:00",
+  "audit_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-trace-audit-20261014-v1",
+  "audit_source_commit": "d67b3c855af835ec0fe97512750e364ff1b0ce76",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "model": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/workers/gpu_4/model-000",
+  "worker_pid": 50111,
+  "model_pid": 52608,
+  "sim_pid": 80431,
+  "original_processes_live": true,
+  "part_status": {
+    "status": "running",
+    "pid": 80431,
+    "task": "putting_shoes_on_rack",
+    "task_id": 22,
+    "indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+    "started": 1791979130.0133808,
+    "optimizer_updates": 0,
+    "control_steps": [
+      3300,
+      3300,
+      3300,
+      3300
+    ],
+    "updated": 1791982766.8288765
+  },
+  "attempts": [
+    {
+      "status": "completed",
+      "task": "putting_shoes_on_rack",
+      "indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "instance_ids": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "rollout": 0,
+      "started": 1791979479.8945084,
+      "max_steps": 11589,
+      "policy_seed": 17,
+      "simulator_seed": 0,
+      "finished": 1791982022.9484265,
+      "seconds": 2543.053001040593,
+      "actual_applied_controls": [
+        11590,
+        7895,
+        11590,
+        11590
+      ],
+      "unused_delivered_controls": {
+        "0": 10,
+        "1": 5,
+        "2": 10,
+        "3": 10
+      },
+      "server_clock_kind": "policy_delivery",
+      "physical_ack_sent": false
+    },
+    {
+      "status": "running",
+      "task": "putting_shoes_on_rack",
+      "indices": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "instance_ids": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "rollout": 0,
+      "started": 1791982022.949423,
+      "max_steps": 11589,
+      "policy_seed": 17,
+      "simulator_seed": 0
+    }
+  ],
+  "trace": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 3242791,
+    "prefix_sha256": "36abd257c7fba15b1ba2124f2e724e0925326ec15ad7a55f7424dc4900e507f6",
+    "lines": 2811,
+    "connections": 4,
+    "episodes": 8,
+    "closed_episodes": 4,
+    "active_connections": 4,
+    "deliveries": 2799,
+    "delivered_controls": 55980,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      22
+    ],
+    "require_closed": false,
+    "session_summaries": [
+      {
+        "episode": "f8d51b4375754710b376b05712bea785/reset-1/task-22",
+        "connection": "f8d51b4375754710b376b05712bea785",
+        "epoch": 1,
+        "task": 22,
+        "deliveries": 580,
+        "stage": 7,
+        "votes": [
+          2,
+          2,
+          2
+        ],
+        "stages": 9,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "2d7d404096094b039c65c893476143c0/reset-1/task-22",
+        "connection": "2d7d404096094b039c65c893476143c0",
+        "epoch": 1,
+        "task": 22,
+        "deliveries": 395,
+        "stage": 8,
+        "votes": [
+          3,
+          8,
+          8
+        ],
+        "stages": 9,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "49f77af5203341879e4517eb74c70f08/reset-1/task-22",
+        "connection": "49f77af5203341879e4517eb74c70f08",
+        "epoch": 1,
+        "task": 22,
+        "deliveries": 580,
+        "stage": 1,
+        "votes": [
+          1,
+          1,
+          1
+        ],
+        "stages": 9,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "bad860a7c939419f9f4cfa15604e84fe/reset-1/task-22",
+        "connection": "bad860a7c939419f9f4cfa15604e84fe",
+        "epoch": 1,
+        "task": 22,
+        "deliveries": 580,
+        "stage": 5,
+        "votes": [
+          1,
+          1,
+          1
+        ],
+        "stages": 9,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "f8d51b4375754710b376b05712bea785/reset-2/task-22",
+        "connection": "f8d51b4375754710b376b05712bea785",
+        "epoch": 2,
+        "task": 22,
+        "deliveries": 166,
+        "stage": 0,
+        "votes": [
+          0,
+          1,
+          0
+        ],
+        "stages": 9,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "2d7d404096094b039c65c893476143c0/reset-2/task-22",
+        "connection": "2d7d404096094b039c65c893476143c0",
+        "epoch": 2,
+        "task": 22,
+        "deliveries": 166,
+        "stage": 3,
+        "votes": [
+          3,
+          3,
+          3
+        ],
+        "stages": 9,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "49f77af5203341879e4517eb74c70f08/reset-2/task-22",
+        "connection": "49f77af5203341879e4517eb74c70f08",
+        "epoch": 2,
+        "task": 22,
+        "deliveries": 166,
+        "stage": 3,
+        "votes": [
+          3,
+          3,
+          3
+        ],
+        "stages": 9,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "bad860a7c939419f9f4cfa15604e84fe/reset-2/task-22",
+        "connection": "bad860a7c939419f9f4cfa15604e84fe",
+        "epoch": 2,
+        "task": 22,
+        "deliveries": 166,
+        "stage": 4,
+        "votes": [
+          4,
+          5,
+          4
+        ],
+        "stages": 9,
+        "legacy": true,
+        "closed": false
+      }
+    ],
+    "original_outputs_modified": false,
+    "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/workers/gpu_4/model-000/events.jsonl",
+    "captured_bytes": 3242791,
+    "ignored_incomplete_tail_bytes": 0
+  },
+  "physical_state_snapshot_not_per_call_ACK": true,
+  "limitations": [
+    "Journal has connection identities, not raw image/action/RNG bytes.",
+    "Coarse physical control snapshot is not a per-connection physical receipt.",
+    "No score counted until completed batch receipt; no new model or rollout started."
+  ],
+  "prior_prefix": {
+    "bytes": 2371667,
+    "sha256": "a7539ddce85254ef9033f688e17a4e196c9d7245602180c22db6bfa51781d02d",
+    "rehashed_and_unchanged": true
+  },
+  "prior_completed_originals_evidence": "docs/infra/results/2026-10-14-champion-shoes-first4-originals.json",
+  "observed_reset_result": "All four first-batch episodes closed; same four connection identities each begin a distinct epoch2. The auditor verifies fresh input stage0, inpainting0, prediction1 and delivery clock0 at each first new event."
+}
