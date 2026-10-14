@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 23:06 CST / Codex SUBMISSION-FULL-EVAL（隔离后的首6原件完成）：** 冠军v2原241557及八worker继续运行、无failed GPU，累计310完整/4继承异常/686待；书架301–304均11610实控/Q0，放鞋309 Q0.2/11590步、310官方成功/Q1/10303步，六份原JSON/MP4 SHA、30fps帧数=实控、种子/官方horizon/原9f源及两个GPU会话递推均验过。放鞋10实例已齐，官方SR2/10、平均Q0.51；不是100任务最终指标。两卡自然切下一batch/任务，未停其他卡；证据`docs/infra/results/2026-10-14-champion-isolated-first6-originals.json`，没有人工全片视觉复核或新速度保证。MEMv8/300108仍等待冠军，无重启、改权重或外部交付；下一继续原件核账及局部异常隔离，全量终态/内部归档仍待。
+
 - **2026-10-14 22:56 CST / Codex SUBMISSION-FULL-EVAL（八卡真实控制验收）：** 原241557/八worker/模型/模拟器全活、无failed GPU；各slot实控快照按GPU0–7为6600/9600/6800/3200/8700/3400/400/1100，喷果树已越过原重置故障，尚不是成功结论。八份journal稳定前缀/30独立会话全部通过task/session/stage/vote/inpainting/交付时钟审计，八份加载参数SHA均原2a5ce80b…、0更新；证据`docs/infra/results/2026-10-14-champion-isolated-eight-gpu-audit.json`。目标上另用真实固定官方network_utils路径补跑先前跳过的socket/重置/动作块消费用例，1通过；不冒称根自测为成员review。只读持续监控PID303366（本地exec session99149）跟踪新冠军v2→MEMv8/队列300108，七卡到八卡自然开始，无再停机；磁盘约4.97TB可用。304完整/4旧异常/692待仍是当前完整回执口径；两轮全量及最终归档仍待，外部交付暂停。
 
 - **2026-10-14 22:44 CST / Codex SUBMISSION-FULL-EVAL（双路线持续隔离已接好）：** 新MEM v8 `queue-after-champion-isolated-v1`PID300108真实waiting/零阶段，manifest7819b835，与旧v7严格同576实例/slot顺序/权重/原件，拆174独立物理batch；未来MEM编排79371d77、原actor51c，队列9122b137，目标249通过/1跳过＋队列修复42通过。原v7从未启动、旧等待器241922零阶段退出/保留STOP与原件。冠军原241557始终运行/未重启/无失败卡：六卡已真实推进，书架每例5800、喷果树3700，另两场景加载中。证据`docs/infra/results/2026-10-14-mem-isolated-queue-launch.json`；之后仍先冠军→MEM，异常逐batch记录/不伪造成绩，权重/物理/官方控制预算不改。下一继续全量监控/完整原件审计，完整Q/SR与归档仍未完成，外部交付暂缓。
