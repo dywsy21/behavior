@@ -1,0 +1,1776 @@
+{
+  "schema": "champion_isolated_new_committed_originals_v1",
+  "observed_at": "2026-10-14T18:21:02.944504+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "batches": [
+    {
+      "part": "clean_up_broken_glass-n4-i4",
+      "gpu": 6,
+      "records": [
+        {
+          "task": "clean_up_broken_glass",
+          "instance_id": 305,
+          "rollout_id": 0,
+          "steps": 13038,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_up_broken_glass-n4-i4/json/clean_up_broken_glass_305_0.json",
+            "sha256": "5339104923b1964e1b1e4ce6aa4d40c5add6d01b80389ff5ac6a82acf40e66a6"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_up_broken_glass-n4-i4/videos/clean_up_broken_glass_305_0.mp4",
+            "sha256": "421032baa1a605d5a836318175459953ca8acab314fb94d9ca692187d2c5e358"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13038"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "clean_up_broken_glass",
+          "instance_id": 306,
+          "rollout_id": 0,
+          "steps": 13038,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_up_broken_glass-n4-i4/json/clean_up_broken_glass_306_0.json",
+            "sha256": "ed041a0d1c8b75b6f0169b79cbb0eda9acbb34e17fdb9c56553718bc65bd0ce4"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_up_broken_glass-n4-i4/videos/clean_up_broken_glass_306_0.mp4",
+            "sha256": "c14a0ce6c18916ac0dd9e13c40d4c8e23a16d5f5196eb6406b179e9ca61af9d5"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13038"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "clean_up_broken_glass",
+          "instance_id": 307,
+          "rollout_id": 0,
+          "steps": 13038,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_up_broken_glass-n4-i4/json/clean_up_broken_glass_307_0.json",
+            "sha256": "0b6b855e1d9b420c9948c10c342a98f2c05bb67fd1844f58d845d44b3e802e06"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_up_broken_glass-n4-i4/videos/clean_up_broken_glass_307_0.mp4",
+            "sha256": "ffbf1ed55c26342a613cf0c2f4b0fd3f2135010ecc90f5dbf252e12fed5d4900"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13038"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "clean_up_broken_glass",
+          "instance_id": 308,
+          "rollout_id": 0,
+          "steps": 13038,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_up_broken_glass-n4-i4/json/clean_up_broken_glass_308_0.json",
+            "sha256": "56c359899aa58ded08d0e43ba9721d83eaa242ba7e7e918fe216aeabd85d7230"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_up_broken_glass-n4-i4/videos/clean_up_broken_glass_308_0.mp4",
+            "sha256": "fc92724fec3e48f814d822f2f75db8ac61727cd44e804c8beb1afb3b1d94cf5d"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13038"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_up_broken_glass-n4-i4/attempts/04.json",
+        "sha256": "369b5703e414c432c2f6b1c109d18dc45ef3296924bf938980164c5d0bf5111c"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "clean_up_broken_glass",
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "instance_ids": [
+          305,
+          306,
+          307,
+          308
+        ],
+        "rollout": 0,
+        "started": 1791999126.5682728,
+        "max_steps": 13037,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792001934.8633254,
+        "seconds": 2808.294383252971,
+        "actual_applied_controls": [
+          13038,
+          13038,
+          13038,
+          13038
+        ],
+        "unused_delivered_controls": {
+          "0": 2,
+          "1": 2,
+          "2": 2,
+          "3": 2
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 525678,
+        "task": "clean_up_broken_glass",
+        "task_id": 80,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "6a7d2dd9c5c05b744652159d22ff8fb6aaad377c95822b78c8bb2dcb5df4bd4b",
+        "started": 1791998726.865993,
+        "optimizer_updates": 0,
+        "control_steps": [
+          13000,
+          13000,
+          13000,
+          13000
+        ],
+        "updated": 1792001926.259813,
+        "finished": 1792001934.866235,
+        "official_timeout": 13037,
+        "completed": 4
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 10481711,
+        "prefix_sha256": "b4a72549cdfef62b520fcedbed0a30401c08275dc3a64e303369854b00b45b96",
+        "lines": 9020,
+        "connections": 14,
+        "episodes": 14,
+        "closed_episodes": 14,
+        "active_connections": 0,
+        "deliveries": 8978,
+        "delivered_controls": 179560,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          32,
+          80
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_6/model-000/events.jsonl",
+        "captured_bytes": 10481711,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241614,
+        "gpu": 6,
+        "started": 1791987613.784483,
+        "completed_parts": [
+          "wash_a_baseball_cap-n4-i4",
+          "wash_a_baseball_cap-n2-i8",
+          "clean_up_broken_glass-n4-i0",
+          "clean_up_broken_glass-n4-i4"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 249502,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_6/model-000",
+        "updated": 1792001944.6685991,
+        "sim_pid": 598165,
+        "part": "clean_up_broken_glass-n2-i8"
+      },
+      "actual_controls": 52152,
+      "controls_per_second": 18.570702669564877
+    },
+    {
+      "part": "packing_meal_for_delivery-n2-i8",
+      "gpu": 1,
+      "records": [
+        {
+          "task": "packing_meal_for_delivery",
+          "instance_id": 309,
+          "rollout_id": 0,
+          "steps": 13290,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/packing_meal_for_delivery-n2-i8/json/packing_meal_for_delivery_309_0.json",
+            "sha256": "c189992b48234066e37abcd2ebcbd31f89cc179696751d0ffeeac61fd39dfbba"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/packing_meal_for_delivery-n2-i8/videos/packing_meal_for_delivery_309_0.mp4",
+            "sha256": "7fb04bc9d91c33c264089252ba6063cb8fd53c7f37ebe7e2d76b4be941f4a811"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13290"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "packing_meal_for_delivery",
+          "instance_id": 310,
+          "rollout_id": 0,
+          "steps": 13290,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/packing_meal_for_delivery-n2-i8/json/packing_meal_for_delivery_310_0.json",
+            "sha256": "69179f14dc9326c067c2e74193963af570c21c59a1f338a41dd58f833ffc502c"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/packing_meal_for_delivery-n2-i8/videos/packing_meal_for_delivery_310_0.mp4",
+            "sha256": "7434f041e7461f8df4d7ac853d40d57c94393076ec55e7972238e4d3d94b14a4"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13290"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/packing_meal_for_delivery-n2-i8/attempts/08.json",
+        "sha256": "c0af7e4d64437311086b113c1279b7089760d92a45c5090bf56d7c73e6247601"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "packing_meal_for_delivery",
+        "indices": [
+          8,
+          9
+        ],
+        "instance_ids": [
+          309,
+          310
+        ],
+        "rollout": 0,
+        "started": 1792000303.3147583,
+        "max_steps": 13289,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792001994.9642735,
+        "seconds": 1691.6485038921237,
+        "actual_applied_controls": [
+          13290,
+          13290
+        ],
+        "unused_delivered_controls": {
+          "0": 10,
+          "1": 10
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 558525,
+        "task": "packing_meal_for_delivery",
+        "task_id": 81,
+        "indices": [
+          8,
+          9
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "ef627f701aeaa3994aa701ad0837b875e83ddbd582a5c0ab8029ac52ec29d947",
+        "started": 1792000152.691191,
+        "optimizer_updates": 0,
+        "control_steps": [
+          13200,
+          13200
+        ],
+        "updated": 1792001983.3056064,
+        "finished": 1792001994.9664059,
+        "official_timeout": 13289,
+        "completed": 2
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 14256641,
+        "prefix_sha256": "ac992cd504d5bd173f5df5b2cfdbf1f6a1c44a5d60783dd44c5a9ca4888e7197",
+        "lines": 12520,
+        "connections": 20,
+        "episodes": 20,
+        "closed_episodes": 20,
+        "active_connections": 0,
+        "deliveries": 12460,
+        "delivered_controls": 249200,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          81,
+          99
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/model-000/events.jsonl",
+        "captured_bytes": 14256641,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241609,
+        "gpu": 1,
+        "started": 1791987613.7508204,
+        "completed_parts": [
+          "sorting_books_on_shelf-n4-i0",
+          "sorting_books_on_shelf-n4-i4",
+          "sorting_books_on_shelf-n2-i8",
+          "packing_meal_for_delivery-n4-i0",
+          "packing_meal_for_delivery-n4-i4",
+          "packing_meal_for_delivery-n2-i8"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 241683,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/model-000",
+        "updated": 1792002059.4337304,
+        "sim_pid": 601640,
+        "part": "turning_out_all_lights_before_sleep-n4-i0"
+      },
+      "actual_controls": 26580,
+      "controls_per_second": 15.712483969834791
+    },
+    {
+      "part": "setting_the_fire-n4-i4",
+      "gpu": 5,
+      "records": [
+        {
+          "task": "setting_the_fire",
+          "instance_id": 305,
+          "rollout_id": 0,
+          "steps": 13678,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_the_fire-n4-i4/json/setting_the_fire_305_0.json",
+            "sha256": "7047d146095106c4aabfb0129e73a1e765e50a111fab1d4145131672a9c7114f"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_the_fire-n4-i4/videos/setting_the_fire_305_0.mp4",
+            "sha256": "38b18de1fe3aa0225f69d252997aa6b91c625d072be50d31f09437377b523390"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13678"
+          },
+          "success": false,
+          "q_score_final": 0.25
+        },
+        {
+          "task": "setting_the_fire",
+          "instance_id": 306,
+          "rollout_id": 0,
+          "steps": 13678,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_the_fire-n4-i4/json/setting_the_fire_306_0.json",
+            "sha256": "710deaea8d7f5e678b0545edd0fd6adf1b0f87bc21e6818a21b6bb00393ae4fe"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_the_fire-n4-i4/videos/setting_the_fire_306_0.mp4",
+            "sha256": "eb780dc35bc0deda5b46c0dc56555cc54ea6783309309973c76fe4eaa6643e62"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13678"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "setting_the_fire",
+          "instance_id": 307,
+          "rollout_id": 0,
+          "steps": 13678,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_the_fire-n4-i4/json/setting_the_fire_307_0.json",
+            "sha256": "92265944bfebb05927d9ceff1ebbee04a502b544b13f8ae0c9fde47bfa0088d4"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_the_fire-n4-i4/videos/setting_the_fire_307_0.mp4",
+            "sha256": "75aa16a9ef24d6495e44b7058d0c60da63a6fb8896a4f2d772461e52d2aa2db5"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13678"
+          },
+          "success": false,
+          "q_score_final": 0.25
+        },
+        {
+          "task": "setting_the_fire",
+          "instance_id": 308,
+          "rollout_id": 0,
+          "steps": 13678,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_the_fire-n4-i4/json/setting_the_fire_308_0.json",
+            "sha256": "d4c469e3599d523f305d4d11bd36cc58f7500c7ac10425aa09693f3e900665ab"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_the_fire-n4-i4/videos/setting_the_fire_308_0.mp4",
+            "sha256": "e1817efc1c8b29bdd7e0f8e1b2fe1c5362960e4f14e6d2d42d33499a12debbab"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13678"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_the_fire-n4-i4/attempts/04.json",
+        "sha256": "a0130958f271e4cea30927d0bce8e30611a9e84cb6e2d8d94f1bec8a51d4c554"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "setting_the_fire",
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "instance_ids": [
+          305,
+          306,
+          307,
+          308
+        ],
+        "rollout": 0,
+        "started": 1791998720.628454,
+        "max_steps": 13677,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792001832.7316198,
+        "seconds": 3112.1020377036184,
+        "actual_applied_controls": [
+          13678,
+          13678,
+          13678,
+          13678
+        ],
+        "unused_delivered_controls": {
+          "0": 2,
+          "1": 2,
+          "2": 2,
+          "3": 2
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 516110,
+        "task": "setting_the_fire",
+        "task_id": 30,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "2ef38ac2c0dceae284086501c55c731da93b6244db9887c7c11bc1a8b15a0da4",
+        "started": 1791998324.7544897,
+        "optimizer_updates": 0,
+        "control_steps": [
+          13600,
+          13600,
+          13600,
+          13600
+        ],
+        "updated": 1792001814.3667126,
+        "finished": 1792001832.7342865,
+        "official_timeout": 13677,
+        "completed": 4
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 10830371,
+        "prefix_sha256": "d6219f3d578821c335d6eb74a8fa1bd91a3a0746768ce756c1b3fbb57790ea79",
+        "lines": 9090,
+        "connections": 16,
+        "episodes": 14,
+        "closed_episodes": 14,
+        "active_connections": 2,
+        "deliveries": 9046,
+        "delivered_controls": 180920,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          12,
+          30
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_5/model-000/events.jsonl",
+        "captured_bytes": 10830371,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241613,
+        "gpu": 5,
+        "started": 1791987613.7776332,
+        "completed_parts": [
+          "preparing_lunch_box-n4-i4",
+          "preparing_lunch_box-n2-i8",
+          "setting_the_fire-n4-i0",
+          "setting_the_fire-n4-i4"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 244175,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_5/model-000",
+        "updated": 1792001843.108364,
+        "sim_pid": 594937,
+        "part": "setting_the_fire-n2-i8"
+      },
+      "actual_controls": 54712,
+      "controls_per_second": 17.580400429406005
+    }
+  ],
+  "protocols": {
+    "1": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 14256641,
+      "prefix_sha256": "ac992cd504d5bd173f5df5b2cfdbf1f6a1c44a5d60783dd44c5a9ca4888e7197",
+      "lines": 12520,
+      "connections": 20,
+      "episodes": 20,
+      "closed_episodes": 20,
+      "active_connections": 0,
+      "deliveries": 12460,
+      "delivered_controls": 249200,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        81,
+        99
+      ],
+      "require_closed": false,
+      "session_summaries": [
+        {
+          "episode": "fe6ff0ea7d584ff1b294e5716d04a359/reset-1/task-99",
+          "connection": "fe6ff0ea7d584ff1b294e5716d04a359",
+          "epoch": 1,
+          "task": 99,
+          "deliveries": 581,
+          "stage": 2,
+          "votes": [
+            2,
+            0,
+            0
+          ],
+          "stages": 8,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "b138a05d807c4b7cb9f73ce0c0b81484/reset-1/task-99",
+          "connection": "b138a05d807c4b7cb9f73ce0c0b81484",
+          "epoch": 1,
+          "task": 99,
+          "deliveries": 581,
+          "stage": 7,
+          "votes": [
+            7,
+            7,
+            6
+          ],
+          "stages": 8,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "5450a9a212734942b30d3e7d2bdf0b08/reset-1/task-99",
+          "connection": "5450a9a212734942b30d3e7d2bdf0b08",
+          "epoch": 1,
+          "task": 99,
+          "deliveries": 581,
+          "stage": 3,
+          "votes": [
+            7
+          ],
+          "stages": 8,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "2e2a4f194254401aa8aa1d72185496ee/reset-1/task-99",
+          "connection": "2e2a4f194254401aa8aa1d72185496ee",
+          "epoch": 1,
+          "task": 99,
+          "deliveries": 581,
+          "stage": 1,
+          "votes": [
+            1,
+            2,
+            6
+          ],
+          "stages": 8,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "13a298216f4b49e8bda3d4943b09680a/reset-1/task-99",
+          "connection": "13a298216f4b49e8bda3d4943b09680a",
+          "epoch": 1,
+          "task": 99,
+          "deliveries": 581,
+          "stage": 2,
+          "votes": [
+            7,
+            7,
+            2
+          ],
+          "stages": 8,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "3996fa92df6b4d70b83433e0aed85f69/reset-1/task-99",
+          "connection": "3996fa92df6b4d70b83433e0aed85f69",
+          "epoch": 1,
+          "task": 99,
+          "deliveries": 581,
+          "stage": 2,
+          "votes": [
+            7,
+            6,
+            7
+          ],
+          "stages": 8,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "3d6a5af5f30049b385521483daaed39b/reset-1/task-99",
+          "connection": "3d6a5af5f30049b385521483daaed39b",
+          "epoch": 1,
+          "task": 99,
+          "deliveries": 581,
+          "stage": 2,
+          "votes": [
+            2,
+            7,
+            6
+          ],
+          "stages": 8,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "f7f8d17b4f3d4895964b807dbabd7120/reset-1/task-99",
+          "connection": "f7f8d17b4f3d4895964b807dbabd7120",
+          "epoch": 1,
+          "task": 99,
+          "deliveries": 581,
+          "stage": 7,
+          "votes": [
+            0,
+            1,
+            2
+          ],
+          "stages": 8,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "343b4ba1e4e745a39793caa588daf016/reset-1/task-99",
+          "connection": "343b4ba1e4e745a39793caa588daf016",
+          "epoch": 1,
+          "task": 99,
+          "deliveries": 581,
+          "stage": 2,
+          "votes": [
+            2,
+            2
+          ],
+          "stages": 8,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "68ad9edc505445099cd3a9fe54edea99/reset-1/task-99",
+          "connection": "68ad9edc505445099cd3a9fe54edea99",
+          "epoch": 1,
+          "task": 99,
+          "deliveries": 581,
+          "stage": 2,
+          "votes": [
+            7,
+            7,
+            7
+          ],
+          "stages": 8,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "e35e59cf74054bfc80227a2b5efbb2c1/reset-1/task-81",
+          "connection": "e35e59cf74054bfc80227a2b5efbb2c1",
+          "epoch": 1,
+          "task": 81,
+          "deliveries": 665,
+          "stage": 8,
+          "votes": [
+            6,
+            6,
+            6
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "6ebf9f363f634d548f266853ecf3cf54/reset-1/task-81",
+          "connection": "6ebf9f363f634d548f266853ecf3cf54",
+          "epoch": 1,
+          "task": 81,
+          "deliveries": 665,
+          "stage": 8,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "c7050f210bdf4032be614a41efa1cc4c/reset-1/task-81",
+          "connection": "c7050f210bdf4032be614a41efa1cc4c",
+          "epoch": 1,
+          "task": 81,
+          "deliveries": 665,
+          "stage": 5,
+          "votes": [
+            7,
+            3,
+            3
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "f501d3bfdb6e48a19c29566287256572/reset-1/task-81",
+          "connection": "f501d3bfdb6e48a19c29566287256572",
+          "epoch": 1,
+          "task": 81,
+          "deliveries": 665,
+          "stage": 8,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "b39dc1802d2c49c38077b97572c56104/reset-1/task-81",
+          "connection": "b39dc1802d2c49c38077b97572c56104",
+          "epoch": 1,
+          "task": 81,
+          "deliveries": 665,
+          "stage": 8,
+          "votes": [
+            8,
+            6,
+            6
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "5216e0c24d17418eba6261e71818b64a/reset-1/task-81",
+          "connection": "5216e0c24d17418eba6261e71818b64a",
+          "epoch": 1,
+          "task": 81,
+          "deliveries": 665,
+          "stage": 8,
+          "votes": [
+            3,
+            6,
+            6
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "6c7f5f401d164a85ba8d5423af706975/reset-1/task-81",
+          "connection": "6c7f5f401d164a85ba8d5423af706975",
+          "epoch": 1,
+          "task": 81,
+          "deliveries": 665,
+          "stage": 6,
+          "votes": [
+            1,
+            2,
+            0
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "6a78504bfe8241a39111d47960ec5b25/reset-1/task-81",
+          "connection": "6a78504bfe8241a39111d47960ec5b25",
+          "epoch": 1,
+          "task": 81,
+          "deliveries": 665,
+          "stage": 7,
+          "votes": [
+            1,
+            7,
+            1
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "96c26d2825af489a9984c52e808d1bf8/reset-1/task-81",
+          "connection": "96c26d2825af489a9984c52e808d1bf8",
+          "epoch": 1,
+          "task": 81,
+          "deliveries": 665,
+          "stage": 3,
+          "votes": [
+            3,
+            3,
+            3
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "9fd394ac132144dfa3d9b5427021ea8b/reset-1/task-81",
+          "connection": "9fd394ac132144dfa3d9b5427021ea8b",
+          "epoch": 1,
+          "task": 81,
+          "deliveries": 665,
+          "stage": 0,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        }
+      ],
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/model-000/events.jsonl",
+      "captured_bytes": 14256641,
+      "ignored_incomplete_tail_bytes": 0
+    },
+    "5": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 10830371,
+      "prefix_sha256": "d6219f3d578821c335d6eb74a8fa1bd91a3a0746768ce756c1b3fbb57790ea79",
+      "lines": 9090,
+      "connections": 16,
+      "episodes": 14,
+      "closed_episodes": 14,
+      "active_connections": 2,
+      "deliveries": 9046,
+      "delivered_controls": 180920,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        12,
+        30
+      ],
+      "require_closed": false,
+      "session_summaries": [
+        {
+          "episode": "563d51c4df314904905169effe9342fd/reset-1/task-12",
+          "connection": "563d51c4df314904905169effe9342fd",
+          "epoch": 1,
+          "task": 12,
+          "deliveries": 619,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            2
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "39dfb26557a74a45b4d0a27bc17bfda0/reset-1/task-12",
+          "connection": "39dfb26557a74a45b4d0a27bc17bfda0",
+          "epoch": 1,
+          "task": 12,
+          "deliveries": 619,
+          "stage": 9,
+          "votes": [
+            9,
+            9,
+            9
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "72fafc6dac164271bb00e604ab3289f5/reset-1/task-12",
+          "connection": "72fafc6dac164271bb00e604ab3289f5",
+          "epoch": 1,
+          "task": 12,
+          "deliveries": 619,
+          "stage": 9,
+          "votes": [
+            9,
+            9,
+            9
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "1b4c5c98426f42038aabde3c283578a6/reset-1/task-12",
+          "connection": "1b4c5c98426f42038aabde3c283578a6",
+          "epoch": 1,
+          "task": 12,
+          "deliveries": 619,
+          "stage": 9,
+          "votes": [
+            9,
+            9,
+            9
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "80d56ff846a4410cba0ba099a9c870bc/reset-1/task-12",
+          "connection": "80d56ff846a4410cba0ba099a9c870bc",
+          "epoch": 1,
+          "task": 12,
+          "deliveries": 479,
+          "stage": 4,
+          "votes": [
+            9,
+            9,
+            9
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "6514e44525d445f6b5f8a41ca4352794/reset-1/task-12",
+          "connection": "6514e44525d445f6b5f8a41ca4352794",
+          "epoch": 1,
+          "task": 12,
+          "deliveries": 619,
+          "stage": 9,
+          "votes": [
+            6,
+            6,
+            6
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "da64afd9738d4676a0c4c5c171c7c34f/reset-1/task-30",
+          "connection": "da64afd9738d4676a0c4c5c171c7c34f",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 8,
+          "votes": [
+            8,
+            8
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "d5d4e69debf44448bdc64f3ced320e91/reset-1/task-30",
+          "connection": "d5d4e69debf44448bdc64f3ced320e91",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "2aef19737f4d4ee691cf5b1a6604794c/reset-1/task-30",
+          "connection": "2aef19737f4d4ee691cf5b1a6604794c",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 1,
+          "votes": [
+            8,
+            7,
+            7
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "c6d5641292d349f1ae000a07aa22c8a4/reset-1/task-30",
+          "connection": "c6d5641292d349f1ae000a07aa22c8a4",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 1,
+          "votes": [
+            1,
+            1,
+            1
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "c66d99c951d94d7cb090a3aa4c49aed7/reset-1/task-30",
+          "connection": "c66d99c951d94d7cb090a3aa4c49aed7",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 1,
+          "votes": [
+            1,
+            5,
+            6
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "82bee785b2224d48bfbdc1b8842c5da3/reset-1/task-30",
+          "connection": "82bee785b2224d48bfbdc1b8842c5da3",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 2,
+          "votes": [
+            2,
+            8,
+            2
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "f3188656d3524abc86d7d71c07369287/reset-1/task-30",
+          "connection": "f3188656d3524abc86d7d71c07369287",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 2,
+          "votes": [
+            7,
+            7,
+            7
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "60337864e79343249106f14662cf101f/reset-1/task-30",
+          "connection": "60337864e79343249106f14662cf101f",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 3,
+          "votes": [
+            7,
+            2,
+            3
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        }
+      ],
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_5/model-000/events.jsonl",
+      "captured_bytes": 10830371,
+      "ignored_incomplete_tail_bytes": 0
+    },
+    "6": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 10481711,
+      "prefix_sha256": "b4a72549cdfef62b520fcedbed0a30401c08275dc3a64e303369854b00b45b96",
+      "lines": 9020,
+      "connections": 14,
+      "episodes": 14,
+      "closed_episodes": 14,
+      "active_connections": 0,
+      "deliveries": 8978,
+      "delivered_controls": 179560,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        32,
+        80
+      ],
+      "require_closed": false,
+      "session_summaries": [
+        {
+          "episode": "4aa4fbb6140d421aacb4dca9288015dd/reset-1/task-32",
+          "connection": "4aa4fbb6140d421aacb4dca9288015dd",
+          "epoch": 1,
+          "task": 32,
+          "deliveries": 627,
+          "stage": 3,
+          "votes": [
+            3,
+            2,
+            2
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "eb4a00b30d824d329910c712b9bd5ea0/reset-1/task-32",
+          "connection": "eb4a00b30d824d329910c712b9bd5ea0",
+          "epoch": 1,
+          "task": 32,
+          "deliveries": 627,
+          "stage": 4,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "0d08741d3b644d62954b2549f7145751/reset-1/task-32",
+          "connection": "0d08741d3b644d62954b2549f7145751",
+          "epoch": 1,
+          "task": 32,
+          "deliveries": 627,
+          "stage": 4,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "88b72d9e582246b4b0530587e24ce621/reset-1/task-32",
+          "connection": "88b72d9e582246b4b0530587e24ce621",
+          "epoch": 1,
+          "task": 32,
+          "deliveries": 627,
+          "stage": 3,
+          "votes": [
+            9,
+            9,
+            9
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "9ce0cb1591d347b7842705ddd8e812f2/reset-1/task-32",
+          "connection": "9ce0cb1591d347b7842705ddd8e812f2",
+          "epoch": 1,
+          "task": 32,
+          "deliveries": 627,
+          "stage": 1,
+          "votes": [
+            0,
+            0
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "1676e4f410f442448b5e5f6abe6f2383/reset-1/task-32",
+          "connection": "1676e4f410f442448b5e5f6abe6f2383",
+          "epoch": 1,
+          "task": 32,
+          "deliveries": 627,
+          "stage": 2,
+          "votes": [],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "f7df236ee36949358444e72b631065d2/reset-1/task-80",
+          "connection": "f7df236ee36949358444e72b631065d2",
+          "epoch": 1,
+          "task": 80,
+          "deliveries": 652,
+          "stage": 1,
+          "votes": [
+            1,
+            1,
+            1
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "371f56cb73e4466fb3d7c87c79a1df4a/reset-1/task-80",
+          "connection": "371f56cb73e4466fb3d7c87c79a1df4a",
+          "epoch": 1,
+          "task": 80,
+          "deliveries": 652,
+          "stage": 3,
+          "votes": [
+            3,
+            3,
+            2
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "a98179aab0ae4793b389b19cd2ca0683/reset-1/task-80",
+          "connection": "a98179aab0ae4793b389b19cd2ca0683",
+          "epoch": 1,
+          "task": 80,
+          "deliveries": 652,
+          "stage": 3,
+          "votes": [
+            4,
+            6,
+            6
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "363e7ceb0e1a42eaa5bfcc79820cef41/reset-1/task-80",
+          "connection": "363e7ceb0e1a42eaa5bfcc79820cef41",
+          "epoch": 1,
+          "task": 80,
+          "deliveries": 652,
+          "stage": 2,
+          "votes": [
+            6,
+            6,
+            6
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "a3c3a1c45880400bb60d47e4d4b0f5e8/reset-1/task-80",
+          "connection": "a3c3a1c45880400bb60d47e4d4b0f5e8",
+          "epoch": 1,
+          "task": 80,
+          "deliveries": 652,
+          "stage": 3,
+          "votes": [
+            1,
+            1,
+            1
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "393bf77464d94b9694b7849355bf9742/reset-1/task-80",
+          "connection": "393bf77464d94b9694b7849355bf9742",
+          "epoch": 1,
+          "task": 80,
+          "deliveries": 652,
+          "stage": 2,
+          "votes": [
+            6,
+            6,
+            6
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "9b8675d23d8a4d5da95b1d6b4055fc62/reset-1/task-80",
+          "connection": "9b8675d23d8a4d5da95b1d6b4055fc62",
+          "epoch": 1,
+          "task": 80,
+          "deliveries": 652,
+          "stage": 2,
+          "votes": [
+            7,
+            7,
+            7
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "1432dcbaf25644809d145cb40b2b027c/reset-1/task-80",
+          "connection": "1432dcbaf25644809d145cb40b2b027c",
+          "epoch": 1,
+          "task": 80,
+          "deliveries": 652,
+          "stage": 1,
+          "votes": [
+            0,
+            0,
+            1
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        }
+      ],
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_6/model-000/events.jsonl",
+      "captured_bytes": 10481711,
+      "ignored_incomplete_tail_bytes": 0
+    }
+  },
+  "previously_verified_parts": [
+    "boxing_food_after_dinner-n2-i8",
+    "boxing_food_after_dinner-n4-i4",
+    "bringing_water-n4-i0",
+    "bringing_water-n4-i4",
+    "clean_boxing_gloves-n4-i0",
+    "clean_up_broken_glass-n4-i0",
+    "cook_a_frozen_pie-n2-i8",
+    "cook_a_frozen_pie-n4-i0",
+    "cook_a_frozen_pie-n4-i4",
+    "dispose_of_glass-n2-i8",
+    "dispose_of_glass-n4-i0",
+    "dispose_of_glass-n4-i4",
+    "packing_meal_for_delivery-n4-i0",
+    "packing_meal_for_delivery-n4-i4",
+    "preparing_lunch_box-n2-i8",
+    "preparing_lunch_box-n4-i4",
+    "putting_shoes_on_rack-n2-i8",
+    "rearranging_kitchen_furniture-n4-i0",
+    "rearranging_kitchen_furniture-n4-i4",
+    "setting_the_fire-n4-i0",
+    "sorting_books_on_shelf-n2-i8",
+    "sorting_books_on_shelf-n4-i0",
+    "sorting_books_on_shelf-n4-i4",
+    "spraying_fruit_trees-n2-i8",
+    "spraying_fruit_trees-n4-i4",
+    "store_produce-n4-i0",
+    "thawing_frozen_food-n2-i8",
+    "thawing_frozen_food-n4-i4",
+    "wash_a_baseball_cap-n2-i8",
+    "wash_a_baseball_cap-n4-i4"
+  ],
+  "summary": {
+    "status": "running",
+    "expected": 1000,
+    "completed": 416,
+    "missing": 584,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.07471382783882782,
+    "completed_only_sr": 0.021634615384615384,
+    "tasks": {
+      "setting_the_fire": {
+        "completed": 8,
+        "expected": 10,
+        "q_score_sum": 1,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0.1,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0.125
+      },
+      "clean_up_broken_glass": {
+        "completed": 8,
+        "expected": 10,
+        "q_score_sum": 0,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0
+      },
+      "packing_meal_for_delivery": {
+        "completed": 10,
+        "expected": 10,
+        "q_score_sum": 0.16666666666666666,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0.016666666666666666,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0.016666666666666666
+      }
+    },
+    "coverage": 420,
+    "execution_errors": 4,
+    "unaccounted": 580,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.031080952380952372,
+    "conservative_sr_errors_and_missing_as_zero": 0.009,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0
+  },
+  "supervisor": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {},
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 416,
+    "coverage": 420,
+    "updated": 1792002047.1436822
+  },
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 300108,
+    "started": 1791989042.9684465,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+        "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v2/status.json",
+        "sha256": "643cca0bd67296878a5518bd6de3d786d331fd9bebe00b777b0d7b68a50f2ec5"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-queue-isolation-20261014-v2",
+    "queue_source_commit": "9122b13726bf1862dbe2d6616c0da916822e2487",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "pending_mem_upgrade": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+      "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+    },
+    "updated": 1791989042.9684682
+  },
+  "manual_visual_review": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "validation_scope": "Original committed JSON, MP4 metadata/hash, physical controls, pinned identity/seed/horizon, and per-GPU journal recurrence; no image-content or RNG identity claim.",
+  "incremental_audit_count": 10,
+  "previous_audited_completed": 406,
+  "previous_audit_commit": "fc2a6f1e",
+  "live_monitor_snapshot": {
+    "observed_at": "2026-10-14T18:20:19.649205+00:00",
+    "monitor_pid": 303366,
+    "champion": {
+      "status": {
+        "status": "running",
+        "pid": 241557,
+        "started": 1791987613.4638016,
+        "completed_gpus": [],
+        "failed_gpus": {},
+        "worker_pids": {
+          "0": 241608,
+          "1": 241609,
+          "2": 241610,
+          "3": 241611,
+          "4": 241612,
+          "5": 241613,
+          "6": 241614,
+          "7": 241615
+        },
+        "completed": 416,
+        "coverage": 420,
+        "updated": 1792002017.0693252
+      },
+      "supervisor_alive": true,
+      "summary": {
+        "status": "running",
+        "completed": 416,
+        "coverage": 420,
+        "execution_errors": 4,
+        "unaccounted": 580,
+        "official_full_q_score": null,
+        "official_full_sr": null
+      },
+      "workers": [
+        {
+          "gpu": 0,
+          "alive": true,
+          "status": "evaluating",
+          "part": "store_produce-n4-i4",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            13600,
+            13600,
+            13600,
+            13600
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 1,
+          "alive": true,
+          "status": "evaluating",
+          "part": "packing_meal_for_delivery-n2-i8",
+          "model_alive": true,
+          "sim_alive": false,
+          "controls": [
+            13200,
+            13200
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 2,
+          "alive": true,
+          "status": "evaluating",
+          "part": "re_shelving_library_books-n4-i0",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            6400,
+            6400,
+            6400,
+            6400
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 3,
+          "alive": true,
+          "status": "evaluating",
+          "part": "rearranging_kitchen_furniture-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            8200,
+            8200
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 4,
+          "alive": true,
+          "status": "evaluating",
+          "part": "bringing_water-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            11000,
+            11000
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 5,
+          "alive": true,
+          "status": "evaluating",
+          "part": "setting_the_fire-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": null,
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 6,
+          "alive": true,
+          "status": "evaluating",
+          "part": "clean_up_broken_glass-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": null,
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 7,
+          "alive": true,
+          "status": "evaluating",
+          "part": "clean_boxing_gloves-n4-i4",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            12000,
+            12000,
+            12000,
+            12000
+          ],
+          "error": null,
+          "final_verification_error": null
+        }
+      ]
+    },
+    "mem": {
+      "status": null,
+      "supervisor_alive": false,
+      "summary": null,
+      "workers": []
+    },
+    "queue": {
+      "status": "waiting_for_champion_continuation",
+      "pid": 300108,
+      "alive": true,
+      "phases": [],
+      "error": null
+    }
+  },
+  "notes": [
+    "Only the newly committed originals are included; previous results retain original evidence/lineage.",
+    "Packing delivery has all ten instances; fire and broken-glass tasks each have eight, not ten.",
+    "Prefix audit accepts pending connections explicitly: GPU5's two next connections had not yet begun episodes at this exact prefix. No claim about future events or raw observation/action/RNG identity.",
+    "No manual full-video review, policy modification, official-horizon change, reroll, active-source write, or stop performed."
+  ]
+}
