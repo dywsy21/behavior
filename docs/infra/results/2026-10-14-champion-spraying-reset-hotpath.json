@@ -1,0 +1,312 @@
+{
+  "schema": "champion_spraying_reset_hotpath_diagnosis_v1",
+  "observed_at": "2026-10-14T13:30:18.698677+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "part": "spraying_fruit_trees-n4-i0",
+  "pid": 127129,
+  "model_pid": 52568,
+  "process_start_ticks": "537438335",
+  "argv": "/run/ti/behavior_stage3_20260930/envs/sim/bin/python /run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py --task spraying_fruit_trees --task-id 39 --policy-config /run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_2.json --output /run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/spraying_fruit_trees-n4-i0 --num-envs 4 --indices 0 1 2 3 4 5 6 7 ",
+  "method": {
+    "program": "/usr/local/bin/py-spy dump",
+    "arguments": [
+      "--pid",
+      "127129",
+      "--nonblocking",
+      "--json",
+      "--full-filenames"
+    ],
+    "samples": 2,
+    "locals_collected": false,
+    "native_stacks": false,
+    "process_pause_requested": false,
+    "source_or_policy_modified": false
+  },
+  "samples": [
+    {
+      "observed_at": "2026-10-14T13:30:13.624698+00:00",
+      "seconds": 0.06454094778746367,
+      "returncode": 0,
+      "thread_count": 13,
+      "stderr": "",
+      "active_threads": [
+        {
+          "thread_name": "MainThread",
+          "owns_gil": true,
+          "frames": [
+            {
+              "name": "<lambda>",
+              "filename": "/run/ti/behavior_stage3_20260930/envs/sim/lib/python3.11/site-packages/isaacsim/exts/isaacsim.core.simulation_manager/isaacsim/core/simulation_manager/impl/simulation_manager.py",
+              "line": 750
+            },
+            {
+              "name": "do",
+              "filename": "/run/ti/behavior_stage3_20260930/envs/sim/lib/python3.11/site-packages/isaacsim/extscache/omni.usd-1.13.10+69cbf6ad.lx64.r.cp311/omni/usd/commands/usd_commands.py",
+              "line": 1307
+            },
+            {
+              "name": "delete_or_deactivate_prim",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/utils/usd_utils.py",
+              "line": 3595
+            },
+            {
+              "name": "remove",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/prims/prim_base.py",
+              "line": 150
+            },
+            {
+              "name": "remove",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/prims/xform_prim.py",
+              "line": 99
+            },
+            {
+              "name": "remove_prim",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/simulator.py",
+              "line": 1120
+            },
+            {
+              "name": "remove_particle_by_name",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+              "line": 258
+            },
+            {
+              "name": "remove_particle_by_name",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+              "line": 493
+            },
+            {
+              "name": "remove_all_group_particles",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/system_base.py",
+              "line": 548
+            },
+            {
+              "name": "remove_attachment_group",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/system_base.py",
+              "line": 624
+            },
+            {
+              "name": "remove_attachment_group",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+              "line": 483
+            },
+            {
+              "name": "_sync_particle_groups",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+              "line": 963
+            },
+            {
+              "name": "_load_state",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+              "line": 1056
+            },
+            {
+              "name": "load_state",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/utils/python_utils.py",
+              "line": 437
+            },
+            {
+              "name": "_load_instance_state",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+              "line": 507
+            },
+            {
+              "name": "load_batch",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+              "line": 549
+            },
+            {
+              "name": "load_fn",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+              "line": 654
+            },
+            {
+              "name": "evaluate_instances_batched",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+              "line": 116
+            },
+            {
+              "name": "run",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+              "line": 691
+            },
+            {
+              "name": "main",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+              "line": 72
+            },
+            {
+              "name": "<module>",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+              "line": 86
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "observed_at": "2026-10-14T13:30:18.698653+00:00",
+      "seconds": 0.06850565318018198,
+      "returncode": 0,
+      "thread_count": 13,
+      "stderr": "",
+      "active_threads": [
+        {
+          "thread_name": "MainThread",
+          "owns_gil": true,
+          "frames": [
+            {
+              "name": "create_rigid_contact_view",
+              "filename": "/run/ti/behavior_stage3_20260930/envs/sim/lib/python3.11/site-packages/isaacsim/extscache/omni.physics.tensors-107.3.26+107.3.3.lx64.r.cp311.u353/omni/physics/tensors/impl/api.py",
+              "line": 421
+            },
+            {
+              "name": "initialize_view",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/utils/usd_utils.py",
+              "line": 1290
+            },
+            {
+              "name": "update_handles",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/simulator.py",
+              "line": 1241
+            },
+            {
+              "name": "remove_prim",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/simulator.py",
+              "line": 1123
+            },
+            {
+              "name": "remove_particle_by_name",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+              "line": 258
+            },
+            {
+              "name": "remove_particle_by_name",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+              "line": 493
+            },
+            {
+              "name": "remove_all_group_particles",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/system_base.py",
+              "line": 548
+            },
+            {
+              "name": "remove_attachment_group",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/system_base.py",
+              "line": 624
+            },
+            {
+              "name": "remove_attachment_group",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+              "line": 483
+            },
+            {
+              "name": "_sync_particle_groups",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+              "line": 963
+            },
+            {
+              "name": "_load_state",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+              "line": 1056
+            },
+            {
+              "name": "load_state",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/utils/python_utils.py",
+              "line": 437
+            },
+            {
+              "name": "_load_instance_state",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+              "line": 507
+            },
+            {
+              "name": "load_batch",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+              "line": 549
+            },
+            {
+              "name": "load_fn",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+              "line": 654
+            },
+            {
+              "name": "evaluate_instances_batched",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+              "line": 116
+            },
+            {
+              "name": "run",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+              "line": 691
+            },
+            {
+              "name": "main",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+              "line": 72
+            },
+            {
+              "name": "<module>",
+              "filename": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+              "line": 86
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "observation": {
+    "completed_instances": [
+      301,
+      302,
+      303,
+      304
+    ],
+    "next_attempt": "attempts/04.json",
+    "next_instances": [
+      305,
+      306,
+      307,
+      308
+    ],
+    "next_attempt_started_unix": 1791984245.416154,
+    "old_coarse_snapshot": [
+      12500,
+      12500,
+      12500,
+      12500
+    ],
+    "sampled_phase": "official next-instance load_state -> macro-particle attachment-group deletion -> per-particle remove_prim",
+    "first_sample_leaf": "USD prim deletion callback",
+    "second_sample_leaf": "rigid contact-view recreation",
+    "source_readback": "remove_all_group_particles loops over names; each remove_particle_by_name calls og.sim.remove_prim; each remove_prim calls update_handles, which updates all initialized objects and unified physics views.",
+    "interpretation": "The two sampled instants are spent in reset particle cleanup/global handle rebuilding, not actor inference. This reveals a concrete reset cost path, not a measured attribution of the entire delay.",
+    "ui_exception_not_proven_causal": "scroll_y_max AttributeError in the GUI property-window callback precedes first-batch completion; captured active stacks are in reset particle cleanup. Do not conflate this GUI traceback with the task-object load_state failure in the earlier onion batch.",
+    "limitations": [
+      "Two nonblocking Python stack samples, not continuous profiling; sampling can be inaccurate.",
+      "No locals/native stack or particle counts captured; cost fraction and asymptotic time are not measured.",
+      "Reset completion and next physical controls still require fresh observations.",
+      "No conclusion that every slow task has the same cause; no root simulator changes were made."
+    ],
+    "next_action": "Keep original frozen run active and observe reset completion; if actual terminal failure occurs, diagnose exact original evidence without score-based retries."
+  },
+  "raw_local_path": "/home/wsy/behavior/artifacts/final-eval-20261014/read-only-probes/spraying-gpu2-reset-2130.json",
+  "raw_local_sha256": "4a306bf08cf00d306b5e826b5d7a6551bd4d7ea9be7c1bd3d9c2ab0645c944bc",
+  "source_bindings": [
+  {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/macro_particle_system.py",
+    "sha256": "6dec978751f46a4fe06a7b3f060ad4ab50608c489499698488dd038cae3b3b14"
+  },
+  {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/systems/system_base.py",
+    "sha256": "c41cfa40f290dda8c6e4650c9e49b79b8c6d6ae1b609fa8f2e646cfefea29f87"
+  },
+  {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/simulator.py",
+    "sha256": "2f6b659e896b416387ffc50a5c1940b0ba6202743f0d2db0d7147f4d96868e80"
+  },
+  {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/official_behavior_a8247a8/OmniGibson/omnigibson/eval/evaluator.py",
+    "sha256": "5885dceea636ce206accbb26d153b90c3004e3d5e959eced27529487c18ae870"
+  }
+]
+}

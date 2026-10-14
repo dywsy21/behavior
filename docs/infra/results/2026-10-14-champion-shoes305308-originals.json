@@ -1,0 +1,159 @@
+{
+  "schema": "champion_shoes305308_originals_v1",
+  "observed_at": "2026-10-14T13:32:47.325842+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/manifest.json",
+    "sha256": "b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46"
+  },
+  "records": [
+    {
+      "task": "putting_shoes_on_rack",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 11590,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/json/putting_shoes_on_rack_305_0.json",
+        "sha256": "01ca7093517a3ef8be008e38db2404f488770e4d06c75d330d42bdffba31fe4a"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/videos/putting_shoes_on_rack_305_0.mp4",
+        "sha256": "8cfbd258589719609c5011333bfdaf19916f174b70fcf42d3bace69bda75f3e1"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11590"
+      },
+      "success": false,
+      "q_score_final": 0.2
+    },
+    {
+      "task": "putting_shoes_on_rack",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 11590,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/json/putting_shoes_on_rack_306_0.json",
+        "sha256": "0692edac1616f2be28e8afdc50243ef7e9d2a10a85146bea254486b3e92703b7"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/videos/putting_shoes_on_rack_306_0.mp4",
+        "sha256": "d4dffb519cde2cac4255d645b5b8b94df652bb703c9294e2c5d24a89deb54d48"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11590"
+      },
+      "success": false,
+      "q_score_final": 0.6
+    },
+    {
+      "task": "putting_shoes_on_rack",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 11590,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/json/putting_shoes_on_rack_307_0.json",
+        "sha256": "650c218f90eea63b87270997775888bb91e9237ba9d774e931d4286b3bf03e4e"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/videos/putting_shoes_on_rack_307_0.mp4",
+        "sha256": "88ed860a1abb0f56c5b178471f7693d22790e447b2ce436d16b7eca60f77c040"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11590"
+      },
+      "success": false,
+      "q_score_final": 0.7
+    },
+    {
+      "task": "putting_shoes_on_rack",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 11590,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/json/putting_shoes_on_rack_308_0.json",
+        "sha256": "bf7cab0aad04957312bff32b1a7f792b050e3fe37c265ede16167e07f7949824"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/videos/putting_shoes_on_rack_308_0.mp4",
+        "sha256": "ed1c8c768c76d6db65e2d728c2911abd271de056e1687b60c4b7543b98d3407b"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11590"
+      },
+      "success": false,
+      "q_score_final": 0.8
+    }
+  ],
+  "physical_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/putting_shoes_on_rack-n4-i0/attempts/04.json",
+    "sha256": "93c2b47e7e5d4a670bbfc98cdd2af7572a4ce9a10960fe81e5bdb64a9e6b2f33"
+  },
+  "attempt": {
+    "status": "completed",
+    "task": "putting_shoes_on_rack",
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "instance_ids": [
+      305,
+      306,
+      307,
+      308
+    ],
+    "rollout": 0,
+    "started": 1791982022.949423,
+    "max_steps": 11589,
+    "policy_seed": 17,
+    "simulator_seed": 0,
+    "finished": 1791984592.4442036,
+    "seconds": 2569.49444320146,
+    "actual_applied_controls": [
+      11590,
+      11590,
+      11590,
+      11590
+    ],
+    "unused_delivered_controls": {
+      "0": 10,
+      "1": 10,
+      "2": 10,
+      "3": 10
+    },
+    "server_clock_kind": "policy_delivery",
+    "physical_ack_sent": false
+  },
+  "successful_instances": [],
+  "completed_q_sum": 2.3,
+  "actual_controls": 46360,
+  "controls_per_second": 18.04245972302543,
+  "manual_visual_review": false,
+  "full_task_all10_complete": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "supervisor_live": {
+    "pid": 50073,
+    "status": "running",
+    "alive": true
+  },
+  "queue_live": {
+    "pid": 127593,
+    "status": "waiting_for_champion_continuation",
+    "phases": [],
+    "alive": true
+  }
+}

@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 21:33 CST / Codex SUBMISSION-FULL-EVAL（放鞋第二批4原件）：** putting_shoes_on_rack305–308原batch自然结束，各11590实际控制/帧，Q依次0.2/0.6/0.7/0.8，均未完整成功；4原JSON/MP4 SHA、30fps/672×448及完成物理回执匹配，原seed17/sim0/11589时限不变，46360控制/2569.494s＝18.0425控制/s。证据`docs/infra/results/2026-10-14-champion-shoes305308-originals.json`；累计唯一已审296，4既有异常/700剩、6成功仅已完子集，不能将Q0.8算成功。GPU4原worker已新建309–310模拟器206947，原模型52608不变。GPU2下方已定位的下一批宏粒子重置仍待实际控制，不擅自重启/放宽看门狗/热改物理；冠军与MEM后继实活、外部交付仍暂停。
+
+- **2026-10-14 21:31 CST / Codex SUBMISSION-FULL-EVAL（真实重置慢点调用栈）：** 上一轮292完整/八卡实活为verified wait。本轮原GPU2模拟器127129 CPU忙、模型52568等请求；首301–304已完成，04回执明确305–308于21:24:05进入下一批，旧12500快照不能当当前动作进度。21:30:13/18对原PID两次`py-spy dump --nonblocking`均成功（约0.065/0.069s，不收locals/native、不暂停/发信号）；主线程分别位于宏粒子清理中的USD删除回调和接触视图重建。原源码实读确认`remove_all_group_particles`逐个删粒子，每次`remove_prim`都`update_handles`遍历场景对象并重建统一物理view。证据`docs/infra/results/2026-10-14-champion-spraying-reset-hotpath.json`；完整采样在忽略的`artifacts/final-eval-20261014/read-only-probes/spraying-gpu2-reset-2130.json`。这定位了采样瞬间的重置开销路径，不能量化整个延迟/粒子数或断言所有慢例同因；GUI scroll_y_max报错未证实为阻塞原因，不混同切洋葱load_state异常。不热改官方物理/重启，待原重置自然结束或真实终态再判定；冠军→MEM继续，外部交付暂停。
+
 - **2026-10-14 21:24 CST / Codex SUBMISSION-FULL-EVAL（果树喷洒首4原件核验）：** 上一轮完成解冻4原件为实质进展；本轮fetch/pull无新增，直接核原50073/八worker/model/sim继续实际推进。spraying_fruit_trees301–304自然各12519实际控制/帧、Q0/未成功，原seed17/sim0/官方12518时限不变；4原JSON/MP4 SHA、30fps/672×448与完成物理回执全合，50076控制/3144.292s＝15.9260控制/s，累计唯一已审292原件。证据`docs/infra/results/2026-10-14-champion-spraying-fruit-first4-originals.json`；只核完整性，非人工画面验收/全task10/全量成绩。未因失败重跑/改actor；50073/127593实活，MEM仍零阶段等待，继续冠军全量→MEM576，外部交付仍暂缓。
 
 - **2026-10-14 21:20 CST / Codex SUBMISSION-FULL-EVAL（解冻首4原件完成）：** 上一goal轮实核50073/八worker/model/sim及127593等待队列均存活、控制持续增长，属verified wait；本轮fetch/pull无新增，保持原运行。thawing_frozen_food301–304自然各12345实际控制/帧、Q2/9、未完整成功；原seed17/sim0/官方12344时限未改，4原JSON/MP4 SHA、30fps/672×448和完成物理回执全合，49380控制/2805.169s＝17.6032控制/s。证据`docs/infra/results/2026-10-14-champion-thawing-first4-originals.json`；累计唯一已审288原件，不把相同最终Q解释为本轮创造的进展，也不冒称全task10或全量成绩/人工画面审查。原冠军/后继直接实活，MEM仍零阶段等待；继续原顺序/预算/策略，不重跑、不热改、不恢复外部交付。
