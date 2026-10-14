@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 16:09 CST / Codex SUBMISSION-FULL-EVAL（新增50原件增量验收）：** 前几goal轮均直接核原supervisor3787083、八worker/model和MEM3812967实活，为verified wait；本轮fetch/pull无新增，原任务继续、没有重启或改配置。只读核此前未审的50条完整公共结果（9种task、15个物理batch）：全部原JSON/MP4 SHA、30fps/672×448帧数与actual_applied_controls/官方steps匹配；旧首100和爆米花首4通过文档SHA关联，不重复充数。累计唯一已审154条/3成功，新增50中0成功、Q和0.95；只是原件完整性验收和已完成子集，非全1000成绩，也不冒称人工画面/逐帧解码审查。证据`docs/infra/results/2026-10-14-champion-new50-originals.json`。冠军原1000继续、MEM576仍waiting；下一步继续原run并在新终态/异常时核验，最终汇总打包仍待全量结束，模型交付暂停。
+
 - **2026-10-14 15:38 CST / Codex SUBMISSION-FULL-EVAL（爆米花慢批次已完整提交）：** 上一goal轮完成首100原件/公共耗时估计及长步恢复诊断，为实质进展；本轮fetch/pull无新增、原3787083/八worker/model与MEM3812967实活，只读等同3894213继续至原时限，未重启/改官方规则。爆米花301–304首batch已真实完成：304官方success=true/Q1/2549控制，其余三例4857控制/Q0/失败；4原JSON/完整视频SHA和全部30fps/672×448帧数与物理回执匹配。证据`docs/infra/results/2026-10-14-champion-popcorn-first4-originals.json`；整批17120控制/2110.8977s＝约8.11控制/s，尚非该task全10或全1000。15:40本地完整原视频`artifacts/final-eval-20261014/champion-public-videos/make_microwave_popcorn_304_0.mp4`同SHA `36fc61f66fbefb19b1988f9c911fc1134b50e7fafddeda9d10138a15b8da313d`，2549帧/30fps/84.966667s核过。15:38已120完整/3成功，completed-only Q0.0375/SR0.025；35已完batch包含此慢批后，2/4环境16.1498/18.0459控制/s，冠军剩32.09–33.39h条件场景（`…/2026-10-14-champion-public-time-risk-1538.json`），仍不保证上界、未计未来额外重载/故障/归档。原冠军→MEM576顺序/模型不变，交付继续暂停。
 
 - **2026-10-14 15:28 CST / Codex SUBMISSION-FULL-EVAL（长步耗时，未擅自重启）：** 15:25发现GPU7爆米花快照仍2500，模型最后交付15:13:23，仿真3894213实活/CPU忙；原日志15:26记env3于2549完成，整batch尚running，不把该行单独加进成绩。15:27同进程自然推进至2700/2700/2700/2549、原模型事件重新增长；未停机/改超时/改物理，不能把此前静止快照称已卡死，也未由现有证据证实具体慢在物理/渲染/状态转换哪一处。连续只读证据`docs/infra/results/2026-10-14-champion-popcorn-long-step.json`；此未闭合慢batch尚未进入15:19的吞吐样本，31–33h仍只是有遗漏风险的条件场景，不承诺上界。其余卡和MEM后继继续，等完整回执再纳入结果/测速。

@@ -1,0 +1,1443 @@
+{
+  "schema": "champion_incremental_completed_original_audit_v1",
+  "started_at": "2026-10-14T08:09:29.933071+00:00",
+  "observed_at": "2026-10-14T08:09:32.650422+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+  "manifest_sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297",
+  "previously_audited": 104,
+  "newly_audited": 50,
+  "cumulative_unique_audited": 154,
+  "snapshot_completed": 154,
+  "new_successes": 0,
+  "new_q_sum": 0.95,
+  "records": [
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 7961,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/clean_a_trumpet-n4-i0/json/clean_a_trumpet_301_0.json",
+        "sha256": "54b28a2e1c9570d8581191b03ca827d2734fc2e77dad7e7754f2529bde9e5acc"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/clean_a_trumpet-n4-i0/videos/clean_a_trumpet_301_0.mp4",
+        "sha256": "0e2b0521398a6586dd4a2e31ac7fe605d3961b289445d42241322e0d0ca9f295",
+        "bytes": 14401528,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "265.366667",
+          "nb_frames": "7961"
+        }
+      }
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 7961,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/clean_a_trumpet-n4-i0/json/clean_a_trumpet_302_0.json",
+        "sha256": "00513ed2d7290985fa02554db8f8a1571771f8210b8a5ef85ec1ad76e95a39f4"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/clean_a_trumpet-n4-i0/videos/clean_a_trumpet_302_0.mp4",
+        "sha256": "26ff3df68c1cd32ab910956d3fb8749bafb01293e4269e807dda620d97fe8c88",
+        "bytes": 15429707,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "265.366667",
+          "nb_frames": "7961"
+        }
+      }
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 7961,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/clean_a_trumpet-n4-i0/json/clean_a_trumpet_303_0.json",
+        "sha256": "f1535175a4b37ffcc61475b3056580db3287fbaf7664be9014af9f4779661e69"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/clean_a_trumpet-n4-i0/videos/clean_a_trumpet_303_0.mp4",
+        "sha256": "9b502fa7caff103663a901cb953c55f1dabecfce4cecc00e67ea59b53bb2e630",
+        "bytes": 13734809,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "265.366667",
+          "nb_frames": "7961"
+        }
+      }
+    },
+    {
+      "task": "clean_a_trumpet",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 7961,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/clean_a_trumpet-n4-i0/json/clean_a_trumpet_304_0.json",
+        "sha256": "c4e5aee68b747b63cb87392257a357e2043d2c1e260f2b2d5b95fd2ba0f762ce"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/clean_a_trumpet-n4-i0/videos/clean_a_trumpet_304_0.mp4",
+        "sha256": "07cbeb3bbad4174e91f9d0949144e91ca648cf09a4571a41a636d1cd3db21f48",
+        "bytes": 14070255,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "265.366667",
+          "nb_frames": "7961"
+        }
+      }
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 5458,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/composting_waste-n2-i8/json/composting_waste_309_0.json",
+        "sha256": "ea1fd5f9b74c3890ffe2f7896fc70e8fc078056f2350dd592db94f04c5438459"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/composting_waste-n2-i8/videos/composting_waste_309_0.mp4",
+        "sha256": "fd01b55235524f3dd2830ccbc43a7242bcd8e50e40f62ede5421d2030ad19cb0",
+        "bytes": 11548047,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "181.933333",
+          "nb_frames": "5458"
+        }
+      }
+    },
+    {
+      "task": "composting_waste",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 5458,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/composting_waste-n2-i8/json/composting_waste_310_0.json",
+        "sha256": "963e5899fa10c5f68045b46e8ffcd720476746f3bd4fdff79810256af803fef5"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/composting_waste-n2-i8/videos/composting_waste_310_0.mp4",
+        "sha256": "231903f05c573758265aa63c300c13e937686a706a6f9bc466578ebd95d83696",
+        "bytes": 12884927,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "181.933333",
+          "nb_frames": "5458"
+        }
+      }
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 6927,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/json/cook_broccolini_301_0.json",
+        "sha256": "65110a011c0d423b58c7a406b20db4f8a2fa19429e5d49886fedab5788bbcf9c"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/videos/cook_broccolini_301_0.mp4",
+        "sha256": "7f52542367943e304d5361307f20e47a48ac763bdd4573a4375859677cbe6a16",
+        "bytes": 19158036,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "230.900000",
+          "nb_frames": "6927"
+        }
+      }
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 6927,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/json/cook_broccolini_302_0.json",
+        "sha256": "1d3b01d8ae83d30b4849d7fb9dc678fadf07ea45f7ccea006498ee8eec30834f"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/videos/cook_broccolini_302_0.mp4",
+        "sha256": "e169184e586cddbd384f80cb37069b00bae541de6be5bd6d00f8496aa70a6c18",
+        "bytes": 16843724,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "230.900000",
+          "nb_frames": "6927"
+        }
+      }
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 6927,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/json/cook_broccolini_303_0.json",
+        "sha256": "5dfdd07a90dbf91b61e1200a36016404ec10227ba9f549536e99ba34b212ffc0"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/videos/cook_broccolini_303_0.mp4",
+        "sha256": "9104fc1512ee6523b0737e9e0e3490b9246bfd5a8c2a5780aad8e3d00b4daf24",
+        "bytes": 9840585,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "230.900000",
+          "nb_frames": "6927"
+        }
+      }
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 6927,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/json/cook_broccolini_304_0.json",
+        "sha256": "ce0e8d63a547274318e1a6b0eded45758b5d00100fda7658c6ae837de105bdc7"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/videos/cook_broccolini_304_0.mp4",
+        "sha256": "a3bb7bc5338ae918030e482768aea3f1a345926c339698f7482a35717b63e8ca",
+        "bytes": 16745327,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "230.900000",
+          "nb_frames": "6927"
+        }
+      }
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 6927,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/json/cook_broccolini_305_0.json",
+        "sha256": "ebef63a07e1857f655c7e1a2166312866aa54e655b9318b3a0378fdcb8239a57"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/videos/cook_broccolini_305_0.mp4",
+        "sha256": "d448cb62a05bf11ac8cf4bec51a2f8119ca03e40f21506f2360a4b205a74edef",
+        "bytes": 15308392,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "230.900000",
+          "nb_frames": "6927"
+        }
+      }
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 6927,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/json/cook_broccolini_306_0.json",
+        "sha256": "c0c1dab6c11d1f2d01edac16d6675d315d5e9695f9e1239cd08e8e4683fe34ce"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/videos/cook_broccolini_306_0.mp4",
+        "sha256": "0f2c67de92f28d848134d3584238fd61e59f82f3ef25e153f3acd381ed035cef",
+        "bytes": 15976110,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "230.900000",
+          "nb_frames": "6927"
+        }
+      }
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 6927,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/json/cook_broccolini_307_0.json",
+        "sha256": "9998d173fad2e5dc661e3f741a751c258535d9d44e85a33a4fd63d74bd391b6f"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/videos/cook_broccolini_307_0.mp4",
+        "sha256": "d4d7cf6ccad1c7341292e7d31b80d03f7f2e32cfd1b02fab92db2a062d0fe6e6",
+        "bytes": 10320848,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "230.900000",
+          "nb_frames": "6927"
+        }
+      }
+    },
+    {
+      "task": "cook_broccolini",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 6927,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/json/cook_broccolini_308_0.json",
+        "sha256": "407c47a1b40ab8f8dc8b3f246471e8f6b058832f5c93aaaa963213c88ce35371"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/videos/cook_broccolini_308_0.mp4",
+        "sha256": "66df1def1555373768e9bfa50f71e135fa1df2354ce457c9e1b78053580bc425",
+        "bytes": 15368550,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "230.900000",
+          "nb_frames": "6927"
+        }
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n2-i8/json/installing_a_scanner_309_0.json",
+        "sha256": "a1147937b6cac9fba5c9c538de2f502071f5284b232dc9496fb4227ad2466e6e"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n2-i8/videos/installing_a_scanner_309_0.mp4",
+        "sha256": "bc5aa4cfa52a0c34cdd132d6c85f4e0940a88734dc27be19e58d73cce70bf4d1",
+        "bytes": 10470354,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "212.933333",
+          "nb_frames": "6388"
+        }
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n2-i8/json/installing_a_scanner_310_0.json",
+        "sha256": "a5429e72ed6251f80c4b3b8b63d36f9f7db2d1969850c9e88d3591f62206bfaf"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n2-i8/videos/installing_a_scanner_310_0.mp4",
+        "sha256": "9c8189a0510695ad194b5e091ee4cdf0c1b6b0440575a247455f4cf864066acf",
+        "bytes": 9442858,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "212.933333",
+          "nb_frames": "6388"
+        }
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/json/installing_a_scanner_301_0.json",
+        "sha256": "e14244ded3bcd6d77481aaa1d8e89144e3bd2e51a06e75225892034b3744e116"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/videos/installing_a_scanner_301_0.mp4",
+        "sha256": "a14ca686bf838c8ade7511d2b10660db1b2d8bad6e44ccd81fb939e3279cc6d0",
+        "bytes": 9257443,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "212.933333",
+          "nb_frames": "6388"
+        }
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/json/installing_a_scanner_302_0.json",
+        "sha256": "2a896b022cba276cdea2324a6d326f4fada88f2ddf5af6a17b81f3bcfc5b039c"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/videos/installing_a_scanner_302_0.mp4",
+        "sha256": "48c949bd402860598ab1c8ff86beaed7851f97f62ba3d3c29130319f8eb32e6c",
+        "bytes": 8865847,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "212.933333",
+          "nb_frames": "6388"
+        }
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/json/installing_a_scanner_303_0.json",
+        "sha256": "61b8cc953c19446b4cf40b6a88d6e0ba90a9406728417f1747cb2971ecd04fcd"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/videos/installing_a_scanner_303_0.mp4",
+        "sha256": "f3e09fabd9f160865d1401e53035612dab36f2135b3a0357fb0f47981d1d3fd9",
+        "bytes": 9107845,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "212.933333",
+          "nb_frames": "6388"
+        }
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/json/installing_a_scanner_304_0.json",
+        "sha256": "9b2c6b05f7f281aad94590b04a1b1096cd4dbc1d9f3712083e4e20d7b4c4860e"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/videos/installing_a_scanner_304_0.mp4",
+        "sha256": "e8df67ffe00b9067ba844a79bcffea1539004e1bd5b77da0b8fb8a549ee6a632",
+        "bytes": 8582784,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "212.933333",
+          "nb_frames": "6388"
+        }
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/json/installing_a_scanner_305_0.json",
+        "sha256": "5bc710484945e9f0351ad45ea5ca57ed724696e1d4787a8688c74ef21d16ad93"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/videos/installing_a_scanner_305_0.mp4",
+        "sha256": "f9a0f2a12efe77596af65b84d430347072d270315b738de126a28cd15cff9732",
+        "bytes": 7763367,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "212.933333",
+          "nb_frames": "6388"
+        }
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/json/installing_a_scanner_306_0.json",
+        "sha256": "a08ede6796dbe13128020b69163d960c148ba8be32c3e27bed44c6efc645a5fe"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/videos/installing_a_scanner_306_0.mp4",
+        "sha256": "de709cfe143b3142d45a943fb4085e543983a8bf4a32cb105a81e2851adcb303",
+        "bytes": 6904147,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "212.933333",
+          "nb_frames": "6388"
+        }
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/json/installing_a_scanner_307_0.json",
+        "sha256": "499ec9083a23d796459abc8585cc8ade61d8eea76f92cc7d3356c4369d09dbc4"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/videos/installing_a_scanner_307_0.mp4",
+        "sha256": "97b6d76907849948d0ac5edf78b514fd6b568bfd671e16bead88968aa0e57ac1",
+        "bytes": 8765228,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "212.933333",
+          "nb_frames": "6388"
+        }
+      }
+    },
+    {
+      "task": "installing_a_scanner",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 6388,
+      "success": false,
+      "q_final": 0.5,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/json/installing_a_scanner_308_0.json",
+        "sha256": "4754d31b06eb8c14a2b011622aecdae867a85534317dbc4aeddf9787fd0acc61"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/videos/installing_a_scanner_308_0.mp4",
+        "sha256": "393f9a9088b3e0fdf50e7eb3d8afd4183997a5d1c46c9ebdaae2820a52455051",
+        "bytes": 9615878,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "212.933333",
+          "nb_frames": "6388"
+        }
+      }
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 3854,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n2-i8/json/installing_smoke_detectors_309_0.json",
+        "sha256": "b6553e6922cbe246d51b138ef9d66d959310007bd24db4e7a707e28ea8630b94"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n2-i8/videos/installing_smoke_detectors_309_0.mp4",
+        "sha256": "1c9d49284d2e5d1a2d48754a0df618478842e5e1b7bf7a74f1fac8ca71a171bc",
+        "bytes": 7633782,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "128.466667",
+          "nb_frames": "3854"
+        }
+      }
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 3854,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n2-i8/json/installing_smoke_detectors_310_0.json",
+        "sha256": "e396037e36907a08e1333c91c27796016a269e85acbd382335cb7e45a89da2d3"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n2-i8/videos/installing_smoke_detectors_310_0.mp4",
+        "sha256": "3a68dc5bc77a676ca88a73074f1b066d029a256a578b295b4033abd70b3a8bac",
+        "bytes": 8284376,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "128.466667",
+          "nb_frames": "3854"
+        }
+      }
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 3854,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n4-i0/json/installing_smoke_detectors_305_0.json",
+        "sha256": "6f29fa6ac3151a59be5d37c8a77e560197283f57d35b26e7edd72ec936c0e715"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n4-i0/videos/installing_smoke_detectors_305_0.mp4",
+        "sha256": "8dfd8c6e98ba809475daf97bef2d9aabee7b3584519c449f1c75bfa991a115a9",
+        "bytes": 9291690,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "128.466667",
+          "nb_frames": "3854"
+        }
+      }
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 3854,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n4-i0/json/installing_smoke_detectors_306_0.json",
+        "sha256": "c485f4d73a51e577ea56c496a549d71956d8e7376b061f05b9e648836137ab4c"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n4-i0/videos/installing_smoke_detectors_306_0.mp4",
+        "sha256": "96f13fe0138ea0d1e9165a48183f01333a72c5cadf845407d84445efeb8db0e8",
+        "bytes": 8985026,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "128.466667",
+          "nb_frames": "3854"
+        }
+      }
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 3854,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n4-i0/json/installing_smoke_detectors_307_0.json",
+        "sha256": "8194833bcdc14dcaa0f17b4fa5832ee7ce8f10fcf280187569bab151c8834844"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n4-i0/videos/installing_smoke_detectors_307_0.mp4",
+        "sha256": "fc0b19844b533f6734176cda33582913bcc30c1d021603500f296512132f8caf",
+        "bytes": 8935393,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "128.466667",
+          "nb_frames": "3854"
+        }
+      }
+    },
+    {
+      "task": "installing_smoke_detectors",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 3854,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n4-i0/json/installing_smoke_detectors_308_0.json",
+        "sha256": "2fd14d3c28d8ff8fc4f165ffc297c6bb32dd5764c231eb19d16f83b8a9dbd5ab"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n4-i0/videos/installing_smoke_detectors_308_0.mp4",
+        "sha256": "11761e4d2817cbf91114131319802079de7fe82ebd36d6a225d9d09a73c2c083",
+        "bytes": 7988265,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "128.466667",
+          "nb_frames": "3854"
+        }
+      }
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 5164,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_cabinet_doors-n2-i8/json/make_cabinet_doors_309_0.json",
+        "sha256": "7da5529b6253a8c113ad5a8027a32349e781dd55272822437cac93074d3e96a8"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_cabinet_doors-n2-i8/videos/make_cabinet_doors_309_0.mp4",
+        "sha256": "29bd7d5632105ad2618e35fa936853dbf47eac436b3e0d6e477e5d3994b9c321",
+        "bytes": 9898144,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "172.133333",
+          "nb_frames": "5164"
+        }
+      }
+    },
+    {
+      "task": "make_cabinet_doors",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 5164,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_cabinet_doors-n2-i8/json/make_cabinet_doors_310_0.json",
+        "sha256": "b0a2f4dcf156e8eea81b5b994e525811b47093bb294fb9bac715f84258d0d34d"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_cabinet_doors-n2-i8/videos/make_cabinet_doors_310_0.mp4",
+        "sha256": "35b1521e15d82dd713701090b91b67a9a64cd3c91679666f826b88ea156a23d9",
+        "bytes": 9986523,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "172.133333",
+          "nb_frames": "5164"
+        }
+      }
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 6799,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_rose_centerpieces-n4-i0/json/make_rose_centerpieces_301_0.json",
+        "sha256": "0e41421226b2ac9eac00b9c8066d347020891a69ccc50c636f26d24cf1868659"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_rose_centerpieces-n4-i0/videos/make_rose_centerpieces_301_0.mp4",
+        "sha256": "3b6d50d2270add7d97e4c93ab8d0f4cadf67e9a58c61861c1f93e37119f1f42b",
+        "bytes": 13688114,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "226.633333",
+          "nb_frames": "6799"
+        }
+      }
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 6799,
+      "success": false,
+      "q_final": 0.25,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_rose_centerpieces-n4-i0/json/make_rose_centerpieces_302_0.json",
+        "sha256": "5763cb7c36536814f754dadd8bdbe0d3fe7ea504a54e8acea402ad4d45fd1afa"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_rose_centerpieces-n4-i0/videos/make_rose_centerpieces_302_0.mp4",
+        "sha256": "58495a9ae5ed1b5e10ccc911b3364db378f66a55d449f4982498e0f0c8ebc67b",
+        "bytes": 12989078,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "226.633333",
+          "nb_frames": "6799"
+        }
+      }
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 6799,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_rose_centerpieces-n4-i0/json/make_rose_centerpieces_303_0.json",
+        "sha256": "3bf5f09d155e3cb470ebcdd8c2a3c269aa936267137659ef4e651794bba9a0d9"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_rose_centerpieces-n4-i0/videos/make_rose_centerpieces_303_0.mp4",
+        "sha256": "ee4ae56bf1b3645e033172c155a2cb4ad03ac860803d5b4c8a7f5b528647896f",
+        "bytes": 9421146,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "226.633333",
+          "nb_frames": "6799"
+        }
+      }
+    },
+    {
+      "task": "make_rose_centerpieces",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 6799,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_rose_centerpieces-n4-i0/json/make_rose_centerpieces_304_0.json",
+        "sha256": "1367464825b908767a3a0cf6eb117e00f27a13002ec76a052e55bc0171a0fb32"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_rose_centerpieces-n4-i0/videos/make_rose_centerpieces_304_0.mp4",
+        "sha256": "62fadfdf7a2f3c4c206cbb8b1ea2324d225f777a02f10bc90bb13e774ea0ff13",
+        "bytes": 13572671,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "226.633333",
+          "nb_frames": "6799"
+        }
+      }
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 9292,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/organizing_art_supplies-n4-i0/json/organizing_art_supplies_301_0.json",
+        "sha256": "84e001b40263b93992dc2d5e66dfed08b68189e32231dd27af974803a3cae2bf"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/organizing_art_supplies-n4-i0/videos/organizing_art_supplies_301_0.mp4",
+        "sha256": "4602c3aca9978728191099b0617060a26f758022946bf81ea7c35ae7f41677d0",
+        "bytes": 19957617,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "309.733333",
+          "nb_frames": "9292"
+        }
+      }
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 9292,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/organizing_art_supplies-n4-i0/json/organizing_art_supplies_302_0.json",
+        "sha256": "273624d8645cfefc77bf3696c72e79980484ffb1c2753f546c3087b2831225d7"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/organizing_art_supplies-n4-i0/videos/organizing_art_supplies_302_0.mp4",
+        "sha256": "c2e7f29274494523c76cb24d2aca268e396fcd7d33ffa10d920617e3f4840726",
+        "bytes": 16292219,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "309.733333",
+          "nb_frames": "9292"
+        }
+      }
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 9292,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/organizing_art_supplies-n4-i0/json/organizing_art_supplies_303_0.json",
+        "sha256": "ce5c4acb80d3682f0e61192ff0e5659d53f97d11f422a35e3b09c4f8415d1b9c"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/organizing_art_supplies-n4-i0/videos/organizing_art_supplies_303_0.mp4",
+        "sha256": "438c546c18288671c24da4fe3fb77261be4a89e50a78751d1d0eaffa6b17a4de",
+        "bytes": 21128491,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "309.733333",
+          "nb_frames": "9292"
+        }
+      }
+    },
+    {
+      "task": "organizing_art_supplies",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 9292,
+      "success": false,
+      "q_final": 0.2,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/organizing_art_supplies-n4-i0/json/organizing_art_supplies_304_0.json",
+        "sha256": "723d840926001d2d7af2ccc2b4f92ce0e696064b324bb75411e78d982a21cb4a"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/organizing_art_supplies-n4-i0/videos/organizing_art_supplies_304_0.mp4",
+        "sha256": "a1754cf63b17673a9bc6134ced34493e85584e4f9bf576025d8563455cb2d9a9",
+        "bytes": 19756455,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "309.733333",
+          "nb_frames": "9292"
+        }
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 6710,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n2-i8/json/sweeping_garage_309_0.json",
+        "sha256": "38b18491308cf73472cf77ac3b0d7bbb5076cc4ab0ee2da6d3beddf3c313384d"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n2-i8/videos/sweeping_garage_309_0.mp4",
+        "sha256": "3b1669f77981da251251badf4e2288aaba8862ef3e1a42ba00cb3a78e7487a3e",
+        "bytes": 9763517,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "223.666667",
+          "nb_frames": "6710"
+        }
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 6710,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n2-i8/json/sweeping_garage_310_0.json",
+        "sha256": "47fb2c075d13d1666a3eeab76293ffdd93719045b587fa2459d641eda98bc987"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n2-i8/videos/sweeping_garage_310_0.mp4",
+        "sha256": "6999dc02ec772fcca4ae4b7a21129c0e681e2b41e81e247662a8983dcac79e23",
+        "bytes": 7808364,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "223.666667",
+          "nb_frames": "6710"
+        }
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 6710,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/json/sweeping_garage_301_0.json",
+        "sha256": "71954249b1e71aed32a02307a53d3158bbb1039393e8a81c9b11680a02bb2d0a"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/videos/sweeping_garage_301_0.mp4",
+        "sha256": "e6ec59ca5001573da2da2efae6121d5f957b35800df57b4751d809e5a89f2483",
+        "bytes": 9333250,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "223.666667",
+          "nb_frames": "6710"
+        }
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 6710,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/json/sweeping_garage_302_0.json",
+        "sha256": "e240c5721e7cca1b5e48c456e9582556a99c0d717fb47069ad7baf87e4201c87"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/videos/sweeping_garage_302_0.mp4",
+        "sha256": "4d42f36c836b04aa5e6b81e30d18b637fed89c476a507a9b9517a3f5a798ded1",
+        "bytes": 9298175,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "223.666667",
+          "nb_frames": "6710"
+        }
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 6710,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/json/sweeping_garage_303_0.json",
+        "sha256": "c68466b25cdd73bcbab339c3e50d32bc174d30b4a24eb3f3d6def48c7c36740b"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/videos/sweeping_garage_303_0.mp4",
+        "sha256": "9863569e7623a429d70d3242a6a89e37911313b962383a6826abdb6bd2447a9e",
+        "bytes": 7112512,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "223.666667",
+          "nb_frames": "6710"
+        }
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 6710,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/json/sweeping_garage_304_0.json",
+        "sha256": "fdf72ec0827d7173b5ae1fc986a117e244be7485047f89146097d1802d1b86fc"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/videos/sweeping_garage_304_0.mp4",
+        "sha256": "bb3815e53939c90284d4121d56fbcd054b6e303627fe481ec2430e09bddc0304",
+        "bytes": 8468466,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "223.666667",
+          "nb_frames": "6710"
+        }
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 6710,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/json/sweeping_garage_305_0.json",
+        "sha256": "fa4cff3858aa44f31293319a659ded22f56e6963d3829836aaf2455856572817"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/videos/sweeping_garage_305_0.mp4",
+        "sha256": "efba1042691c8ad70b4db51a35a16bed120e3ada3240b4968956e13f7be9504d",
+        "bytes": 11262857,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "223.666667",
+          "nb_frames": "6710"
+        }
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 6710,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/json/sweeping_garage_306_0.json",
+        "sha256": "522639d13f9bb0444ebff382128260555250a8f398221dc3d4d55fcbc69b445d"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/videos/sweeping_garage_306_0.mp4",
+        "sha256": "3b6abd5b10286f6b599d6311fc963fa47b748969ee9346189e9ff73c3cdbb81c",
+        "bytes": 9873514,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "223.666667",
+          "nb_frames": "6710"
+        }
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 6710,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/json/sweeping_garage_307_0.json",
+        "sha256": "353543e70f42ab80f382e0c751d1b551c8d16d506e618af9893f522f27f5278e"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/videos/sweeping_garage_307_0.mp4",
+        "sha256": "11e98a345502c3675f1765c935c8c83cf93998876306df941ce242785c1f258f",
+        "bytes": 9402340,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "223.666667",
+          "nb_frames": "6710"
+        }
+      }
+    },
+    {
+      "task": "sweeping_garage",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 6710,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/json/sweeping_garage_308_0.json",
+        "sha256": "9a3a02346e544f7840b8cda61ce63b4caba56441eb25585b718eea319224f501"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/videos/sweeping_garage_308_0.mp4",
+        "sha256": "8d95c000ab31f91e27479377bae0b8db285e7265b905ebccd5ddb0a1ebcac020",
+        "bytes": 9388564,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "223.666667",
+          "nb_frames": "6710"
+        }
+      }
+    }
+  ],
+  "batches": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/clean_a_trumpet-n4-i0/attempts/00.json",
+      "sha256": "986542833902e318edb3dc64f6eddcba0708529f51db891d4221ccbf204f871f",
+      "seconds": 1573.0117193413898,
+      "actual_controls": 31844,
+      "max_steps": 7960,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "task": "clean_a_trumpet-n4-i0"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/composting_waste-n2-i8/attempts/08.json",
+      "sha256": "8356faf1d1bad72d452a47a0dc0dc8d0e4f8b523b1bbc2624833d36a73ed44e7",
+      "seconds": 647.4713308308274,
+      "actual_controls": 10916,
+      "max_steps": 5457,
+      "instances": [
+        309,
+        310
+      ],
+      "task": "composting_waste-n2-i8"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/attempts/00.json",
+      "sha256": "aa0a8bf53ec9c152902679985c06540556734fc2056cf3f90e2e3c6c3e398857",
+      "seconds": 1346.9556743446738,
+      "actual_controls": 27708,
+      "max_steps": 6926,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "task": "cook_broccolini-n4-i0"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/cook_broccolini-n4-i0/attempts/04.json",
+      "sha256": "33c1ba96c224395851098b963f4da79f12df9e650e730fed1aec81db4e36f110",
+      "seconds": 1376.8171883746982,
+      "actual_controls": 27708,
+      "max_steps": 6926,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "task": "cook_broccolini-n4-i0"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n2-i8/attempts/08.json",
+      "sha256": "772f7dd49b18efac219d8e3e5badde2fe69e9a459a9c1142e97917df4b4250c0",
+      "seconds": 776.6871328642592,
+      "actual_controls": 12776,
+      "max_steps": 6387,
+      "instances": [
+        309,
+        310
+      ],
+      "task": "installing_a_scanner-n2-i8"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/attempts/00.json",
+      "sha256": "e0accfde3134d22ce95e1bd54696fac0ca33e9926fa96d1044c1449c28c3a76c",
+      "seconds": 1272.6366208801046,
+      "actual_controls": 25552,
+      "max_steps": 6387,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "task": "installing_a_scanner-n4-i0"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_a_scanner-n4-i0/attempts/04.json",
+      "sha256": "dc44c00fa992290385eee47b6e3a100442399bda8eeceafb4a75c7ede3e9942b",
+      "seconds": 1281.6444903053343,
+      "actual_controls": 25552,
+      "max_steps": 6387,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "task": "installing_a_scanner-n4-i0"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n2-i8/attempts/08.json",
+      "sha256": "4e93f6baa1b02fb9d55a01621a64b5aef40873f140c328a741bd7dc346ca6b7d",
+      "seconds": 509.16543848998845,
+      "actual_controls": 7708,
+      "max_steps": 3853,
+      "instances": [
+        309,
+        310
+      ],
+      "task": "installing_smoke_detectors-n2-i8"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/installing_smoke_detectors-n4-i0/attempts/04.json",
+      "sha256": "1e5c7a693475f44dc8ac3f1a2232cf2a6e47ba9c70c1b6780e057bbb645d9c08",
+      "seconds": 870.3338792845607,
+      "actual_controls": 15416,
+      "max_steps": 3853,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "task": "installing_smoke_detectors-n4-i0"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_cabinet_doors-n2-i8/attempts/08.json",
+      "sha256": "c8ed55b62892a60cf51a5854bfb487d7a39ca9e58f3adb80a4d600f7c69d6cd5",
+      "seconds": 589.0470363954082,
+      "actual_controls": 10328,
+      "max_steps": 5163,
+      "instances": [
+        309,
+        310
+      ],
+      "task": "make_cabinet_doors-n2-i8"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_rose_centerpieces-n4-i0/attempts/00.json",
+      "sha256": "677ef0d8e09d2474c5e5913f995b1d6f663c4cabae477d22635c1c8ce087d499",
+      "seconds": 1565.3196030175313,
+      "actual_controls": 27196,
+      "max_steps": 6798,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "task": "make_rose_centerpieces-n4-i0"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/organizing_art_supplies-n4-i0/attempts/00.json",
+      "sha256": "4090e04ef0e31734e9b3a33138b4c1e99cf7d9f0b73db9d00cf8d61e5073b4b4",
+      "seconds": 1953.0621453309432,
+      "actual_controls": 37168,
+      "max_steps": 9291,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "task": "organizing_art_supplies-n4-i0"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n2-i8/attempts/08.json",
+      "sha256": "850669cd748c7d0aea3c8e080a5040115767f031d82ac7cf6117465d568eff8b",
+      "seconds": 830.2324823671952,
+      "actual_controls": 13420,
+      "max_steps": 6709,
+      "instances": [
+        309,
+        310
+      ],
+      "task": "sweeping_garage-n2-i8"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/attempts/00.json",
+      "sha256": "b34676cef7d43f15f8b3549a1216b1b0361ff358ca243ee55ec14640dc3ba0cf",
+      "seconds": 1369.0390281202272,
+      "actual_controls": 26840,
+      "max_steps": 6709,
+      "instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "task": "sweeping_garage-n4-i0"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/sweeping_garage-n4-i0/attempts/04.json",
+      "sha256": "e8ac1bece659de3ee7de0562e6fa281bc54912d870ef3c31c29fa75c94f17c5e",
+      "seconds": 1379.2677829694003,
+      "actual_controls": 26840,
+      "max_steps": 6709,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "task": "sweeping_garage-n4-i0"
+    }
+  ],
+  "full_model_score": false,
+  "physical_and_original_video_frames_exact": true,
+  "originals_modified": false,
+  "scope": "Only newly completed cases not in the first100 and popcorn-first4 audits; ffprobe frame metadata checked, not a human visual or full video decode review",
+  "previous_audits": [
+    {
+      "path": "docs/infra/results/2026-10-14-champion-first100-originals.json",
+      "sha256": "4315312c31d9b4efa90cee639dbfee5dd4374d8336550e2ff5d44daeb5142199",
+      "unique_cases": 100
+    },
+    {
+      "path": "docs/infra/results/2026-10-14-champion-popcorn-first4-originals.json",
+      "sha256": "aa4378adf09c2d8342eb9163408846de677dad504c1b1c3bfbb21fc490a72011",
+      "unique_cases": 4
+    }
+  ],
+  "cumulative_successes": 3,
+  "cumulative_q_sum": 5.45,
+  "audited_subset_q": 0.03538961038961039,
+  "audited_subset_sr": 0.01948051948051948,
+  "method_source": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/completed_metrics.py",
+  "additional_limits": [
+    "No rerun, rollout reset, configuration or model change.",
+    "The 154 audited cases are not all 1000 evaluation cases.",
+    "Videos were hashed and their recorded frame metadata checked; this is not human visual review or an exhaustive decoder check."
+  ]
+}
