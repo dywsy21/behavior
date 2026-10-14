@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 01:59 CST / Codex SUBMISSION-FULL-EVAL（玻璃尾批/家具新增6原件）：** 冠军累计406完整/4继承异常/590待，原241557/八worker与MEM300108后继实活，无新增故障。处理玻璃309–310均13793实控/Q0，该task全10已齐、SR0/Q均值0；厨房家具305–308均13415实控、Q为0、1/4、1/4、1/4、均未完整成功，该task仅8/10。六份原JSON/MP4 SHA、672×448/30fps/帧数=实控、注册seed/horizon/配置及两GPU journal稳定前缀已验，证据`docs/infra/results/2026-10-15-champion-glass-final-furniture305308-originals.json`。GPU2自然转图书归架、GPU3转家具尾批，正常卡全程未停；不冒称全模型成绩、人工全片复核或策略改善。下一继续冠军→MEM全量及终态内部归档，外部交付仍暂缓。
+
 - **2026-10-15 01:50 CST / Codex SUBMISSION-FULL-EVAL（400完整原件）：** 冠军原八worker/241557及MEM300108后继持续实活，累计400完整/4继承异常/596待，无新增故障。外卖打包305–308均13290实际控制/Q0/success=false；4份原JSON/MP4 SHA、672×448/30fps/帧数=实控、注册seed/horizon/配置及GPU1 journal稳定前缀验过，证据`docs/infra/results/2026-10-15-champion-packing305308-originals.json`。该task仅8/10，不将阶段均值作最终成绩；该卡已自然切309–310，未因核验停机或重跑失败。继续冠军→MEM全量/终态内部归档，外部交付暂缓。
 
 - **2026-10-15 01:45 CST / Codex SUBMISSION-FULL-EVAL（取水新增4原件）：** 冠军累计396完整/4继承异常/600待；原241557、八worker及MEM300108后继仍实活，无新增故障。取水305–308均14158实际控制，Q依次0、0、0、1/3，success均false；原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置与GPU4 journal稳定前缀验过，证据`docs/infra/results/2026-10-15-champion-water305308-originals.json`。该task仅8/10，不能称全task或全模型成绩；同卡已自然切309–310，其余卡持续，不因审计停机、不重跑失败、不改actor/时限。下一继续冠军→MEM全量及终态内部归档，外部交付仍暂停。
