@@ -1,0 +1,1238 @@
+{
+  "schema": "champion_isolated_new_committed_originals_v1",
+  "observed_at": "2026-10-14T18:33:57.110712+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "batches": [
+    {
+      "part": "bringing_water-n2-i8",
+      "gpu": 4,
+      "records": [
+        {
+          "task": "bringing_water",
+          "instance_id": 309,
+          "rollout_id": 0,
+          "steps": 14158,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/bringing_water-n2-i8/json/bringing_water_309_0.json",
+            "sha256": "55c12bb10e9e56544736e15ae1d9bd8f4dc3b04d03652b7778874954e32d8a91"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/bringing_water-n2-i8/videos/bringing_water_309_0.mp4",
+            "sha256": "dde14fb6ef55c1a8ae4ae866f332f504ac2a3324ee001726d0ef383970c22e31"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "14158"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "bringing_water",
+          "instance_id": 310,
+          "rollout_id": 0,
+          "steps": 14158,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/bringing_water-n2-i8/json/bringing_water_310_0.json",
+            "sha256": "c5169b1c0b30223319a11b8784a8a74e22d3a6da49bac0c2fd49dd5eb26493af"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/bringing_water-n2-i8/videos/bringing_water_310_0.mp4",
+            "sha256": "ad4f936009953c1d0fc0422629cd5682f9ace1e1d7f97a28f9b95cd96d9e7424"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "14158"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/bringing_water-n2-i8/attempts/08.json",
+        "sha256": "46fd16febb539a4afef1b113cc8f0330519aee0c7f4cabd13ba3132395943e89"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "bringing_water",
+        "indices": [
+          8,
+          9
+        ],
+        "instance_ids": [
+          309,
+          310
+        ],
+        "rollout": 0,
+        "started": 1792000209.6415405,
+        "max_steps": 14157,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792002523.9674602,
+        "seconds": 2314.3247784236446,
+        "actual_applied_controls": [
+          14158,
+          14158
+        ],
+        "unused_delivered_controls": {
+          "0": 2,
+          "1": 2
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 551390,
+        "task": "bringing_water",
+        "task_id": 17,
+        "indices": [
+          8,
+          9
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+        "started": 1791999841.7996187,
+        "optimizer_updates": 0,
+        "control_steps": [
+          14100,
+          14100
+        ],
+        "updated": 1792002514.4690526,
+        "finished": 1792002523.9703467,
+        "official_timeout": 14157,
+        "completed": 2
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 9821084,
+        "prefix_sha256": "022f45494894388e38dfb8a7e04cfe22c78a6398e23739c9489c268ef8dd8603",
+        "lines": 8212,
+        "connections": 12,
+        "episodes": 12,
+        "closed_episodes": 12,
+        "active_connections": 0,
+        "deliveries": 8176,
+        "delivered_controls": 163520,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          17,
+          22
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000/events.jsonl",
+        "captured_bytes": 9821084,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241612,
+        "gpu": 4,
+        "started": 1791987613.778339,
+        "completed_parts": [
+          "putting_shoes_on_rack-n2-i8",
+          "bringing_water-n4-i0",
+          "bringing_water-n4-i4",
+          "bringing_water-n2-i8"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 246626,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000",
+        "updated": 1792002597.5532944,
+        "sim_pid": 617853,
+        "part": "sorting_bottles_cans_and_paper-n4-i0"
+      },
+      "actual_controls": 28316,
+      "controls_per_second": 12.235102118764363
+    },
+    {
+      "part": "rearranging_kitchen_furniture-n2-i8",
+      "gpu": 3,
+      "records": [
+        {
+          "task": "rearranging_kitchen_furniture",
+          "instance_id": 309,
+          "rollout_id": 0,
+          "steps": 13415,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearranging_kitchen_furniture-n2-i8/json/rearranging_kitchen_furniture_309_0.json",
+            "sha256": "d5eb916cd89017bd3e0cbc10f8d0228317d9bc526404a465d1a8516d2834c7c0"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearranging_kitchen_furniture-n2-i8/videos/rearranging_kitchen_furniture_309_0.mp4",
+            "sha256": "58eab9b703cd7447c5d8c2f163eca90e1972fff670f431f8f0f73542060b803d"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13415"
+          },
+          "success": false,
+          "q_score_final": 0.25
+        },
+        {
+          "task": "rearranging_kitchen_furniture",
+          "instance_id": 310,
+          "rollout_id": 0,
+          "steps": 13415,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearranging_kitchen_furniture-n2-i8/json/rearranging_kitchen_furniture_310_0.json",
+            "sha256": "7ddb62379a8acc049ad934317936fddd621135c282edf4a4b613962fe8cafbf3"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearranging_kitchen_furniture-n2-i8/videos/rearranging_kitchen_furniture_310_0.mp4",
+            "sha256": "8100b3871b550a2b1ffe8625508e97ee0a3403e7e37c1e75c80e50ccca5b9e9f"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13415"
+          },
+          "success": false,
+          "q_score_final": 0.25
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearranging_kitchen_furniture-n2-i8/attempts/08.json",
+        "sha256": "a405c75d569973bc2dd489ba2dbfcc55e9aad23db0be4189fd433c31e006aee8"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "rearranging_kitchen_furniture",
+        "indices": [
+          8,
+          9
+        ],
+        "instance_ids": [
+          309,
+          310
+        ],
+        "rollout": 0,
+        "started": 1792000869.614025,
+        "max_steps": 13414,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792002768.5436788,
+        "seconds": 1898.9288303237408,
+        "actual_applied_controls": [
+          13415,
+          13415
+        ],
+        "unused_delivered_controls": {
+          "0": 5,
+          "1": 5
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 570228,
+        "task": "rearranging_kitchen_furniture",
+        "task_id": 8,
+        "indices": [
+          8,
+          9
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "78067a2510a97b7874a3550d2a759f5716351c33c5c1fc671e41fb2e2e290e9d",
+        "started": 1792000657.686345,
+        "optimizer_updates": 0,
+        "control_steps": [
+          13400,
+          13400
+        ],
+        "updated": 1792002766.084315,
+        "finished": 1792002768.54611,
+        "official_timeout": 13414,
+        "completed": 2
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 12196502,
+        "prefix_sha256": "7c091a7332ad7451aba4d7fbcf353f57c443fb0f2b6fe660cc8bbacda0e2361a",
+        "lines": 10466,
+        "connections": 16,
+        "episodes": 16,
+        "closed_episodes": 16,
+        "active_connections": 0,
+        "deliveries": 10418,
+        "delivered_controls": 208360,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          8,
+          70
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_3/model-000/events.jsonl",
+        "captured_bytes": 12196502,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241611,
+        "gpu": 3,
+        "started": 1791987613.7789094,
+        "completed_parts": [
+          "thawing_frozen_food-n4-i4",
+          "thawing_frozen_food-n2-i8",
+          "rearranging_kitchen_furniture-n4-i0",
+          "rearranging_kitchen_furniture-n4-i4",
+          "rearranging_kitchen_furniture-n2-i8"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 246666,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_3/model-000",
+        "updated": 1792002774.174076,
+        "sim_pid": 570228,
+        "part": "rearranging_kitchen_furniture-n2-i8"
+      },
+      "actual_controls": 26830,
+      "controls_per_second": 14.129018197815165
+    }
+  ],
+  "protocols": {
+    "3": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 12196502,
+      "prefix_sha256": "7c091a7332ad7451aba4d7fbcf353f57c443fb0f2b6fe660cc8bbacda0e2361a",
+      "lines": 10466,
+      "connections": 16,
+      "episodes": 16,
+      "closed_episodes": 16,
+      "active_connections": 0,
+      "deliveries": 10418,
+      "delivered_controls": 208360,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        8,
+        70
+      ],
+      "require_closed": false,
+      "session_summaries": [
+        {
+          "episode": "252c28db4ce04ce1a82f7bfa38c8962f/reset-1/task-70",
+          "connection": "252c28db4ce04ce1a82f7bfa38c8962f",
+          "epoch": 1,
+          "task": 70,
+          "deliveries": 618,
+          "stage": 4,
+          "votes": [
+            4
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "f6eb4dd2f76a4eaa83935ed966bd6e53/reset-1/task-70",
+          "connection": "f6eb4dd2f76a4eaa83935ed966bd6e53",
+          "epoch": 1,
+          "task": 70,
+          "deliveries": 618,
+          "stage": 5,
+          "votes": [
+            3,
+            2,
+            2
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "dbfd495f05e74521a49201b508ff86df/reset-1/task-70",
+          "connection": "dbfd495f05e74521a49201b508ff86df",
+          "epoch": 1,
+          "task": 70,
+          "deliveries": 618,
+          "stage": 4,
+          "votes": [
+            4,
+            3,
+            3
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "5b8fe7999670420092299475e5455533/reset-1/task-70",
+          "connection": "5b8fe7999670420092299475e5455533",
+          "epoch": 1,
+          "task": 70,
+          "deliveries": 618,
+          "stage": 3,
+          "votes": [
+            3,
+            3,
+            3
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "4511d99c9af341c09426acbe69ca2dad/reset-1/task-70",
+          "connection": "4511d99c9af341c09426acbe69ca2dad",
+          "epoch": 1,
+          "task": 70,
+          "deliveries": 618,
+          "stage": 4,
+          "votes": [
+            1,
+            1,
+            1
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "8d7d933f1689413a90498a348c388b05/reset-1/task-70",
+          "connection": "8d7d933f1689413a90498a348c388b05",
+          "epoch": 1,
+          "task": 70,
+          "deliveries": 618,
+          "stage": 4,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "28c7bf98a4474385a2824892bc42c1cb/reset-1/task-8",
+          "connection": "28c7bf98a4474385a2824892bc42c1cb",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 9,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "a2c9c1e72b7f4ba795890b18cdafe2ea/reset-1/task-8",
+          "connection": "a2c9c1e72b7f4ba795890b18cdafe2ea",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 4,
+          "votes": [
+            4,
+            4,
+            6
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "22069f8cda354daa833b5df0c1057751/reset-1/task-8",
+          "connection": "22069f8cda354daa833b5df0c1057751",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 1,
+          "votes": [
+            9,
+            9,
+            9
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "01a2dbc2ba7749be8100b45f593bef27/reset-1/task-8",
+          "connection": "01a2dbc2ba7749be8100b45f593bef27",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "28c032f8a84b42b2829afd2ff1c7bb40/reset-1/task-8",
+          "connection": "28c032f8a84b42b2829afd2ff1c7bb40",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 9,
+          "votes": [
+            3,
+            3,
+            3
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "8c31531beee9418ea81e3a316ef1a2eb/reset-1/task-8",
+          "connection": "8c31531beee9418ea81e3a316ef1a2eb",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 9,
+          "votes": [
+            7,
+            2,
+            2
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "8c54db0062324f45be4a7910e921225a/reset-1/task-8",
+          "connection": "8c54db0062324f45be4a7910e921225a",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 7,
+          "votes": [
+            7,
+            7,
+            7
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "7fdfa50d7314479e9813b20f448b1d08/reset-1/task-8",
+          "connection": "7fdfa50d7314479e9813b20f448b1d08",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 7,
+          "votes": [
+            3,
+            3,
+            3
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "09807fbf275f4091901689e8bb8d9c43/reset-1/task-8",
+          "connection": "09807fbf275f4091901689e8bb8d9c43",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 6,
+          "votes": [
+            6,
+            4,
+            6
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "e1ba973ce8f34b478219ffc6715703cc/reset-1/task-8",
+          "connection": "e1ba973ce8f34b478219ffc6715703cc",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 9,
+          "votes": [
+            6,
+            6,
+            6
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        }
+      ],
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_3/model-000/events.jsonl",
+      "captured_bytes": 12196502,
+      "ignored_incomplete_tail_bytes": 0
+    },
+    "4": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 9821084,
+      "prefix_sha256": "022f45494894388e38dfb8a7e04cfe22c78a6398e23739c9489c268ef8dd8603",
+      "lines": 8212,
+      "connections": 12,
+      "episodes": 12,
+      "closed_episodes": 12,
+      "active_connections": 0,
+      "deliveries": 8176,
+      "delivered_controls": 163520,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        17,
+        22
+      ],
+      "require_closed": false,
+      "session_summaries": [
+        {
+          "episode": "180f0cbc71c2455099bf8308b39445b0/reset-1/task-22",
+          "connection": "180f0cbc71c2455099bf8308b39445b0",
+          "epoch": 1,
+          "task": 22,
+          "deliveries": 580,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 9,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "92f1b3cb8291492c844ad98ae5d762b8/reset-1/task-22",
+          "connection": "92f1b3cb8291492c844ad98ae5d762b8",
+          "epoch": 1,
+          "task": 22,
+          "deliveries": 516,
+          "stage": 8,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 9,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "c4e6b72dfc4c433e9328795a9b8b42a6/reset-1/task-17",
+          "connection": "c4e6b72dfc4c433e9328795a9b8b42a6",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 4,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "2b6b65aecb494888b83265bbaad66000/reset-1/task-17",
+          "connection": "2b6b65aecb494888b83265bbaad66000",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 4,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "98d462ce99334f7d832986e3e08d5075/reset-1/task-17",
+          "connection": "98d462ce99334f7d832986e3e08d5075",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 4,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "5e49311fd1ea4877a6ee0761a16aef34/reset-1/task-17",
+          "connection": "5e49311fd1ea4877a6ee0761a16aef34",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 8,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "6bc53ebd7cc5434f8ac4aaca0e4883bd/reset-1/task-17",
+          "connection": "6bc53ebd7cc5434f8ac4aaca0e4883bd",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "701df01ef42744ed8d0adaa93c46c9ac/reset-1/task-17",
+          "connection": "701df01ef42744ed8d0adaa93c46c9ac",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 7,
+          "votes": [
+            7,
+            6,
+            7
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "7dd0d597c15b40e1a0a3e99f1a8535e1/reset-1/task-17",
+          "connection": "7dd0d597c15b40e1a0a3e99f1a8535e1",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 4,
+          "votes": [
+            7,
+            7,
+            7
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "16c19d6b627748f2b34313dfdd75a622/reset-1/task-17",
+          "connection": "16c19d6b627748f2b34313dfdd75a622",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 7,
+          "votes": [
+            5,
+            7,
+            7
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "c200dd909aa54d2891c1b0d0376fb587/reset-1/task-17",
+          "connection": "c200dd909aa54d2891c1b0d0376fb587",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 4,
+          "votes": [
+            3,
+            3,
+            4
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "4fb676b9284144e2ac25dcca27fe71d5/reset-1/task-17",
+          "connection": "4fb676b9284144e2ac25dcca27fe71d5",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 4,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        }
+      ],
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000/events.jsonl",
+      "captured_bytes": 9821084,
+      "ignored_incomplete_tail_bytes": 0
+    }
+  },
+  "previously_verified_parts": [
+    "boxing_food_after_dinner-n2-i8",
+    "boxing_food_after_dinner-n4-i4",
+    "bringing_water-n4-i0",
+    "bringing_water-n4-i4",
+    "clean_boxing_gloves-n4-i0",
+    "clean_boxing_gloves-n4-i4",
+    "clean_up_broken_glass-n4-i0",
+    "clean_up_broken_glass-n4-i4",
+    "cook_a_frozen_pie-n2-i8",
+    "cook_a_frozen_pie-n4-i0",
+    "cook_a_frozen_pie-n4-i4",
+    "dispose_of_glass-n2-i8",
+    "dispose_of_glass-n4-i0",
+    "dispose_of_glass-n4-i4",
+    "packing_meal_for_delivery-n2-i8",
+    "packing_meal_for_delivery-n4-i0",
+    "packing_meal_for_delivery-n4-i4",
+    "preparing_lunch_box-n2-i8",
+    "preparing_lunch_box-n4-i4",
+    "putting_shoes_on_rack-n2-i8",
+    "rearranging_kitchen_furniture-n4-i0",
+    "rearranging_kitchen_furniture-n4-i4",
+    "setting_the_fire-n4-i0",
+    "setting_the_fire-n4-i4",
+    "sorting_books_on_shelf-n2-i8",
+    "sorting_books_on_shelf-n4-i0",
+    "sorting_books_on_shelf-n4-i4",
+    "spraying_fruit_trees-n2-i8",
+    "spraying_fruit_trees-n4-i4",
+    "store_produce-n4-i0",
+    "store_produce-n4-i4",
+    "thawing_frozen_food-n2-i8",
+    "thawing_frozen_food-n4-i4",
+    "wash_a_baseball_cap-n2-i8",
+    "wash_a_baseball_cap-n4-i4"
+  ],
+  "summary": {
+    "status": "running",
+    "expected": 1000,
+    "completed": 428,
+    "missing": 572,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.07378727191811302,
+    "completed_only_sr": 0.02102803738317757,
+    "tasks": {
+      "rearranging_kitchen_furniture": {
+        "completed": 10,
+        "expected": 10,
+        "q_score_sum": 1.75,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0.175,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0.175
+      },
+      "bringing_water": {
+        "completed": 10,
+        "expected": 10,
+        "q_score_sum": 0.6666666666666666,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0.06666666666666667,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0.06666666666666667
+      }
+    },
+    "coverage": 432,
+    "execution_errors": 4,
+    "unaccounted": 568,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.03158095238095237,
+    "conservative_sr_errors_and_missing_as_zero": 0.009,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0
+  },
+  "supervisor": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {},
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 428,
+    "coverage": 432,
+    "updated": 1792002829.003024
+  },
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 300108,
+    "started": 1791989042.9684465,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+        "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v2/status.json",
+        "sha256": "643cca0bd67296878a5518bd6de3d786d331fd9bebe00b777b0d7b68a50f2ec5"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-queue-isolation-20261014-v2",
+    "queue_source_commit": "9122b13726bf1862dbe2d6616c0da916822e2487",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "pending_mem_upgrade": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+      "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+    },
+    "updated": 1791989042.9684682
+  },
+  "manual_visual_review": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "validation_scope": "Original committed JSON, MP4 metadata/hash, physical controls, pinned identity/seed/horizon, and per-GPU journal recurrence; no image-content or RNG identity claim.",
+  "incremental_audit_count": 4,
+  "previous_audited_completed": 424,
+  "previous_audit_commit": "dad52a98",
+  "live_monitor_snapshot": {
+    "observed_at": "2026-10-14T18:32:50.366403+00:00",
+    "monitor_pid": 303366,
+    "champion": {
+      "status": {
+        "status": "running",
+        "pid": 241557,
+        "started": 1791987613.4638016,
+        "completed_gpus": [],
+        "failed_gpus": {},
+        "worker_pids": {
+          "0": 241608,
+          "1": 241609,
+          "2": 241610,
+          "3": 241611,
+          "4": 241612,
+          "5": 241613,
+          "6": 241614,
+          "7": 241615
+        },
+        "completed": 428,
+        "coverage": 432,
+        "updated": 1792002768.85533
+      },
+      "supervisor_alive": true,
+      "summary": {
+        "status": "running",
+        "completed": 428,
+        "coverage": 432,
+        "execution_errors": 4,
+        "unaccounted": 568,
+        "official_full_q_score": null,
+        "official_full_sr": null
+      },
+      "workers": [
+        {
+          "gpu": 0,
+          "alive": true,
+          "status": "evaluating",
+          "part": "store_produce-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            1300,
+            1300
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 1,
+          "alive": true,
+          "status": "evaluating",
+          "part": "turning_out_all_lights_before_sleep-n4-i0",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": null,
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 2,
+          "alive": true,
+          "status": "evaluating",
+          "part": "re_shelving_library_books-n4-i0",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            10500,
+            10500,
+            10500,
+            10500
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 3,
+          "alive": true,
+          "status": "evaluating",
+          "part": "rearranging_kitchen_furniture-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            13400,
+            13400
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 4,
+          "alive": true,
+          "status": "evaluating",
+          "part": "sorting_bottles_cans_and_paper-n4-i0",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": null,
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 5,
+          "alive": true,
+          "status": "evaluating",
+          "part": "setting_the_fire-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            5200,
+            5200
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 6,
+          "alive": true,
+          "status": "evaluating",
+          "part": "clean_up_broken_glass-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            4700,
+            4700
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 7,
+          "alive": true,
+          "status": "evaluating",
+          "part": "clean_boxing_gloves-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            2000,
+            2000
+          ],
+          "error": null,
+          "final_verification_error": null
+        }
+      ]
+    },
+    "mem": {
+      "status": null,
+      "supervisor_alive": false,
+      "summary": null,
+      "workers": []
+    },
+    "queue": {
+      "status": "waiting_for_champion_continuation",
+      "pid": 300108,
+      "alive": true,
+      "phases": [],
+      "error": null
+    }
+  },
+  "resource_checkpoint": {
+    "observed_at": "2026-10-14T18:25:45.563165+00:00",
+    "processes": {
+      "241557": {
+        "state": "S",
+        "alive": true,
+        "start_ticks": 538129517
+      },
+      "241608": {
+        "state": "S",
+        "alive": true,
+        "start_ticks": 538129546
+      },
+      "241609": {
+        "state": "S",
+        "alive": true,
+        "start_ticks": 538129546
+      },
+      "241610": {
+        "state": "S",
+        "alive": true,
+        "start_ticks": 538129546
+      },
+      "241611": {
+        "state": "S",
+        "alive": true,
+        "start_ticks": 538129547
+      },
+      "241612": {
+        "state": "S",
+        "alive": true,
+        "start_ticks": 538129547
+      },
+      "241613": {
+        "state": "S",
+        "alive": true,
+        "start_ticks": 538129547
+      },
+      "241614": {
+        "state": "S",
+        "alive": true,
+        "start_ticks": 538129547
+      },
+      "241615": {
+        "state": "S",
+        "alive": true,
+        "start_ticks": 538129547
+      },
+      "300108": {
+        "state": "S",
+        "alive": true,
+        "start_ticks": 538272450
+      },
+      "303366": {
+        "state": "S",
+        "alive": true,
+        "start_ticks": 538287979
+      }
+    },
+    "disk": {
+      "path": "/run/ti",
+      "total": 7679370067968,
+      "free": 4970774044672
+    },
+    "memory_available": "576934216 kB",
+    "gpu_csv_columns": [
+      "index",
+      "memory_used_MiB",
+      "memory_total_MiB",
+      "utilization_percent",
+      "temperature_C"
+    ],
+    "gpus": [
+      "0, 10144, 73415, 0, 35",
+      "1, 10652, 73415, 0, 36",
+      "2, 17155, 73415, 59, 49",
+      "3, 24210, 73415, 45, 44",
+      "4, 26789, 73415, 33, 43",
+      "5, 23222, 73415, 30, 42",
+      "6, 18797, 73415, 30, 44",
+      "7, 10770, 73415, 0, 34"
+    ],
+    "read_only": true
+  },
+  "notes": [
+    "Both touched tasks now have all ten original instances; their full-task metrics are not the full-model result.",
+    "Read-only /proc start-time/resource probe confirms existing processes and sufficient current disk/RAM headroom; this is not a future capacity guarantee.",
+    "No manual full-video review, raw observation/action/RNG equality claim, active source/model/physical changes, stop, or reroll."
+  ]
+}

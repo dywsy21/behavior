@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 02:38 CST / Codex SUBMISSION-FULL-EVAL（关灯慢加载已真实推进）：** GPU1原worker241609/model241683/sim601640未重启；首次scene.ready距进程状态启动约794s（13.2min），之后原状态依次记录四实例各100/200实际控制。已核固定9f入口：scene.ready仅表示Evaluator进入，不能单独当实控；本次以后续applied控制记录确认进展。原同一模型14,329,573B journal稳定前缀通过，task81→66四个独立epoch1连接、stage/vote/inpainting/交付递推有效；不冒称原图/动作/RNG字节等价或成功。证据`docs/infra/results/2026-10-15-champion-lights-initial-load-and-session-audit.json`。慢加载未被误判停机，正常卡与MEM300108后继持续；本轮无运行源/参数/时限修改或重跑，完整全量仍待、外部交付暂停。
+
+- **2026-10-15 02:35 CST / Codex SUBMISSION-FULL-EVAL（取水/家具尾4原件）：** 冠军累计428完整/4继承异常/568待；原241557/八worker及MEM300108后继实活，无新增故障。取水309–310均14158实控/Q0，家具309–310均13415步/Q1/4，四例均未完整成功；两task全10已齐，取水平均Q1/15、家具0.175，SR均0。原JSON/MP4 SHA、672×448/30fps/帧数=实控、注册seed/horizon/配置与两GPU journal稳定前缀已验，证据`docs/infra/results/2026-10-15-champion-water-furniture-final4-originals.json`。附02:25只读进程start ticks与资源快照：磁盘约4.97TB可用、RAM约550GiB，正常卡/后继不动。GPU1关灯首次加载偏长，02:34新写scene.ready但尚未实控，正只读确认进展，不把CPU忙当已成功；继续冠军→MEM/终态内部归档，外部交付暂缓。
+
 - **2026-10-15 02:24 CST / Codex SUBMISSION-FULL-EVAL（拳套/农产品再增8原件）：** 冠军累计424完整/4继承异常/572待，原241557、八worker/模型和MEM300108后继仍实活，无新增故障。拳套305–308各12354实控、农产品305–308各14284实控，八例均Q0/success=false；原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置及两GPU journal稳定前缀已验，证据`docs/infra/results/2026-10-15-champion-gloves-produce305308-originals.json`。连同下条本轮共18新原件已核；两个task各仅8/10，不称完整task/全模型成绩。GPU7转尾批，GPU0上一sim退出后仍由原worker收尾/等槽，不能误判为worker故障；正常卡不停、未重跑或改actor。下一继续冠军→MEM与终态内部归档，外部交付暂缓。
 
 - **2026-10-15 02:21 CST / Codex SUBMISSION-FULL-EVAL（生火/碎玻璃/外卖新增10原件）：** 冠军累计416完整/4继承异常/580待，原241557、八worker及MEM300108后继仍实活，无新增故障。生火305–308均13678实控/Q为1/4、0、1/4、0；清碎玻璃305–308均13038步/Q0；外卖309–310均13290步/Q0，十例success均false。原JSON/MP4 SHA、672×448/30fps/帧数=实控、注册seed/horizon/配置及三GPU journal稳定前缀已验，证据`docs/infra/results/2026-10-15-champion-fire-glass-packing-new10-originals.json`。外卖全10已齐、SR0/平均Q1/60，生火及碎玻璃各仅8/10；GPU1自然转睡前关灯、GPU5/6转尾批，无STOP/重跑/改actor。下一继续冠军→MEM与最终内部归档，完整模型成绩仍待，外部交付暂缓。

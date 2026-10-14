@@ -1,0 +1,714 @@
+{
+  "schema": "champion_slow_initial_load_progress_v1",
+  "observed_at": "2026-10-14T18:37:13.753646+00:00",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "worker": {
+    "status": "evaluating",
+    "pid": 241609,
+    "gpu": 1,
+    "started": 1791987613.7508204,
+    "completed_parts": [
+      "sorting_books_on_shelf-n4-i0",
+      "sorting_books_on_shelf-n4-i4",
+      "sorting_books_on_shelf-n2-i8",
+      "packing_meal_for_delivery-n4-i0",
+      "packing_meal_for_delivery-n4-i4",
+      "packing_meal_for_delivery-n2-i8"
+    ],
+    "diagnosed_failed_parts": [],
+    "model_generations": [],
+    "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "model_pid": 241683,
+    "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/model-000",
+    "updated": 1792002059.4337304,
+    "sim_pid": 601640,
+    "part": "turning_out_all_lights_before_sleep-n4-i0"
+  },
+  "part_status": {
+    "status": "running",
+    "pid": 601640,
+    "task": "turning_out_all_lights_before_sleep",
+    "task_id": 66,
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "ef627f701aeaa3994aa701ad0837b875e83ddbd582a5c0ab8029ac52ec29d947",
+    "started": 1792002059.7676532,
+    "optimizer_updates": 0,
+    "control_steps": [
+      200,
+      200,
+      200,
+      200
+    ],
+    "updated": 1792002989.9049027
+  },
+  "protocol": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 14329573,
+    "prefix_sha256": "5f762bf13761df887eede9cf8f332e9cd92891c9316ca08b98bf1ba92e32183a",
+    "lines": 12588,
+    "connections": 24,
+    "episodes": 24,
+    "closed_episodes": 20,
+    "active_connections": 4,
+    "deliveries": 12520,
+    "delivered_controls": 250400,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      66,
+      81,
+      99
+    ],
+    "require_closed": false,
+    "session_summaries": [
+      {
+        "episode": "fe6ff0ea7d584ff1b294e5716d04a359/reset-1/task-99",
+        "connection": "fe6ff0ea7d584ff1b294e5716d04a359",
+        "epoch": 1,
+        "task": 99,
+        "deliveries": 581,
+        "stage": 2,
+        "votes": [
+          2,
+          0,
+          0
+        ],
+        "stages": 8,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "b138a05d807c4b7cb9f73ce0c0b81484/reset-1/task-99",
+        "connection": "b138a05d807c4b7cb9f73ce0c0b81484",
+        "epoch": 1,
+        "task": 99,
+        "deliveries": 581,
+        "stage": 7,
+        "votes": [
+          7,
+          7,
+          6
+        ],
+        "stages": 8,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "5450a9a212734942b30d3e7d2bdf0b08/reset-1/task-99",
+        "connection": "5450a9a212734942b30d3e7d2bdf0b08",
+        "epoch": 1,
+        "task": 99,
+        "deliveries": 581,
+        "stage": 3,
+        "votes": [
+          7
+        ],
+        "stages": 8,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "2e2a4f194254401aa8aa1d72185496ee/reset-1/task-99",
+        "connection": "2e2a4f194254401aa8aa1d72185496ee",
+        "epoch": 1,
+        "task": 99,
+        "deliveries": 581,
+        "stage": 1,
+        "votes": [
+          1,
+          2,
+          6
+        ],
+        "stages": 8,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "13a298216f4b49e8bda3d4943b09680a/reset-1/task-99",
+        "connection": "13a298216f4b49e8bda3d4943b09680a",
+        "epoch": 1,
+        "task": 99,
+        "deliveries": 581,
+        "stage": 2,
+        "votes": [
+          7,
+          7,
+          2
+        ],
+        "stages": 8,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "3996fa92df6b4d70b83433e0aed85f69/reset-1/task-99",
+        "connection": "3996fa92df6b4d70b83433e0aed85f69",
+        "epoch": 1,
+        "task": 99,
+        "deliveries": 581,
+        "stage": 2,
+        "votes": [
+          7,
+          6,
+          7
+        ],
+        "stages": 8,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "3d6a5af5f30049b385521483daaed39b/reset-1/task-99",
+        "connection": "3d6a5af5f30049b385521483daaed39b",
+        "epoch": 1,
+        "task": 99,
+        "deliveries": 581,
+        "stage": 2,
+        "votes": [
+          2,
+          7,
+          6
+        ],
+        "stages": 8,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "f7f8d17b4f3d4895964b807dbabd7120/reset-1/task-99",
+        "connection": "f7f8d17b4f3d4895964b807dbabd7120",
+        "epoch": 1,
+        "task": 99,
+        "deliveries": 581,
+        "stage": 7,
+        "votes": [
+          0,
+          1,
+          2
+        ],
+        "stages": 8,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "343b4ba1e4e745a39793caa588daf016/reset-1/task-99",
+        "connection": "343b4ba1e4e745a39793caa588daf016",
+        "epoch": 1,
+        "task": 99,
+        "deliveries": 581,
+        "stage": 2,
+        "votes": [
+          2,
+          2
+        ],
+        "stages": 8,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "68ad9edc505445099cd3a9fe54edea99/reset-1/task-99",
+        "connection": "68ad9edc505445099cd3a9fe54edea99",
+        "epoch": 1,
+        "task": 99,
+        "deliveries": 581,
+        "stage": 2,
+        "votes": [
+          7,
+          7,
+          7
+        ],
+        "stages": 8,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "e35e59cf74054bfc80227a2b5efbb2c1/reset-1/task-81",
+        "connection": "e35e59cf74054bfc80227a2b5efbb2c1",
+        "epoch": 1,
+        "task": 81,
+        "deliveries": 665,
+        "stage": 8,
+        "votes": [
+          6,
+          6,
+          6
+        ],
+        "stages": 9,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "6ebf9f363f634d548f266853ecf3cf54/reset-1/task-81",
+        "connection": "6ebf9f363f634d548f266853ecf3cf54",
+        "epoch": 1,
+        "task": 81,
+        "deliveries": 665,
+        "stage": 8,
+        "votes": [
+          0,
+          0,
+          0
+        ],
+        "stages": 9,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "c7050f210bdf4032be614a41efa1cc4c/reset-1/task-81",
+        "connection": "c7050f210bdf4032be614a41efa1cc4c",
+        "epoch": 1,
+        "task": 81,
+        "deliveries": 665,
+        "stage": 5,
+        "votes": [
+          7,
+          3,
+          3
+        ],
+        "stages": 9,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "f501d3bfdb6e48a19c29566287256572/reset-1/task-81",
+        "connection": "f501d3bfdb6e48a19c29566287256572",
+        "epoch": 1,
+        "task": 81,
+        "deliveries": 665,
+        "stage": 8,
+        "votes": [
+          8,
+          8,
+          8
+        ],
+        "stages": 9,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "b39dc1802d2c49c38077b97572c56104/reset-1/task-81",
+        "connection": "b39dc1802d2c49c38077b97572c56104",
+        "epoch": 1,
+        "task": 81,
+        "deliveries": 665,
+        "stage": 8,
+        "votes": [
+          8,
+          6,
+          6
+        ],
+        "stages": 9,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "5216e0c24d17418eba6261e71818b64a/reset-1/task-81",
+        "connection": "5216e0c24d17418eba6261e71818b64a",
+        "epoch": 1,
+        "task": 81,
+        "deliveries": 665,
+        "stage": 8,
+        "votes": [
+          3,
+          6,
+          6
+        ],
+        "stages": 9,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "6c7f5f401d164a85ba8d5423af706975/reset-1/task-81",
+        "connection": "6c7f5f401d164a85ba8d5423af706975",
+        "epoch": 1,
+        "task": 81,
+        "deliveries": 665,
+        "stage": 6,
+        "votes": [
+          1,
+          2,
+          0
+        ],
+        "stages": 9,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "6a78504bfe8241a39111d47960ec5b25/reset-1/task-81",
+        "connection": "6a78504bfe8241a39111d47960ec5b25",
+        "epoch": 1,
+        "task": 81,
+        "deliveries": 665,
+        "stage": 7,
+        "votes": [
+          1,
+          7,
+          1
+        ],
+        "stages": 9,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "96c26d2825af489a9984c52e808d1bf8/reset-1/task-81",
+        "connection": "96c26d2825af489a9984c52e808d1bf8",
+        "epoch": 1,
+        "task": 81,
+        "deliveries": 665,
+        "stage": 3,
+        "votes": [
+          3,
+          3,
+          3
+        ],
+        "stages": 9,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "9fd394ac132144dfa3d9b5427021ea8b/reset-1/task-81",
+        "connection": "9fd394ac132144dfa3d9b5427021ea8b",
+        "epoch": 1,
+        "task": 81,
+        "deliveries": 665,
+        "stage": 0,
+        "votes": [
+          8,
+          8,
+          8
+        ],
+        "stages": 9,
+        "legacy": false,
+        "closed": true
+      },
+      {
+        "episode": "9e362e5c50cc4b0ab7383ae4853442a0/reset-1/task-66",
+        "connection": "9e362e5c50cc4b0ab7383ae4853442a0",
+        "epoch": 1,
+        "task": 66,
+        "deliveries": 15,
+        "stage": 0,
+        "votes": [
+          0,
+          0,
+          0
+        ],
+        "stages": 11,
+        "legacy": false,
+        "closed": false
+      },
+      {
+        "episode": "fb0ef858c77c491db36c80022456c588/reset-1/task-66",
+        "connection": "fb0ef858c77c491db36c80022456c588",
+        "epoch": 1,
+        "task": 66,
+        "deliveries": 15,
+        "stage": 0,
+        "votes": [
+          3,
+          0,
+          3
+        ],
+        "stages": 11,
+        "legacy": false,
+        "closed": false
+      },
+      {
+        "episode": "846ad205794f4d05a282ca0aeed37196/reset-1/task-66",
+        "connection": "846ad205794f4d05a282ca0aeed37196",
+        "epoch": 1,
+        "task": 66,
+        "deliveries": 15,
+        "stage": 0,
+        "votes": [
+          3,
+          1,
+          2
+        ],
+        "stages": 11,
+        "legacy": false,
+        "closed": false
+      },
+      {
+        "episode": "3f241997dcba43f3a78ebbdca0ce791b/reset-1/task-66",
+        "connection": "3f241997dcba43f3a78ebbdca0ce791b",
+        "epoch": 1,
+        "task": 66,
+        "deliveries": 15,
+        "stage": 0,
+        "votes": [
+          0,
+          0,
+          0
+        ],
+        "stages": 11,
+        "legacy": false,
+        "closed": false
+      }
+    ],
+    "original_outputs_modified": false,
+    "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/model-000/events.jsonl",
+    "captured_bytes": 14329573,
+    "ignored_incomplete_tail_bytes": 0
+  },
+  "new_task_sessions": [
+    {
+      "episode": "9e362e5c50cc4b0ab7383ae4853442a0/reset-1/task-66",
+      "connection": "9e362e5c50cc4b0ab7383ae4853442a0",
+      "epoch": 1,
+      "task": 66,
+      "deliveries": 15,
+      "stage": 0,
+      "votes": [
+        0,
+        0,
+        0
+      ],
+      "stages": 11,
+      "legacy": false,
+      "closed": false
+    },
+    {
+      "episode": "fb0ef858c77c491db36c80022456c588/reset-1/task-66",
+      "connection": "fb0ef858c77c491db36c80022456c588",
+      "epoch": 1,
+      "task": 66,
+      "deliveries": 15,
+      "stage": 0,
+      "votes": [
+        3,
+        0,
+        3
+      ],
+      "stages": 11,
+      "legacy": false,
+      "closed": false
+    },
+    {
+      "episode": "846ad205794f4d05a282ca0aeed37196/reset-1/task-66",
+      "connection": "846ad205794f4d05a282ca0aeed37196",
+      "epoch": 1,
+      "task": 66,
+      "deliveries": 15,
+      "stage": 0,
+      "votes": [
+        3,
+        1,
+        2
+      ],
+      "stages": 11,
+      "legacy": false,
+      "closed": false
+    },
+    {
+      "episode": "3f241997dcba43f3a78ebbdca0ce791b/reset-1/task-66",
+      "connection": "3f241997dcba43f3a78ebbdca0ce791b",
+      "epoch": 1,
+      "task": 66,
+      "deliveries": 15,
+      "stage": 0,
+      "votes": [
+        0,
+        0,
+        0
+      ],
+      "stages": 11,
+      "legacy": false,
+      "closed": false
+    }
+  ],
+  "runtime_entry": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+    "sha256": "9bf5b9a0955f17071faab41aaaa164e268990a140d64ba7f946c5f3da98252d5"
+  },
+  "read_only": true,
+  "no_restart_or_runtime_modification": true,
+  "initial_observation": {
+    "observed_at": "2026-10-14T18:34:22.894961+00:00",
+    "worker": {
+      "status": "evaluating",
+      "pid": 241609,
+      "gpu": 1,
+      "started": 1791987613.7508204,
+      "completed_parts": [
+        "sorting_books_on_shelf-n4-i0",
+        "sorting_books_on_shelf-n4-i4",
+        "sorting_books_on_shelf-n2-i8",
+        "packing_meal_for_delivery-n4-i0",
+        "packing_meal_for_delivery-n4-i4",
+        "packing_meal_for_delivery-n2-i8"
+      ],
+      "diagnosed_failed_parts": [],
+      "model_generations": [],
+      "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "model_pid": 241683,
+      "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/model-000",
+      "updated": 1792002059.4337304,
+      "sim_pid": 601640,
+      "part": "turning_out_all_lights_before_sleep-n4-i0"
+    },
+    "part_status": {
+      "status": "loading",
+      "pid": 601640,
+      "task": "turning_out_all_lights_before_sleep",
+      "task_id": 66,
+      "indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "ef627f701aeaa3994aa701ad0837b875e83ddbd582a5c0ab8029ac52ec29d947",
+      "started": 1792002059.7676532,
+      "optimizer_updates": 0
+    },
+    "files": [
+      {
+        "name": "status.json",
+        "bytes": 364,
+        "mtime": 1792002059.7663538
+      },
+      {
+        "name": "resolved_config.json",
+        "bytes": 3829,
+        "mtime": 1792002073.5838134
+      },
+      {
+        "name": "scene.ready",
+        "bytes": 0,
+        "mtime": 1792002853.8007865
+      }
+    ],
+    "process": {
+      "pid": 601640,
+      "state": "R",
+      "utime_ticks": 440398,
+      "stime_ticks": 25582,
+      "start_ticks": 539574143,
+      "wchan": "0"
+    },
+    "log_tails": {},
+    "read_only": true
+  },
+  "followup_observation": {
+    "observed_at": "2026-10-14T18:36:01.475642+00:00",
+    "worker": {
+      "status": "evaluating",
+      "pid": 241609,
+      "gpu": 1,
+      "started": 1791987613.7508204,
+      "completed_parts": [
+        "sorting_books_on_shelf-n4-i0",
+        "sorting_books_on_shelf-n4-i4",
+        "sorting_books_on_shelf-n2-i8",
+        "packing_meal_for_delivery-n4-i0",
+        "packing_meal_for_delivery-n4-i4",
+        "packing_meal_for_delivery-n2-i8"
+      ],
+      "diagnosed_failed_parts": [],
+      "model_generations": [],
+      "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "model_pid": 241683,
+      "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/model-000",
+      "updated": 1792002059.4337304,
+      "sim_pid": 601640,
+      "part": "turning_out_all_lights_before_sleep-n4-i0"
+    },
+    "part_status": {
+      "status": "running",
+      "pid": 601640,
+      "task": "turning_out_all_lights_before_sleep",
+      "task_id": 66,
+      "indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "ef627f701aeaa3994aa701ad0837b875e83ddbd582a5c0ab8029ac52ec29d947",
+      "started": 1792002059.7676532,
+      "optimizer_updates": 0,
+      "control_steps": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "updated": 1792002941.1739438
+    },
+    "attempts": [
+      {
+        "status": "running",
+        "task": "turning_out_all_lights_before_sleep",
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "instance_ids": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "rollout": 0,
+        "started": 1792002853.8018837,
+        "max_steps": 15009,
+        "policy_seed": 17,
+        "simulator_seed": 0
+      }
+    ],
+    "files": [
+      {
+        "name": "status.json",
+        "bytes": 458,
+        "mtime": 1792002941.173698
+      },
+      {
+        "name": "resolved_config.json",
+        "bytes": 3829,
+        "mtime": 1792002073.5838134
+      },
+      {
+        "name": "scene.ready",
+        "bytes": 0,
+        "mtime": 1792002853.8007865
+      }
+    ],
+    "process": {
+      "pid": 601640,
+      "state": "S",
+      "utime_ticks": 474120,
+      "stime_ticks": 29188,
+      "start_ticks": 539574143,
+      "wchan": "futex_wait_queue_me"
+    },
+    "log_tails": {},
+    "read_only": true
+  },
+  "scene_ready_after_seconds": 794.0331332683563,
+  "first100_status_seconds_after_scene_ready": 87.37315726280212,
+  "scope": "Read-only live observation of this physical batch and exact per-GPU protocol prefix; no raw observation/action/RNG identity or success claim.",
+  "notes": [
+    "Pinned launcher writes scene.ready after Evaluator entry and before evaluator.run; scene.ready alone does not prove physical control.",
+    "Same worker/model/simulator PIDs and start ticks remained in place; later status records each slot's first100 then200 applied controls.",
+    "Four new independent task66 epoch1 sessions pass identity/stage/vote/inpainting and delivery-clock recurrence following the previous task81 sessions.",
+    "The protocol prefix includes live/unclosed episodes; it is not a terminal full-task or final-weight verification.",
+    "No source/runtime/model/physical parameter changes, stop, or reroll."
+  ]
+}
