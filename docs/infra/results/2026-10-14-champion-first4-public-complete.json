@@ -1,0 +1,150 @@
+{
+  "schema": "champion_first_complete_public_batch_audit_v1",
+  "observed_at": "2026-10-14T06:11:50.887507+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+  "manifest_sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297",
+  "attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/turning_on_radio-n4-i0/attempts/00.json",
+    "sha256": "35b505320d04d897f08cb81469bb0f9947cf79535cb5330e2163119339a20f3a",
+    "receipt": {
+      "status": "completed",
+      "task": "turning_on_radio",
+      "indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "instance_ids": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "rollout": 0,
+      "started": 1791957506.6349075,
+      "max_steps": 3224,
+      "policy_seed": 17,
+      "simulator_seed": 0,
+      "finished": 1791958176.6217835,
+      "seconds": 669.9860660675913,
+      "actual_applied_controls": [
+        3225,
+        3225,
+        3225,
+        3225
+      ],
+      "unused_delivered_controls": {
+        "0": 15,
+        "1": 15,
+        "2": 15,
+        "3": 15
+      },
+      "server_clock_kind": "policy_delivery",
+      "physical_ack_sent": false
+    }
+  },
+  "records": [
+    {
+      "task": "turning_on_radio",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 3225,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/turning_on_radio-n4-i0/json/turning_on_radio_301_0.json",
+        "sha256": "213e0f7195044b2c76eac989cdb6af823d24a0468fb45c7e0a9aa8d577504a42"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/turning_on_radio-n4-i0/videos/turning_on_radio_301_0.mp4",
+        "sha256": "02f7c7ae6b543fd27d58d34975bfa49ea089922dad6e3787f2862481a13b284d",
+        "bytes": 6981325,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "107.500000",
+          "nb_frames": "3225"
+        }
+      }
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 3225,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/turning_on_radio-n4-i0/json/turning_on_radio_302_0.json",
+        "sha256": "2d96ee2eaa6ee0b1a78e1e13e8c1c9c56fadb90add2e71d61e36697e77a649ad"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/turning_on_radio-n4-i0/videos/turning_on_radio_302_0.mp4",
+        "sha256": "120c8a3faed0386a354fd5a833e8e8c2506ffb2e61710a91f8ec80c382d4def5",
+        "bytes": 5589959,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "107.500000",
+          "nb_frames": "3225"
+        }
+      }
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 3225,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/turning_on_radio-n4-i0/json/turning_on_radio_303_0.json",
+        "sha256": "9dfc7c06a65cf9ecd14447705cebe3b82353e33157e967b6fea128bb7e8433ac"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/turning_on_radio-n4-i0/videos/turning_on_radio_303_0.mp4",
+        "sha256": "0a87464703a93dad0b9457a257be7c52935d4099d08a74e929764115cd687b09",
+        "bytes": 5713462,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "107.500000",
+          "nb_frames": "3225"
+        }
+      }
+    },
+    {
+      "task": "turning_on_radio",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 3225,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/turning_on_radio-n4-i0/json/turning_on_radio_304_0.json",
+        "sha256": "eca7be0566608729eb7cdee32983e4244a3f81d25aab1cf3c203c015887f4525"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/turning_on_radio-n4-i0/videos/turning_on_radio_304_0.mp4",
+        "sha256": "a4fb6b0ae76f1ea72cf7efcd17fb4a7048f9d441d8b323cb5ac83515c084afbe",
+        "bytes": 5166771,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "107.500000",
+          "nb_frames": "3225"
+        }
+      }
+    }
+  ],
+  "physical_and_original_video_frames_exact": true,
+  "completed_only_q": 0,
+  "completed_only_sr": 0,
+  "full_model_score": false,
+  "originals_modified": false
+}

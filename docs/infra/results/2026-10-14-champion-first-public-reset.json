@@ -1,0 +1,65 @@
+{
+  "schema": "champion_first_public_reset_boundary_audit_v1",
+  "observed_at": "2026-10-14T06:11:51.557074+00:00",
+  "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/workers/gpu_1/model/events.jsonl",
+  "prefix_bytes": 807959,
+  "prefix_sha256": "01207ac0159099c6f5cf342e465850cc0164925fbd74dc3aa60bedd9e4a48fb4",
+  "records": [
+    {
+      "connection": "7f6739dfba5b48cd9e94f5fa24701c33",
+      "slot": 0,
+      "completed_instance": 301,
+      "next_instance": 305,
+      "old_delivered": 3240,
+      "old_actual_controls": 3225,
+      "old_unused_client_tail": 15,
+      "next_prediction": 1,
+      "next_display_clock": 0,
+      "next_input_stage": 0,
+      "next_inpainting_steps": 0
+    },
+    {
+      "connection": "2d3f45495084417dae8c10b604916588",
+      "slot": 1,
+      "completed_instance": 302,
+      "next_instance": 306,
+      "old_delivered": 3240,
+      "old_actual_controls": 3225,
+      "old_unused_client_tail": 15,
+      "next_prediction": 1,
+      "next_display_clock": 0,
+      "next_input_stage": 0,
+      "next_inpainting_steps": 0
+    },
+    {
+      "connection": "c029737bd0cb49cf8bdccac459c746ad",
+      "slot": 2,
+      "completed_instance": 303,
+      "next_instance": 307,
+      "old_delivered": 3240,
+      "old_actual_controls": 3225,
+      "old_unused_client_tail": 15,
+      "next_prediction": 1,
+      "next_display_clock": 0,
+      "next_input_stage": 0,
+      "next_inpainting_steps": 0
+    },
+    {
+      "connection": "4f0b77ee01964bf4b825266ad2652cd6",
+      "slot": 3,
+      "completed_instance": 304,
+      "next_instance": 308,
+      "old_delivered": 3240,
+      "old_actual_controls": 3225,
+      "old_unused_client_tail": 15,
+      "next_prediction": 1,
+      "next_display_clock": 0,
+      "next_input_stage": 0,
+      "next_inpainting_steps": 0
+    }
+  ],
+  "all_four_boundaries_passed": true,
+  "physical_counter_not_fabricated": true,
+  "scope": "Observed protocol counters and displayed initial state; does not authenticate raw cached action values, original pixels, or every future transition.",
+  "originals_modified": false
+}

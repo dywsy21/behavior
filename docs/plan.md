@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 14:12 CST / Codex SUBMISSION-FULL-EVAL（冠军首4完整原件＋回合切换核验）：** 上一goal轮已真实切换冠军优先/封存MEM/部署反向依赖，为实质进展；本轮先直接核原supervisor3787083、八worker和MEM队列3812967实活，不重启。Git首次fetch TLS瞬断，复测fetch/pull成功且无远端新增；修正FULL_EVAL手册顶部旧顺序。冠军radio301–304已真正结束：各3225实际控制、对应MP4各3225帧/30fps/672×448，4原JSON/视频SHA及物理回执全一致，4例均Q0/SRfalse，仅为首批而非全量结论。四连接各交付3240、实际3225、未执行尾15明确分开；转305–308后prediction1/交付前时钟0/input-stage0/inpainting0，四个重置边界通过。证据`docs/infra/results/2026-10-14-champion-first4-public-complete.json`及`…first-public-reset.json`，仅记录可审计状态/时钟，不宣称原始图像/缓存字节或未来全程已验。当前继续原1000，不换模型、不重跑不良结果；MEM576仍等冠军。模型交付仍暂停。
+
 - **2026-10-14 14:01 CST / Codex SUBMISSION-FULL-EVAL（冠军已实际控制，MEM后继挂起）：** ae869bfb独立编排已Git部署，144目标回归通过（16.56s）。真实v6行政seal `3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040`核390原完整/34既有异常/4本次行政/572未启、八权重不变；新v7 manifest `a1709991df8902efeb5c0622baf7a0c9c7bd1038d7d290ca5802a8e780f4261a`登记576剩余，反向队列PID3812967实际waiting_for_champion、零MEM阶段。冠军8模型ready；14:00首两task各4环境已有500/400实际控制状态，审计8独立连接200次chunk交付：初始stage/历史、逐连接stage投票和inpainting计数、task/episode/交付时钟全过；不把交付当物理ACK，不代表未来全部或任务成功，详`docs/infra/results/2026-10-14-champion-first-public-prefix.json`。下一持续监控所有场景及完整原件；仍0完整冠军回合，不报全量Q/SR。
 
 - **2026-10-14 13:54 CST / Codex SUBMISSION-FULL-EVAL（行政封存/反向依赖本地验收）：** 独立代码增加显式授权收据的行政停机封存，仍拒绝未知错误/权重变化/遗漏原件；冠军后继改为MEM队列，须冠军1000完整、八卡终态权重核验、原物理/归档计数一致、所有原PID退出及GPU实空才启动。新增正反例后144本地回归通过（13.59s）；尚待独立Git冻结/RTX验收/真实seal，不能称队列已挂起。冠军supervisor3787083/八worker3787168–75实活、4环境，原1177/9f源不动；首两模型加载中、0公共完整结果。
