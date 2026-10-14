@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 import pytest
 
@@ -195,6 +196,7 @@ def test_worker_uses_original_entry_and_never_retries_failed_prefix(tmp_path,mon
     class Permit:
         def close(self):pass
     monkeypatch.setattr(m,'loader_lock',lambda _:Permit())
+    monkeypatch.setattr(m.shutil,'disk_usage',lambda _:SimpleNamespace(free=1 << 40))
     calls=[];models={}
     class Process:
         def __init__(self,argv,**kw):
@@ -245,3 +247,16 @@ def test_worker_uses_original_entry_and_never_retries_failed_prefix(tmp_path,mon
         errors=m.read(job/'workers/gpu_0/task0-n4-i0-execution-errors.json')
         assert [r['instance_id'] for r in errors]==list(range(301,305))
         assert len(worker['model_generations'])==2
+
+
+def test_real_disk_safety_gate_runs_before_any_model_launch(tmp_path,monkeypatch):
+    prior,runtime,seal,original=stopped(tmp_path,monkeypatch);m.freeze(prior,runtime,seal)
+    job=prior.parent/'resume';manifest=m.prepare(prior,seal,runtime,job)
+    monkeypatch.setattr(m,'registration',lambda _: (job,manifest))
+    monkeypatch.setattr(m,'root_registration',lambda _: (prior,original,m.binding(prior/'manifest.json')))
+    simroot=tmp_path/'simroot';simroot.mkdir();monkeypatch.setattr(m,'SIM_ROOT',simroot)
+    monkeypatch.setattr(m.shutil,'disk_usage',lambda _:SimpleNamespace(free=149 << 30))
+    def forbidden(*args,**kwargs):raise AssertionError('Model must not start below disk reserve')
+    monkeypatch.setattr(m.subprocess,'Popen',forbidden)
+    with pytest.raises(RuntimeError,match='Disk safety reserve'):m.worker(job,0)
+    assert m.read(job/'workers/gpu_0/status.json')['model_generations']==[]

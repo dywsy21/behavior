@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 19:39 CST / Codex SUBMISSION-FULL-EVAL（目标机测试夹具修正，生产安全门保留）：** 65197303独立Git源码已部署RTX `code/champion-final-continuation-20261014-v1`，目标回归142过/2失败均是fake worker使用`/tmp`仅41.9GB触发原150GiB保留门，尚未运行真实freeze/评测。真实`/run/ti`空闲4,993,916,243,968字节；未清盘/降门/改生产代码。测试改为显式模拟充足磁盘，并新增低于保留门不得启动模型回归，本机145通过；将经新冻结源码重跑目标验收再封存/启动，原故障现场保持不动。
+
 - **2026-10-14 19:34 CST / Codex SUBMISSION-FULL-EVAL（精确重置故障与续评实现，本机144测试过）：** 原切洋葱301–304完整回执为各9600控制，305–308刚进入官方`load_batch/_load_instance_state`即因`object_scope[tro_key]`对应对象None、调用`load_state`抛唯一AttributeError；日志未记具体物体/slot，不能断言为何丢失。八模型result均closed/参数SHA相同/0更新，八卡无人占用。新增独立`scripts/eval/continue_champion_final.py`封存原件/错误/行政中断、保持原任务/实例/seed/批量排程；模型服务与模拟器仍从原9f源码运行，原文件和STOP不改。只对精确错误签名隔离整批，无原JSON者不造分数；其他未知错误继续停机。测试含完整/错误互斥、行政中断的独立错误拒绝、未提交JSON拒绝、权重/实例/超时绑定，以及fake进程验证原入口＋只续未启动后缀；本机144通过，真实目标验收/封存/重启尚待。证据`docs/infra/results/2026-10-14-champion-onion-reset-diagnosis.json`；待恢复冠军后重接MEM依赖及续评打包，交付仍暂停。
 
 - **2026-10-14 19:21 CST / Codex SUBMISSION-FULL-EVAL（冠军已保护停机，开始诊断）：** 本轮恢复时直接核原supervisor3787083、八worker/model均已退出；原run于18:45因GPU5 `chop_an_onion-n4-i0` 的 `Official task batch incomplete` 转needs_diagnosis，其他卡为行政中断，MEM3812967后继亦已停止且零阶段。当前254完整/746缺失、5成功，completed-only Q0.0562461/SR0.0196850，不是全量。此前“持续运行”记录不再是当前状态。根独自核原日志/物理回执/参数终态，具体底层异常、故障实例和行政中断清单尚待分类；不清STOP、不改原权重/actor/官方物理，不重跑已完整或实际错误批次。下一步按确证原因封存并构建独立剩余续评及MEM后继，模型交付仍暂停。
