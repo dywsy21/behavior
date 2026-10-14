@@ -1,0 +1,142 @@
+{
+  "schema": "champion_continuation_new_originals_v1",
+  "observed_at": "2026-10-14T12:27:05.160506+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/manifest.json",
+    "sha256": "b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46"
+  },
+  "inherited_unique": 254,
+  "prior_errors_not_rerun": 4,
+  "new_originals": 4,
+  "successes": 0,
+  "q_sum": 0,
+  "records": [
+    {
+      "task": "halve_an_egg",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 9566,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/halve_an_egg-n2-i8/json/halve_an_egg_309_0.json",
+        "sha256": "f0f822b621463bec6540a537472e31936b47293dd7f5cb8ef34ad1116bc3b4ef"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/halve_an_egg-n2-i8/videos/halve_an_egg_309_0.mp4",
+        "sha256": "9161b3e880ad811e6196eb69782c06b34c311daaafb40453230679796a02d8f3"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9566"
+      },
+      "success": false,
+      "q_score_final": 0
+    },
+    {
+      "task": "halve_an_egg",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 9566,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/halve_an_egg-n2-i8/json/halve_an_egg_310_0.json",
+        "sha256": "bb81d6caa5b38cbb249eba63a78b10633b2e03d767d1d86ea02b5dc4123749bb"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/halve_an_egg-n2-i8/videos/halve_an_egg_310_0.mp4",
+        "sha256": "8dde442de816fd6bc2bd41988adba593424da90738bfe48900dc1408c3c5e907"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9566"
+      },
+      "success": false,
+      "q_score_final": 0
+    },
+    {
+      "task": "spraying_for_bugs",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 9720,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/spraying_for_bugs-n2-i8/json/spraying_for_bugs_309_0.json",
+        "sha256": "f08c8482a9b2ccf0bd55b4fa73d632cc7f2e617d060703c99d21bab7802441aa"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/spraying_for_bugs-n2-i8/videos/spraying_for_bugs_309_0.mp4",
+        "sha256": "4ce92dc9f8a981769dfb8f394d7c8fb5fe6422d3e75e8a3e9d3a27533b7b32d3"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9720"
+      },
+      "success": false,
+      "q_score_final": 0
+    },
+    {
+      "task": "spraying_for_bugs",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "steps": 9720,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/spraying_for_bugs-n2-i8/json/spraying_for_bugs_310_0.json",
+        "sha256": "b64a5c7b9fe7022fad2f844a570d075470e754a02cca65f2174268f769cc5cbc"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/spraying_for_bugs-n2-i8/videos/spraying_for_bugs_310_0.mp4",
+        "sha256": "e3029898c1b8c4ec794543f37f22de5d4c6ef431ccebb540342f8f399b989a4a"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "9720"
+      },
+      "success": false,
+      "q_score_final": 0
+    }
+  ],
+  "physical_attempts": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/halve_an_egg-n2-i8/attempts/08.json",
+      "sha256": "414fd5948c6b5b22c090f2ea8eb4a05e04104b261046df9c28ea72750890876a",
+      "task": "halve_an_egg",
+      "instance_ids": [
+        309,
+        310
+      ],
+      "actual_applied_controls": [
+        9566,
+        9566
+      ],
+      "max_steps": 9565,
+      "status": "completed"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/spraying_for_bugs-n2-i8/attempts/08.json",
+      "sha256": "57c22f53191a5c68bff76d920c828c3c7e6500931ba10e56d613355689d01ff2",
+      "task": "spraying_for_bugs",
+      "instance_ids": [
+        309,
+        310
+      ],
+      "actual_applied_controls": [
+        9720,
+        9720
+      ],
+      "max_steps": 9719,
+      "status": "completed"
+    }
+  ],
+  "root_actor_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+  "policy_changed": false,
+  "reruns_of_scored_or_error_cases": 0,
+  "raw_json_video_sha_and_frame_count_checked": true,
+  "manual_visual_review": false,
+  "full_model_score": false
+}

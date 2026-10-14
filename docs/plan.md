@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 20:27 CST / Codex SUBMISSION-FULL-EVAL（续评首4新原件核验）：** halve_an_egg309/310各9566实际控制、spraying_for_bugs309/310各9720，4原JSON/MP4 SHA、30fps/672×448帧数和完成物理回执全吻合；原seed17/sim0、官方horizon+1超时语义未改，与既有254完整/4异常无重叠。四例Q0/未成功，非全量结论；累计唯一已审258原件。证据`docs/infra/results/2026-10-14-champion-continuation-first4-originals.json`，只是原件/控制时钟核验，不冒称人工逐帧画面审查。原冠军和127593后继继续，待完整终态/真正切换/最终结果收集；交付仍暂停。
+
+- **2026-10-14 20:25 CST / Codex SUBMISSION-FULL-EVAL（冠军→MEM真实后继已就绪）：** 4a347897独立Git源码`code/champion-dependency-20261014-v1`目标186通过（仅pynvml弃用警告），真实授权/原manifest/旧队列/两个原协调源校验过。新`memlite_final100_20261014_resume_v7/queue-after-champion-resume-v1` PID127593、tmux `mem-after-champion-resume-v1`实活waiting、0阶段，实际argv/cwd核对；旧失败队列保留，MEM job仍无status/STOP、未提前启动。冠军50073/八worker/model/sim正常，新summary256完整/4异常/740待，5成功只属已完子集；首新增2原件专门核验待。冠军全1000去向/终态权重/原件核账归档并释放GPU后自动接原ae86 MEM576，再归档MEM；实际结果包均尚未生成。证据`docs/infra/results/2026-10-14-champion-first-mem-dependency-launch.json`，源包SHA `001bf771296b3f042692d1ac482c83f4a21f4b4f4aeca676823312bc22a7f9f6`。模型交付/提交继续暂停，goal未完成。
+
 - **2026-10-14 20:23 CST / Codex SUBMISSION-FULL-EVAL（后继与原件归档实现完成，本机186回归通过）：** 新后继严格绑定原冠军root/续评/授权、原MEM v7及其ae86协调源；旧队列必须死且零阶段，新队列独立路径/owner锁，等待全核账和GPU空闲后才用原入口启动MEM。冠军归档保留996或实际更多/更少真实结果的原字节，不伪造异常JSON；逐代参数、原物理命令/seed/时限/原MP4及整批缺失验证，MEM终态亦收原件。新增成功等待和各拒绝门连同既有流程186本地测试通过；目标机同套验证/真实授权核验/挂起尚待。八卡续评仍运行，未热改任何远端源码，其他成员独立review仍待。
 
 - **2026-10-14 20:19 CST / Codex SUBMISSION-FULL-EVAL（八卡真实续评，归档17测试通过）：** 新续评八场景全部已有实际控制，原supervisor/八worker/model/sim实活；尚无新完整批、不重启。独立`package_champion_continuation.py`完成1000账目、原日志精确错误、行政中断、逐代权重、原命令/seed/时限、JSON/视频/物理回执验证和原字节ZIP；17本地测试通过（使用明确合成夹具，不冒称真实终态）。`queue_memlite_after_champion_continuation.py`保持原MEM ae86协调源/51c actor，核旧死队列零阶段/原用户授权再等待冠军；新增后继回归尚待。两条正式全量/真实最终归档都未完成，模型交付仍暂缓。

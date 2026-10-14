@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 20:25 CST：冠军续评→MEM新后继
+
+- RTX独立队列/归档源码`/run/ti/rl_memlite_stage1_20261006/code/champion-dependency-20261014-v1`，commit `4a34789727c10386e6b35e249d80cc618f683979`；Git bundle `runs/final_eval_preparation_20261014/champion-dependency-v1.bundle`，本地`artifacts/final-eval-20261014/champion-dependency-v1/source.bundle`，SHA `001bf771296b3f042692d1ac482c83f4a21f4b4f4aeca676823312bc22a7f9f6`。本机/目标186回归通过，不是新actor。
+- MEM v7新等待队列`runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v1/status.json`，PID127593、tmux `mem-after-champion-resume-v1`；launch日志在同job的`queue-after-champion-resume-v1.launch.log`，未来MEM supervisor日志在新队列内。旧`queue-after-champion`保留失败现场。实际MEM仍使用`code/final-eval-priority-20261014-v1`(ae869bfb)启动、原51c actor；冠军运行源c978/9f不变。
+- 内部最终原件收集预定`runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/{champion-results,mem-results}`，20:25父目录空、两个结果均**尚未生成**。只在各自全部1000去向和原件终态验收后创建；不含伪造缺失JSON，不是对外模型交付或上传。
+- Git验收证据`docs/infra/results/2026-10-14-champion-first-mem-dependency-launch.json`含真实PID/argv/cwd、授权及所有manifest绑定。不要改运行中的队列源码或原MEM/冠军源码；不要清旧STOP、重用旧等待目录。
+
 ## 2026-10-14 19:47 CST：冠军故障封存及独立续评
 
 - RTX仍`/run/ti/rl_memlite_stage1_20261006`。原`runs/champion_final100_20261013_v2`已停，原STOP/所有原件保留。254完整、4切洋葱305–308重置异常、24行政中断、718未开始；封存`runs/champion_final100_20261013_v2-diagnosed-stop-v1.json` SHA `2d196c19f4c6eb136044a0abf9d7aacb662ffff8e13289ed0bfb80b946dd1a08`。

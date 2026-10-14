@@ -1,0 +1,359 @@
+{
+  "schema": "champion_first_mem_dependency_launch_v1",
+  "observed_at": "2026-10-14T12:25:31.660062+00:00",
+  "owner": "Codex / SUBMISSION-FULL-EVAL",
+  "source_commit": "4a34789727c10386e6b35e249d80cc618f683979",
+  "source_bundle_sha256": "001bf771296b3f042692d1ac482c83f4a21f4b4f4aeca676823312bc22a7f9f6",
+  "tests": {
+    "local": {
+      "passed": 186
+    },
+    "target": {
+      "passed": 186,
+      "warnings": [
+        "pynvml deprecated (environment unchanged)"
+      ]
+    }
+  },
+  "preflight": {
+    "status": "readonly_authorization_and_runtime_gate_passed",
+    "queue": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v1",
+    "previous": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion/status.json",
+      "sha256": "3aa0aa76a61591e70034dc8dbfaeffa86932f95b6fa094c6ea8190d6ced7b1c6"
+    },
+    "mem_manifest": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/manifest.json",
+      "sha256": "a1709991df8902efeb5c0622baf7a0c9c7bd1038d7d290ca5802a8e780f4261a"
+    },
+    "champion_manifest": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/manifest.json",
+      "sha256": "b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46"
+    },
+    "champion_root": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+      "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+    },
+    "authorization": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+      "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+    },
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-priority-20261014-v1",
+    "mem_commit": "ae869bfb13ce51084f0ee500306596d4391d823c",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-final-continuation-20261014-v2",
+    "champion_commit": "c97800831339f63efef78bc9c5d84ee4fb0e3416",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-dependency-20261014-v1",
+    "queue_commit": "4a34789727c10386e6b35e249d80cc618f683979",
+    "mem_command": [
+      "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+      "/run/ti/rl_memlite_stage1_20261006/code/final-eval-priority-20261014-v1/scripts/eval/continue_memlite_final.py",
+      "supervise",
+      "--job",
+      "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7"
+    ],
+    "remaining_mem": 576,
+    "champion_supervisor_pid": 50073,
+    "champion_status": "running",
+    "existing_mem_status": false,
+    "existing_mem_STOP": false
+  },
+  "launch": {
+    "status": "submitted_pending_process_check",
+    "tmux": "mem-after-champion-resume-v1",
+    "argv": [
+      "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+      "/run/ti/rl_memlite_stage1_20261006/code/champion-dependency-20261014-v1/scripts/eval/queue_memlite_after_champion_continuation.py",
+      "--mem-job",
+      "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7",
+      "--champion-job",
+      "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+      "--authorization",
+      "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+      "--mem-source",
+      "/run/ti/rl_memlite_stage1_20261006/code/final-eval-priority-20261014-v1",
+      "--champion-source",
+      "/run/ti/rl_memlite_stage1_20261006/code/champion-final-continuation-20261014-v2",
+      "--previous-queue",
+      "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion",
+      "--queue-name",
+      "queue-after-champion-resume-v1",
+      "--output-root",
+      "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1"
+    ],
+    "log": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v1.launch.log",
+    "queue": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v1",
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1"
+  },
+  "actual": {
+    "observed_at": "2026-10-14T12:25:31.660062+00:00",
+    "queue_state": {
+      "status": "waiting_for_champion_continuation",
+      "pid": 127593,
+      "started": 1791980716.9312413,
+      "phases": [],
+      "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7",
+      "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+      "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+      "bindings": [
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/manifest.json",
+          "sha256": "a1709991df8902efeb5c0622baf7a0c9c7bd1038d7d290ca5802a8e780f4261a"
+        },
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/manifest.json",
+          "sha256": "b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46"
+        },
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+          "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+        },
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+          "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+        },
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2-diagnosed-stop-v1.json",
+          "sha256": "2d196c19f4c6eb136044a0abf9d7aacb662ffff8e13289ed0bfb80b946dd1a08"
+        },
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+          "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+        },
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion/status.json",
+          "sha256": "3aa0aa76a61591e70034dc8dbfaeffa86932f95b6fa094c6ea8190d6ced7b1c6"
+        }
+      ],
+      "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-priority-20261014-v1",
+      "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-final-continuation-20261014-v2",
+      "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-dependency-20261014-v1",
+      "queue_source_commit": "4a34789727c10386e6b35e249d80cc618f683979",
+      "automatic_retries": false,
+      "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+      "updated": 1791980716.931247
+    },
+    "queue_alive": true,
+    "argv": [
+      "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+      "/run/ti/rl_memlite_stage1_20261006/code/champion-dependency-20261014-v1/scripts/eval/queue_memlite_after_champion_continuation.py",
+      "--mem-job",
+      "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7",
+      "--champion-job",
+      "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+      "--authorization",
+      "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+      "--mem-source",
+      "/run/ti/rl_memlite_stage1_20261006/code/final-eval-priority-20261014-v1",
+      "--champion-source",
+      "/run/ti/rl_memlite_stage1_20261006/code/champion-final-continuation-20261014-v2",
+      "--previous-queue",
+      "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion",
+      "--queue-name",
+      "queue-after-champion-resume-v1",
+      "--output-root",
+      "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+      ""
+    ],
+    "cwd": "/run/ti/rl_memlite_stage1_20261006/code/champion-dependency-20261014-v1",
+    "mem_started": false,
+    "collection_outputs": [],
+    "old_queue_preserved": "needs_diagnosis"
+  },
+  "champion_live": {
+    "observed_at": "2026-10-14T12:25:32.051783+00:00",
+    "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+    "state": {
+      "status": "running",
+      "pid": 50073,
+      "error": null,
+      "finished": null,
+      "completed_gpus": []
+    },
+    "failed_gpus": {},
+    "supervisor_alive": true,
+    "summary": {
+      "status": "running",
+      "completed": 256,
+      "coverage": 260,
+      "execution_errors": 4,
+      "unaccounted": 740,
+      "completed_only_q": 0.05580667162698412,
+      "completed_only_sr": 0.01953125
+    },
+    "workers": [
+      {
+        "gpu": 0,
+        "pid": 50107,
+        "alive": true,
+        "status": "evaluating",
+        "model_pid": 50220,
+        "model_alive": true,
+        "model_status": "ready",
+        "model_generations": 0,
+        "sim_pid": 61299,
+        "sim_alive": true,
+        "part": "store_batteries-n4-i0",
+        "part_status": "running",
+        "controls": [
+          9500,
+          9500,
+          9500,
+          9500
+        ],
+        "error": null,
+        "final_verification_error": null
+      },
+      {
+        "gpu": 1,
+        "pid": 50108,
+        "alive": true,
+        "status": "evaluating",
+        "model_pid": 50217,
+        "model_alive": true,
+        "model_status": "ready",
+        "model_generations": 0,
+        "sim_pid": 61253,
+        "sim_alive": true,
+        "part": "cook_bacon-n4-i4",
+        "part_status": "running",
+        "controls": [
+          5000,
+          5000,
+          5000,
+          5000
+        ],
+        "error": null,
+        "final_verification_error": null
+      },
+      {
+        "gpu": 2,
+        "pid": 50109,
+        "alive": true,
+        "status": "evaluating",
+        "model_pid": 52568,
+        "model_alive": true,
+        "model_status": "ready",
+        "model_generations": 0,
+        "sim_pid": 127129,
+        "sim_alive": true,
+        "part": "spraying_fruit_trees-n4-i0",
+        "part_status": "loading",
+        "controls": null,
+        "error": null,
+        "final_verification_error": null
+      },
+      {
+        "gpu": 3,
+        "pid": 50110,
+        "alive": true,
+        "status": "evaluating",
+        "model_pid": 55061,
+        "model_alive": true,
+        "model_status": "ready",
+        "model_generations": 0,
+        "sim_pid": 85781,
+        "sim_alive": true,
+        "part": "spraying_for_bugs-n2-i8",
+        "part_status": "running",
+        "controls": [
+          9600,
+          9600
+        ],
+        "error": null,
+        "final_verification_error": null
+      },
+      {
+        "gpu": 4,
+        "pid": 50111,
+        "alive": true,
+        "status": "evaluating",
+        "model_pid": 52608,
+        "model_alive": true,
+        "model_status": "ready",
+        "model_generations": 0,
+        "sim_pid": 80431,
+        "sim_alive": true,
+        "part": "putting_shoes_on_rack-n4-i0",
+        "part_status": "running",
+        "controls": [
+          5400,
+          5400,
+          5400,
+          5400
+        ],
+        "error": null,
+        "final_verification_error": null
+      },
+      {
+        "gpu": 5,
+        "pid": 50112,
+        "alive": true,
+        "status": "evaluating",
+        "model_pid": 55062,
+        "model_alive": true,
+        "model_status": "ready",
+        "model_generations": 0,
+        "sim_pid": 92787,
+        "sim_alive": true,
+        "part": "chop_an_onion-n2-i8",
+        "part_status": "running",
+        "controls": [
+          8000,
+          8000
+        ],
+        "error": null,
+        "final_verification_error": null
+      },
+      {
+        "gpu": 6,
+        "pid": 50113,
+        "alive": true,
+        "status": "evaluating",
+        "model_pid": 57898,
+        "model_alive": true,
+        "model_status": "ready",
+        "model_generations": 0,
+        "sim_pid": 101828,
+        "sim_alive": true,
+        "part": "wash_a_baseball_cap-n4-i0",
+        "part_status": "running",
+        "controls": [
+          1700,
+          1700,
+          1700,
+          1700
+        ],
+        "error": null,
+        "final_verification_error": null
+      },
+      {
+        "gpu": 7,
+        "pid": 50114,
+        "alive": true,
+        "status": "evaluating",
+        "model_pid": 57948,
+        "model_alive": true,
+        "model_status": "ready",
+        "model_generations": 0,
+        "sim_pid": 96233,
+        "sim_alive": true,
+        "part": "boxing_food_after_dinner-n4-i0",
+        "part_status": "running",
+        "controls": [
+          1500,
+          1500,
+          1500,
+          1500
+        ],
+        "error": null,
+        "final_verification_error": null
+      }
+    ]
+  },
+  "limitations": [
+    "Running evaluations, not final full Q/SR",
+    "No final result archive yet",
+    "No new training, policy changes, rerolls, uploads or model delivery",
+    "Independent teammate review not completed"
+  ]
+}
