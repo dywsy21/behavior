@@ -1,0 +1,159 @@
+{
+  "schema": "champion_thawing_first4_originals_v1",
+  "observed_at": "2026-10-14T13:20:07.699530+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/manifest.json",
+    "sha256": "b49768e6db035249bc7f0a70eb8cedeedddfc62fa2e10c3be2d060e3705c7b46"
+  },
+  "records": [
+    {
+      "task": "thawing_frozen_food",
+      "instance_id": 301,
+      "rollout_id": 0,
+      "steps": 12345,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/thawing_frozen_food-n4-i0/json/thawing_frozen_food_301_0.json",
+        "sha256": "fa004d4a02ba4c9b8ba75009a364dbbfc8afe94050b78891a1737ddd5a543fdd"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/thawing_frozen_food-n4-i0/videos/thawing_frozen_food_301_0.mp4",
+        "sha256": "5c734ddd534cc9f3da597b34e153f8a33624125d8871e9011c12c8805b1f1ec2"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "12345"
+      },
+      "success": false,
+      "q_score_final": 0.2222222222222222
+    },
+    {
+      "task": "thawing_frozen_food",
+      "instance_id": 302,
+      "rollout_id": 0,
+      "steps": 12345,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/thawing_frozen_food-n4-i0/json/thawing_frozen_food_302_0.json",
+        "sha256": "bdae9e48202bc6c1f3e96d4f1540e0158b0676346d1ceddc0af07c3f99709941"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/thawing_frozen_food-n4-i0/videos/thawing_frozen_food_302_0.mp4",
+        "sha256": "5000dab25a3425af0593ab5769f3ad54611af3c72f24133ca3244b104e8ef69f"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "12345"
+      },
+      "success": false,
+      "q_score_final": 0.2222222222222222
+    },
+    {
+      "task": "thawing_frozen_food",
+      "instance_id": 303,
+      "rollout_id": 0,
+      "steps": 12345,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/thawing_frozen_food-n4-i0/json/thawing_frozen_food_303_0.json",
+        "sha256": "ea70c26b3844690ffcea07b23df82a426ff271f07a3281d20d13eea9ccb7da27"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/thawing_frozen_food-n4-i0/videos/thawing_frozen_food_303_0.mp4",
+        "sha256": "c0af1f18ea2dea6fc5e74de9d8b2a90ce2968c3af2676643faf0531b51e993e6"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "12345"
+      },
+      "success": false,
+      "q_score_final": 0.2222222222222222
+    },
+    {
+      "task": "thawing_frozen_food",
+      "instance_id": 304,
+      "rollout_id": 0,
+      "steps": 12345,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/thawing_frozen_food-n4-i0/json/thawing_frozen_food_304_0.json",
+        "sha256": "b675032d11fe64ea17b1a3d2c6920fc473ab5aa0663a608e71be9cb15d7912d5"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/thawing_frozen_food-n4-i0/videos/thawing_frozen_food_304_0.mp4",
+        "sha256": "d70a48cf3521d0681bdc3ba56d0d47d598bd1b6923cf65ca2b46117136234e8e"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "12345"
+      },
+      "success": false,
+      "q_score_final": 0.2222222222222222
+    }
+  ],
+  "physical_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1/parts/thawing_frozen_food-n4-i0/attempts/00.json",
+    "sha256": "7a0fe4e2a7904d4ba2d736241a918ccb0a1e04d5d625e0dff25200c7467d7846"
+  },
+  "attempt": {
+    "status": "completed",
+    "task": "thawing_frozen_food",
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "instance_ids": [
+      301,
+      302,
+      303,
+      304
+    ],
+    "rollout": 0,
+    "started": 1791981149.8320622,
+    "max_steps": 12344,
+    "policy_seed": 17,
+    "simulator_seed": 0,
+    "finished": 1791983955.0023875,
+    "seconds": 2805.168951155618,
+    "actual_applied_controls": [
+      12345,
+      12345,
+      12345,
+      12345
+    ],
+    "unused_delivered_controls": {
+      "0": 15,
+      "1": 15,
+      "2": 15,
+      "3": 15
+    },
+    "server_clock_kind": "policy_delivery",
+    "physical_ack_sent": false
+  },
+  "successful_instances": [],
+  "completed_q_sum": 0.8888888888888888,
+  "actual_controls": 49380,
+  "controls_per_second": 17.603217795369297,
+  "manual_visual_review": false,
+  "full_task_all10_complete": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "supervisor_live": {
+    "pid": 50073,
+    "status": "running",
+    "alive": true
+  },
+  "queue_live": {
+    "pid": 127593,
+    "status": "waiting_for_champion_continuation",
+    "phases": [],
+    "alive": true
+  }
+}
