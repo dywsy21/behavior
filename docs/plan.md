@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 01:20 CST / Codex SUBMISSION-FULL-EVAL（生火/拳套新增8原件）：** 冠军累计380完整/4继承异常/616待，原八worker/241557及MEM300108等待器持续存活，无新增故障。清洗拳套303官方success=true/Q1/9406实控，其余301/302/304均12354步/Q0；生火301–304均13678步、Q依次1/4、1/8、1/8、0、均未完整成功。八份原JSON/MP4 SHA、30fps/672×448/帧数=实控、注册seed/horizon/配置及两GPU journal闭会话通过，证据`docs/infra/results/2026-10-15-champion-fire-boxing-first8-originals.json`。两task均仅4/10，不称全task SR；两卡自动进305–308，无停机/换模型/重跑。下一继续全量和原件核验，最终内部归档及模型全量Q/SR仍待，交付暂缓。
+
 - **2026-10-15 01:03 CST / Codex SUBMISSION-FULL-EVAL（新8原件完成）：** 原八worker/241557与MEM300108后继持续运行，累计372完整/4继承异常/624待，无新增异常。外卖打包301–304均13290实控，Q为0、1/6、0、0；厨房家具整理301–304均13415实控，Q为1/4、0、0、1/4，8例success均false。原JSON/MP4 SHA、672×448/30fps帧数=实控、注册seed/horizon/配置及两GPU journal稳定前缀已验，证据`docs/infra/results/2026-10-15-champion-packing-furniture-first8-originals.json`。两卡均进入305–308，未停正常卡/改模型；各task仅4/10，完整Q/SR与最终内部收集仍待。下一沿原全量顺序继续监控，外部交付暂停。
 
 - **2026-10-15 00:58 CST / Codex SUBMISSION-FULL-EVAL（新增30原件验收）：** 冠军原241557/八worker及MEM300108仍实活、无新增异常，累计364完整/4继承异常/632待。补核11批共30例（上次334之后全部已提交原件）的JSON/MP4 SHA、672×448/30fps帧数=实际控制、原seed/horizon/配置身份；八GPU journal稳定前缀均通过任务/会话/阶段/交付递推，证据`docs/infra/results/2026-10-15-champion-new30-0057-originals.json`。午餐盒309官方success=true/Q1/9574步，该task全10已齐SR1/10、平均Q0.50；其余新29例未完整成功，全部保留，不仅收成功。多卡已自然转入下一个task；不是全模型成绩或人工全片视觉验收。下一继续全量/局部异常隔离及终态归档，无停机、换权重、重跑挑优或外部交付。
