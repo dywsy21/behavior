@@ -1,0 +1,337 @@
+{
+  "schema": "memlite_frozen_eval_memory_rejection_audit_v1",
+  "parent_seal_sha256": "9d41cc44ed7bf2327d257ef132e1bdba582d1f7858a4daccaf04a5e9253d4bc3",
+  "new_continuation_manifest_sha256": "966341edd2a0d05f1c1958707387f7db347fa689eeca11ac019fa53f0bc24a19",
+  "sealed_counts": {"completed": 388, "execution_errors": 30, "administrative_interruptions": 26, "unstarted": 556, "next_scheduled": 582},
+  "owner": "Codex root",
+  "observed_at": "2026-10-14T10:32:00+08:00",
+  "run": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4",
+  "runtime_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+  "audit_and_continuation_commit": "66b7d54d370afe320066d8f3687626c80c628a76",
+  "failure": {
+    "task": "store_produce",
+    "instance_ids": [
+      305,
+      306,
+      307,
+      308
+    ],
+    "last_ack_each": 10240,
+    "kind": "planner_memory_recurrence_rejected",
+    "first_exception_cst": "2026-10-14T04:51:42+08:00",
+    "rejected_proposal_applied": false,
+    "failed_slot_unknown": true,
+    "failed_text_not_persisted": true,
+    "client_log": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_0/store_produce-n4-i0.log",
+      "sha256": "0389dcff7a8e71e07bbe7b4884a4854c4b7c27ce8748343c2b59eca866c693c8"
+    },
+    "model_log": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_0/model-001.log",
+      "sha256": "102733a379682949ee49b611a43e22fdd04165bc57ac169c027ed95e09f45242"
+    },
+    "reroll": false,
+    "official_json_fabricated": false
+  },
+  "audit": {
+    "status": "incomplete_causal_trace_audit",
+    "episodes": 30,
+    "closed_episodes": 26,
+    "unclosed_episodes": [
+      {
+        "identity": {
+          "session": "model-001-slot0",
+          "task": "store produce",
+          "instance": 305,
+          "episode": "memlite_final100_20261013_resume_v4-store_produce-305-r0",
+          "models": {
+            "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+            "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+            "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+            "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+            "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+            "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+            "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+          }
+        },
+        "slot": 0,
+        "applied_controls": 10240
+      },
+      {
+        "identity": {
+          "session": "model-001-slot1",
+          "task": "store produce",
+          "instance": 306,
+          "episode": "memlite_final100_20261013_resume_v4-store_produce-306-r0",
+          "models": {
+            "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+            "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+            "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+            "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+            "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+            "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+            "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+          }
+        },
+        "slot": 1,
+        "applied_controls": 10240
+      },
+      {
+        "identity": {
+          "session": "model-001-slot2",
+          "task": "store produce",
+          "instance": 307,
+          "episode": "memlite_final100_20261013_resume_v4-store_produce-307-r0",
+          "models": {
+            "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+            "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+            "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+            "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+            "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+            "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+            "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+          }
+        },
+        "slot": 2,
+        "applied_controls": 10240
+      },
+      {
+        "identity": {
+          "session": "model-001-slot3",
+          "task": "store produce",
+          "instance": 308,
+          "episode": "memlite_final100_20261013_resume_v4-store_produce-308-r0",
+          "models": {
+            "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+            "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+            "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+            "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+            "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+            "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+            "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+          }
+        },
+        "slot": 3,
+        "applied_controls": 10240
+      }
+    ],
+    "events": {
+      "begin": 30,
+      "plan": 2870,
+      "observer": 25738,
+      "action": 22868,
+      "ack": 22868,
+      "close": 26
+    },
+    "applied_controls": 365692,
+    "models": {
+      "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+      "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+      "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+      "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+      "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+      "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+      "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+    },
+    "tasks": [
+      "cook a brisket",
+      "cook a frozen pie",
+      "store batteries",
+      "store produce"
+    ],
+    "checks": [
+      "fresh empty per-episode memory",
+      "full identity and fixed slot on every event",
+      "high-to-low exact current intent",
+      "observer attempt and applied clock",
+      "unique tokens and exact raw23 physical ACK digest",
+      "final partial chunk acknowledged"
+    ],
+    "proves_full_task_success": false,
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_0/model-001/events.jsonl",
+    "trace_bytes": 301905783,
+    "trace_sha256": "556e18df076ca8b4c5fd82854b773518719d9ccc2eebead4b8ce1ea6fc42ab89",
+    "exact_memory_chain_plans": 2870,
+    "last_case_state": {
+      "0": {
+        "identity": {
+          "session": "model-001-slot0",
+          "task": "store produce",
+          "instance": 305,
+          "episode": "memlite_final100_20261013_resume_v4-store_produce-305-r0",
+          "models": {
+            "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+            "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+            "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+            "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+            "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+            "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+            "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+          }
+        },
+        "last_plan_control_step": 10112,
+        "last_intent": "Active skills: [verb=\"NAVIGATE\"; target=\"wicker_basket\"; source=\"NONE\"; destination=\"NONE\"; target_part=\"NONE\"; arm=\"UNSPECIFIED\"].",
+        "last_ack": 10240
+      },
+      "1": {
+        "identity": {
+          "session": "model-001-slot1",
+          "task": "store produce",
+          "instance": 306,
+          "episode": "memlite_final100_20261013_resume_v4-store_produce-306-r0",
+          "models": {
+            "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+            "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+            "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+            "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+            "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+            "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+            "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+          }
+        },
+        "last_plan_control_step": 10112,
+        "last_intent": "Active skills: [verb=\"NAVIGATE\"; target=\"wicker_basket\"; source=\"NONE\"; destination=\"NONE\"; target_part=\"NONE\"; arm=\"UNSPECIFIED\"].",
+        "last_ack": 10240
+      },
+      "2": {
+        "identity": {
+          "session": "model-001-slot2",
+          "task": "store produce",
+          "instance": 307,
+          "episode": "memlite_final100_20261013_resume_v4-store_produce-307-r0",
+          "models": {
+            "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+            "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+            "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+            "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+            "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+            "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+            "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+          }
+        },
+        "last_plan_control_step": 10112,
+        "last_intent": "Active skills: [verb=\"NAVIGATE\"; target=\"wicker_basket\"; source=\"NONE\"; destination=\"NONE\"; target_part=\"NONE\"; arm=\"UNSPECIFIED\"].",
+        "last_ack": 10240
+      },
+      "3": {
+        "identity": {
+          "session": "model-001-slot3",
+          "task": "store produce",
+          "instance": 308,
+          "episode": "memlite_final100_20261013_resume_v4-store_produce-308-r0",
+          "models": {
+            "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+            "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+            "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+            "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+            "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+            "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+            "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+          }
+        },
+        "last_plan_control_step": 10112,
+        "last_intent": "Active skills: [verb=\"NAVIGATE\"; target=\"commercial_kitchen_table\"; source=\"NONE\"; destination=\"NONE\"; target_part=\"NONE\"; arm=\"UNSPECIFIED\"].",
+        "last_ack": 10240
+      }
+    }
+  },
+  "model_final_receipts": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_0/model-000/weights-final.json",
+      "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271",
+      "unchanged": true,
+      "observer_unchanged": true,
+      "updates": 0
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_0/model-001/weights-final.json",
+      "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271",
+      "unchanged": true,
+      "observer_unchanged": true,
+      "updates": 0
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_1/model-000/weights-final.json",
+      "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271",
+      "unchanged": true,
+      "observer_unchanged": true,
+      "updates": 0
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_2/model-000/weights-final.json",
+      "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271",
+      "unchanged": true,
+      "observer_unchanged": true,
+      "updates": 0
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_3/model-000/weights-final.json",
+      "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271",
+      "unchanged": true,
+      "observer_unchanged": true,
+      "updates": 0
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_4/model-000/weights-final.json",
+      "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271",
+      "unchanged": true,
+      "observer_unchanged": true,
+      "updates": 0
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_5/model-000/weights-final.json",
+      "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271",
+      "unchanged": true,
+      "observer_unchanged": true,
+      "updates": 0
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_5/model-001/weights-final.json",
+      "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271",
+      "unchanged": true,
+      "observer_unchanged": true,
+      "updates": 0
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_5/model-002/weights-final.json",
+      "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271",
+      "unchanged": true,
+      "observer_unchanged": true,
+      "updates": 0
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_6/model-000/weights-final.json",
+      "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271",
+      "unchanged": true,
+      "observer_unchanged": true,
+      "updates": 0
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_7/model-000/weights-final.json",
+      "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271",
+      "unchanged": true,
+      "observer_unchanged": true,
+      "updates": 0
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261013_resume_v4/workers/gpu_7/model-001/weights-final.json",
+      "sha256": "625a581031289dd6fa851810af40503e3ada233b5e101cc1a11560fb6e20f271",
+      "unchanged": true,
+      "observer_unchanged": true,
+      "updates": 0
+    }
+  ],
+  "classification_tests": {
+    "local": 76,
+    "rtx": 76,
+    "passed": true,
+    "independent_member_review": false
+  },
+  "limitations": [
+    "Audit covers every recorded event from byte 0 to EOF; four unclosed episodes explicitly remain unclosed.",
+    "All 2870 admitted plans' memory/previous-intent/parent chains independently match the preceding event in that same episode.",
+    "Rejected decode text was lost by the original server; exact wrong string/slot cannot be reconstructed.",
+    "Structural isolation audit does not prove observation pixel semantics, skill efficacy, or full task success.",
+    "Actor, strict parser, weights, official physics and timeout unchanged; changes affect only diagnosis/orchestration and read-only audits."
+  ]
+}

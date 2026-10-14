@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 10:35 CST / Codex SUBMISSION-FULL-EVAL（真实加载与冠军后继已核）：** 原定582剩余已由supervisor3754600和八worker3754630–37实际启动；GPU0/1先加载原模型，其余公平排队，非已经恢复控制。新冠军queue-resume-v5/PID3754801实活waiting，原run19b/原9f/final8000与两次已过TRAIN预检保持，0公共/不重试。新parent seal9d41…d4bc3与manifest9663…24a19已复制本地artifacts并双端SHA一致；源码66b7已push。接下来等场景就绪与真实ACK，后续仍MEM→冠军；不停止/改写原件，不恢复模型交付。
+
+- **2026-10-14 10:34 CST / Codex SUBMISSION-FULL-EVAL（恢复已提交）：** 原停机seal SHA9d41cc44…d4bc3验签通过，新MEM `runs/memlite_final100_20261014_resume_v5` manifest966341ed…24a19，独立66b7编排/原51c actor；582剩余=26明确行政中断＋556未启，首GPU0只跑store_produce309/310，不重跑拒绝的305–308。确认八卡实空、无旧进程后提交tmux `memlite-final100-resume-v5`，仅记启动中，实际PID/加载/控制待核；冠军后继下一接回同原final8000与2/4已过预检。旧run/STOP/seal/全部结果均保留，无新训练或公网交付。
+
+- **2026-10-14 10:32 CST / Codex SUBMISSION-FULL-EVAL（封存通过，恢复待启动）：** 独立66b7d54d源码已Git部署RTX，本地/目标76回归均过；原resume_v4全量封存实际为388完整、30执行异常（旧26物理＋本次4模型拒绝）、26行政中断、556未启，不能用旧running summary替代。八卡12代模型的权重与observer全部未变/0更新。GPU0 model001整段301,905,783B连续trace从头到尾独立审计：30回合/26关闭/4明示未关闭，365692控制/22868 ACK；2870已接纳plan逐条memory/previous-intent/parent递推与各自前序事件相符，未见记录内跨环境混用；失败解码未落盘，仍不能确认错误slot/文本。证据`docs/infra/results/2026-10-14-memlite-planner-memory-rejection.json`，trace556e18df…2ab89。新resume_v5注册正在验签，只安排582剩余，原完整与本次拒绝不重跑；队列/实际控制恢复仍待。
+
 - **2026-10-14 10:29 CST / Codex SUBMISSION-FULL-EVAL（定位为生成拒绝，非物理NaN）：** 原GPU0 `store_produce`305–308各ACK10240后，高层生成触发K=3 memory recurrence校验，客户端/模型栈/服务终态一致，原service未记录失败文本所以不能定位具体slot或声称串任务；终态权重均未变。已在本地独立续评编排增加精确三方证据分类并保留未知异常STOP，严格校验本身/actor/物理不改；本批将记模型拒绝的执行异常而非行政重跑。新增停机trace显式不完整审计，不能假造close。首75项回归过，旧代模型账本补测与目标机封存/恢复仍待；证据原日志SHA0389dcff…693c8、模型日志102733a3…45242，说明`docs/infra/FINAL_EVAL_CONTINUATION.md`。模型交付继续暂缓。
 
 - **2026-10-14 10:24 CST / Codex SUBMISSION-FULL-EVAL（续接发现保护停机）：** 最新用户明确先完成自己的评测，模型交付、公网服务资格暂缓。已fetch/pull本分支（无新变更），RTX实查MEM resume_v4的supervisor/八worker均已退出、八卡无计算进程；status为needs_diagnosis，GPU0 `store_produce-n4-i0`未分类错误触发全局STOP，冠军queue-resume-v4也已退出且phases为空，不再称两者仍运行。388完整/26已登记执行异常/586未覆盖，completed-only Q0.004095074/SR0，summary中的running是停机前快照而非活进程。根先查原日志/attempt与权重终态，封存后仅显式续未完成部分；已有完整/真正物理异常不重跑，不改actor或官方物理。新异常精确分类、行政中断清单与恢复尚待；goal保持active。

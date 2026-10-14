@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 10:35 CST：当前内部续评与后继
+
+- RTX根仍`/run/ti/rl_memlite_stage1_20261006`。当前MEM `runs/memlite_final100_20261014_resume_v5`，manifest `966341edd2a0d05f1c1958707387f7db347fa689eeca11ac019fa53f0bc24a19`；新独立编排`code/final-eval-continuation-20261014-v1`=`66b7d54d370afe320066d8f3687626c80c628a76`，实际actor仍`code/memlite-final-eval-20261013-v4`=`51c11d32`。tmux `memlite-final100-resume-v5`，supervisor3754600，worker3754630–37，日志`supervisor.log`及各卡`workers/`；启动时加载中，未冒称已实际步进。
+- 新父封存`runs/memlite_final100_20261013_resume_v4-diagnosed-stop-v1.json` SHA `9d41cc44ed7bf2327d257ef132e1bdba582d1f7858a4daccaf04a5e9253d4bc3`：388完整、30异常、26行政中断、556未启。旧resume_v4/STOP/全部原件不动，摘要running不再代表存活。新582剩余清单不含已完成或异常；本地原seal/manifest在`artifacts/final-eval-20261014/continuation-v5/`同SHA。
+- 冠军仍`runs/champion_final100_20261013_v2`，manifest19b056a7/原9f actor/final8000不变；新后继`queue-resume-v5/status.json`与`queue-resume-v5.log`，tmux `champion-final100-after-resume-v5`，PID3754801已waiting。旧queue-resume-v4已终止保留，不复用旧目录或重跑TRAIN门。
+- Git传输包`runs/final_eval_preparation_20261014/continuation-v5.bundle` SHA `9ac9078dcfb8dbdc007042a45aa97d608880c6452118e128c865729aa99e7a15`；独立clone/dissociate，未热拉取原actor/env。用户继续暂缓公网/容器模型交付。
+
 ## 2026-10-13 20:41 CST：冠军公平后继（当前等待）
 
 - 新独立编排RTX `code/champion-fifo-eval-20261013-v1` = `858885e04d6e9702778001f90657795469980300`，Git包 `runs/champion_final_preparation_20261013/champion-fifo-v1.bundle` SHA `eaaf48a87d976949ade1825b13c74f0ffab9dbd720e20da9d287d43903cfc4e7`。目标69回归及只读原9f绑定检查通过；不是替换冠军模型源。
