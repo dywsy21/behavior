@@ -1,0 +1,259 @@
+{
+  "schema": "champion_popcorn_second4_original_audit_v1",
+  "observed_at": "2026-10-14T08:23:19.377161+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+  "manifest_sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297",
+  "completed": 4,
+  "successes": 1,
+  "completed_only_q": 0.25,
+  "completed_only_sr": 0.25,
+  "records": [
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 4857,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_microwave_popcorn-n4-i0/json/make_microwave_popcorn_305_0.json",
+        "sha256": "2c236f8a34ebe27553c69d4d2a56e87e8a9cb923119708565c0faeb6b98741e9"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_microwave_popcorn-n4-i0/videos/make_microwave_popcorn_305_0.mp4",
+        "sha256": "9f2d31d1ebb67b024812af91014147f25f1af82e92aee9a3ed0e948167523183",
+        "bytes": 9134709,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "161.900000",
+          "nb_frames": "4857"
+        }
+      }
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 4857,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_microwave_popcorn-n4-i0/json/make_microwave_popcorn_306_0.json",
+        "sha256": "9cd872ed3df745e8b58cc2e8f612069b21c31aeedb6e068bb1cb0c7fc3bdb089"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_microwave_popcorn-n4-i0/videos/make_microwave_popcorn_306_0.mp4",
+        "sha256": "cb281e51102223f1ef0edb8dc2842508abeb8f5bf20036a1c65da298a83f0b00",
+        "bytes": 10500459,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "161.900000",
+          "nb_frames": "4857"
+        }
+      }
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 4857,
+      "success": false,
+      "q_final": 0,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_microwave_popcorn-n4-i0/json/make_microwave_popcorn_307_0.json",
+        "sha256": "efb3df496273e572fad53b115b5ad2280a7507eb6f7182242422092cec778108"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_microwave_popcorn-n4-i0/videos/make_microwave_popcorn_307_0.mp4",
+        "sha256": "f250e1be31667f557431a9aed4cb2e9199aa6c7b508d72c482d6177439dedbe2",
+        "bytes": 9826126,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "161.900000",
+          "nb_frames": "4857"
+        }
+      }
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 4824,
+      "success": true,
+      "q_final": 1,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_microwave_popcorn-n4-i0/json/make_microwave_popcorn_308_0.json",
+        "sha256": "66773bc912f7e561280e7d7e924091e79302a3e6a5c0775da23afa6fa333b047"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_microwave_popcorn-n4-i0/videos/make_microwave_popcorn_308_0.mp4",
+        "sha256": "b2496e01cf63683900670acfc1c2a0f977428f87977fa7c153ba7b80b97685de",
+        "bytes": 11452799,
+        "probe": {
+          "width": 672,
+          "height": 448,
+          "r_frame_rate": "30/1",
+          "duration": "160.800000",
+          "nb_frames": "4824"
+        }
+      }
+    }
+  ],
+  "batches": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/parts/make_microwave_popcorn-n4-i0/attempts/04.json",
+      "sha256": "dd8465e76a5e9482f9884479eb686297e10a9264601c0252365bfa759d20dd12",
+      "seconds": 2456.800356269814,
+      "actual_controls": 19395,
+      "max_steps": 4856,
+      "instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "task": "make_microwave_popcorn-n4-i0"
+    }
+  ],
+  "full_model_score": false,
+  "physical_and_original_video_frames_exact": true,
+  "originals_modified": false,
+  "complete_task": false,
+  "is_full1000": false,
+  "wait_observation": {
+    "observed_at": "2026-10-14T08:12:43.337051+00:00",
+    "sim_pid": 3894213,
+    "part_status": {
+      "status": "running",
+      "pid": 3894213,
+      "task": "make_microwave_popcorn",
+      "task_id": 40,
+      "indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "129bc9d9537459688305a59241f1e28ee1d6a42e6d59f380bde43db548d7c34e",
+      "started": 1791960115.449748,
+      "optimizer_updates": 0,
+      "control_steps": [
+        4800,
+        4800,
+        4800,
+        4800
+      ],
+      "updated": 1791965132.342633
+    },
+    "processes": "    PID    PPID STAT     ELAPSED %CPU %MEM WCHAN\n3792362 3787175 Ssl     02:21:39  8.7  1.7 ep_poll\n3894213 3787175 Rsl     01:30:48  318  2.3 -\n",
+    "files": {
+      "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/workers/gpu_7/make_microwave_popcorn-n4-i0.log": {
+        "size": 87879,
+        "age_seconds": 1768.4111564159393
+      },
+      "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/workers/gpu_7/model/events.jsonl": {
+        "size": 3878551,
+        "age_seconds": 424.69667410850525
+      }
+    }
+  },
+  "terminal_observation": {
+    "observed_at": "2026-10-14T08:22:17.462428+00:00",
+    "status": {
+      "status": "completed",
+      "pid": 3894213,
+      "task": "make_microwave_popcorn",
+      "task_id": 40,
+      "indices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "129bc9d9537459688305a59241f1e28ee1d6a42e6d59f380bde43db548d7c34e",
+      "started": 1791960115.449748,
+      "optimizer_updates": 0,
+      "control_steps": [
+        4800,
+        4800,
+        4800,
+        4800
+      ],
+      "updated": 1791965132.342633,
+      "finished": 1791965874.8837159,
+      "official_timeout": 4856,
+      "completed": 8
+    },
+    "attempt04": {
+      "status": "completed",
+      "task": "make_microwave_popcorn",
+      "indices": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "instance_ids": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "rollout": 0,
+      "started": 1791963418.0790558,
+      "max_steps": 4856,
+      "policy_seed": 17,
+      "simulator_seed": 0,
+      "finished": 1791965874.8798065,
+      "seconds": 2456.800356269814,
+      "actual_applied_controls": [
+        4857,
+        4857,
+        4857,
+        4824
+      ],
+      "unused_delivered_controls": {
+        "0": 3,
+        "1": 3,
+        "2": 3,
+        "3": 16
+      },
+      "server_clock_kind": "policy_delivery",
+      "physical_ack_sent": false
+    }
+  },
+  "stack_probe": {
+    "status": "not_collected",
+    "reason": "Original PID had already exited before probe; reading /proc/3894213/stat failed, so py-spy was not invoked. Subsequent original worker and part receipts proved normal completion.",
+    "process_restarted": false,
+    "model_or_physics_changed": false,
+    "root_cause_established": false
+  },
+  "previous_popcorn_cohort": {
+    "path": "docs/infra/results/2026-10-14-champion-popcorn-first4-originals.json",
+    "sha256": "aa4378adf09c2d8342eb9163408846de677dad504c1b1c3bfbb21fc490a72011"
+  },
+  "first_eight": {
+    "completed": 8,
+    "successes": 2,
+    "q_sum": 2,
+    "complete_task": false
+  },
+  "second_batch_controls_per_second": 7.8944143550384505
+}
