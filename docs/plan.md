@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 21:24 CST / Codex SUBMISSION-FULL-EVAL（果树喷洒首4原件核验）：** 上一轮完成解冻4原件为实质进展；本轮fetch/pull无新增，直接核原50073/八worker/model/sim继续实际推进。spraying_fruit_trees301–304自然各12519实际控制/帧、Q0/未成功，原seed17/sim0/官方12518时限不变；4原JSON/MP4 SHA、30fps/672×448与完成物理回执全合，50076控制/3144.292s＝15.9260控制/s，累计唯一已审292原件。证据`docs/infra/results/2026-10-14-champion-spraying-fruit-first4-originals.json`；只核完整性，非人工画面验收/全task10/全量成绩。未因失败重跑/改actor；50073/127593实活，MEM仍零阶段等待，继续冠军全量→MEM576，外部交付仍暂缓。
+
 - **2026-10-14 21:20 CST / Codex SUBMISSION-FULL-EVAL（解冻首4原件完成）：** 上一goal轮实核50073/八worker/model/sim及127593等待队列均存活、控制持续增长，属verified wait；本轮fetch/pull无新增，保持原运行。thawing_frozen_food301–304自然各12345实际控制/帧、Q2/9、未完整成功；原seed17/sim0/官方12344时限未改，4原JSON/MP4 SHA、30fps/672×448和完成物理回执全合，49380控制/2805.169s＝17.6032控制/s。证据`docs/infra/results/2026-10-14-champion-thawing-first4-originals.json`；累计唯一已审288原件，不把相同最终Q解释为本轮创造的进展，也不冒称全task10或全量成绩/人工画面审查。原冠军/后继直接实活，MEM仍零阶段等待；继续原顺序/预算/策略，不重跑、不热改、不恢复外部交付。
 
 - **2026-10-14 21:13 CST / Codex SUBMISSION-FULL-EVAL（新增12原件，累计已审284）：** 原评测自然完成boxing_food_after_dinner301–304：各10047控制/帧，Q依次1/6、1/6、0、0，均未完整成功，40188控制/3005.198s＝13.3728控制/s；证据`docs/infra/results/2026-10-14-champion-boxing-food-first4-originals.json`。随后store_batteries305–308各11557控制/Q0，wash_a_baseball_cap301–304各12525/Q0，均未成功，整批吞吐19.5958/15.4862控制/s；证据`…/2026-10-14-champion-batteries-cap-new8-originals.json`。12原JSON/MP4 SHA、30fps/672×448帧数与完成物理回执全合，原seed17/sim0/官方horizon+1超时不变；仅原件完整性、非人工画面验收。21:13 summary284有效/4既有异常/712待、6成功，仅子集；原50073/127593直接实活，八worker继续、MEM零阶段等待。未重启/热改/改策略/缩时限/启动交付，下一步继续冠军全量，完成核账后既有依赖接MEM576。
