@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 22:41 CST / Codex SUBMISSION-FULL-EVAL（MEM等待器切换校验）：** 79371d77新MEM源目标249通过/1可选源跳过，v8已准备同576案例；按明示请求仅停止旧MEM241922等待器，冠军241557始终运行、未发STOP。旧等待器实际零阶段行政退出，但新verify正确阻止放行：文件系统STOP mtime比userspace请求created早0.253ms，其他绑定/PID/阶段均一致。只给文件系统边界加10ms容差，仍严核终态原因、零阶段、未启动MEM、同权重/实例/原件；42相关本地回归过，证据`docs/infra/results/2026-10-14-mem-queue-time-precision.json`。不热改793源或v8manifest，下一用新的独立队列工具源码验收并挂v8；当前MEM暂无线等待器，冠军不受影响。
+
 - **2026-10-14 22:36 CST / Codex SUBMISSION-FULL-EVAL（MEM故障隔离准备完成）：** 本地补齐MEM独立物理batch、未知已尝试批次异常留证后继续、单worker异常不发全局STOP及只替换未启动等待队列的严格工具`pending_mem_upgrade.py`；249整体回归通过，新增fresh-vs-reset记忆/意图/observer回归4/4通过（整体合计250项，下次目标一并运行）。原batch分组/实例顺序/权重/控制时限不变，实际MEM仍v7/241922等待，尚未部署新源或停等待队列；冠军f7正常推理不热改。下一独立Git部署、准备与v7同576案例的v8，停旧等待器（不是冠军）、绑定新后继。
 
 - **2026-10-14 22:33 CST / Codex SUBMISSION-FULL-EVAL（重置恢复已实际步进）：** 原f7续评未动，书架301–304各2000实际控制、喷果树305–308各600实际控制，后者成功越过前轮卡住的加载路径；两个journal稳定前缀分别4独立epoch1，通过task/session/stage/vote/inpainting/动作交付时钟审计。证据`docs/infra/results/2026-10-14-champion-isolated-first-controls.json`。其余场景继续FIFO加载、八模型ready/无failed GPU；这不是完整成功率或物理逐位等价。根正在独立本地完善未启动MEM的同类batch/worker隔离和等待队列替换校验，尚未替换241922，不碰活跃冠军源码。

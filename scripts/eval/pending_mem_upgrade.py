@@ -80,9 +80,14 @@ def verify(receipt,old_queue,new_mem,champion,authorization):
     _,new=m.registration(new_mem,coordinator_source=row['new_source'])
     same_remainder(old,new);unused(old_mem);unused(new_mem)
     stopped=m.read(old_queue/'status.json')
+    # Filesystem mtimes can be quantized slightly before the userspace clock
+    # (observed 0.253 ms). Bound this to 10 ms, retaining the exact PID, empty
+    # phases, immutable bindings and never-started-job checks above.
+    stop_time=(old_queue/'STOP').stat().st_mtime
     if (stopped['status']!='needs_diagnosis' or stopped.get('phases')!=[]
             or stopped.get('error')!="InterruptedError('Requested queue stop')"
-            or not before['started']<=row['created']<=(old_queue/'STOP').stat().st_mtime<=stopped['finished']
+            or not before['started']<=row['created']<=stopped['finished']
+            or not row['created']-0.01<=stop_time<=stopped['finished']+0.01
             or any(stopped.get(k)!=before.get(k) for k in ('pid','mem_job','champion_job','bindings'))):
         raise ValueError('Waiting queue was not safely superseded before MEM execution')
     m.require_exited([stopped['pid']])

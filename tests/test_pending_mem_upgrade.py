@@ -78,3 +78,12 @@ def test_request_writes_only_waiting_queue_stop_not_champion_or_mem_stop(tmp_pat
     m.request(fresh,new,champ,auth,'/old/source','/new/source',output)
     assert (fresh/'STOP').exists() and output.exists()
     assert not (champ/'STOP').exists() and not (new/'STOP').exists() and not (queue.parent/'STOP').exists()
+
+
+@pytest.mark.parametrize('offset',[-0.0003,-0.1,-60.])
+def test_submillisecond_filesystem_quantization_not_unbounded_clock_tolerance(tmp_path,monkeypatch,offset):
+    args=fixture(tmp_path,monkeypatch);receipt,queue,*_=args
+    created=m.m.read(receipt)['created'];os.utime(queue/'STOP',(created+offset,created+offset))
+    if offset < -0.01:
+        with pytest.raises(ValueError):m.verify(*args)
+    else:assert m.verify(*args)['scored_cases_replayed']==0

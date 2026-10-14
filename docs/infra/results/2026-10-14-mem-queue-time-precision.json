@@ -1,0 +1,61 @@
+{
+  "schema": "pending_mem_queue_timestamp_quantization_v1",
+  "observed_at": "2026-10-14T14:41:00+00:00",
+  "stopped": {
+    "status": "needs_diagnosis",
+    "pid": 241922,
+    "started": 1791987638.3639078,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/manifest.json",
+        "sha256": "a1709991df8902efeb5c0622baf7a0c9c7bd1038d7d290ca5802a8e780f4261a"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v1/status.json",
+        "sha256": "3486d302305c8621dbaa25b918344ebd04c5af11c368b6c0b97425cacd8d9a59"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-priority-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source_commit": "f7b728549309b00940861f2a00ba4e9a36419855",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "updated": 1791988779.514453,
+    "error": "InterruptedError('Requested queue stop')",
+    "finished": 1791988779.5144515
+  },
+  "times": {
+    "before_start": 1791987638.3639078,
+    "created": 1791988761.0044947,
+    "stop_mtime": 1791988761.0042412,
+    "finished": 1791988779.5144515
+  },
+  "different": {},
+  "interpretation": "Immutable bindings and PID/phases matched; queue correctly stopped before any MEM launch. Filesystem STOP mtime was 0.253 ms earlier than userspace request time. Champion was never signalled.",
+  "fix": "10 ms bounded filesystem tolerance only; PID, terminal reason, empty phases, no MEM attempts, same model/cases/source bindings still mandatory."
+}
