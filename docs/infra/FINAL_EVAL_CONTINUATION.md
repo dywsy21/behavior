@@ -10,6 +10,8 @@
 
 新增`queue_memlite_after_champion.py`只接受上述seal派生的新MEM清单，冠军须完整1000、八worker终态/权重/原JSON与物理回执/内部归档相符、原PID全部退出且GPU无人占用才放行。冠军有错即停队列等待诊断；不会自动重试、抢卡、清STOP或截短任务。它不是通知服务，不承担公网模型交付。144项本地回归已过，目标机器验收、真实seal与反向队列启动待实时计划核实；根自测不替代另一成员审查。
 
+14:01实测更新：ae869bfb独立部署后，RTX144回归通过；真实seal核390完整/34既有异常/4行政/572未启，新v7仍576剩余，PID3812967已waiting_for_champion。冠军首两task8环境已实际控制，200次chunk交付的任务/会话/初始状态/stage投票/inpainting长度复核通过；仅前缀证据，不冒称逐动作物理字节核验或完整成功率，详`results/2026-10-14-champion-first-public-prefix.json`。
+
 ## 2026-10-14 生火任务：关节状态视图丢失
 
 resume_v5在11:39:17 CST的`setting_the_fire`305–308物理批次退出，11:40:46全局停止。唯一终止栈是官方evaluator的`_apply_actions`→env.step/get_obs→robot.get_proprioception→entity_prim.get_joint_positions，`_articulation_view.get_joint_positions()`返回None后`.view(self.n_dof)`抛AttributeError；此前有PhysX `unitDir is not valid`和`Articulation needs to be initialized`。模型服务因客户端退出而断连，不是高层解析错误、OOM或已知NaN四元数断言。日志SHA `89b099872561c6e4500eb8a410280643c18e2e1256b5708924c28b442d403bd9`。

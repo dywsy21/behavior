@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-14 14:01 CST / Codex SUBMISSION-FULL-EVAL（冠军已实际控制，MEM后继挂起）：** ae869bfb独立编排已Git部署，144目标回归通过（16.56s）。真实v6行政seal `3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040`核390原完整/34既有异常/4本次行政/572未启、八权重不变；新v7 manifest `a1709991df8902efeb5c0622baf7a0c9c7bd1038d7d290ca5802a8e780f4261a`登记576剩余，反向队列PID3812967实际waiting_for_champion、零MEM阶段。冠军8模型ready；14:00首两task各4环境已有500/400实际控制状态，审计8独立连接200次chunk交付：初始stage/历史、逐连接stage投票和inpainting计数、task/episode/交付时钟全过；不把交付当物理ACK，不代表未来全部或任务成功，详`docs/infra/results/2026-10-14-champion-first-public-prefix.json`。下一持续监控所有场景及完整原件；仍0完整冠军回合，不报全量Q/SR。
+
 - **2026-10-14 13:54 CST / Codex SUBMISSION-FULL-EVAL（行政封存/反向依赖本地验收）：** 独立代码增加显式授权收据的行政停机封存，仍拒绝未知错误/权重变化/遗漏原件；冠军后继改为MEM队列，须冠军1000完整、八卡终态权重核验、原物理/归档计数一致、所有原PID退出及GPU实空才启动。新增正反例后144本地回归通过（13.59s）；尚待独立Git冻结/RTX验收/真实seal，不能称队列已挂起。冠军supervisor3787083/八worker3787168–75实活、4环境，原1177/9f源不动；首两模型加载中、0公共完整结果。
 
 - **2026-10-14 13:48 CST / Codex SUBMISSION-FULL-EVAL（资源已释放，冠军全量启动）：** 原MEM supervisor/八worker/model/sim及旧队列均实退出，八终态权重/observer未变、0更新，GPU计算进程已空；handoff收据`runs/final_eval_preparation_20261014/champion-priority-handoff-v1.json` SHA `57a5b699fb10b2307c9d73799a1b9995f33bfee6f605d0c20afcdbc0bb4b8ae9`。已由原1177 FIFO编排启动原冠军v2/9f actor/final8000，tmux `champion-final100-priority-v1`，log `supervisor-priority-v1.log`；复用原TRAIN门，不重训、不改公共条件。MEM行政封存及反向队列正在独立实现/测试，未称已接续。

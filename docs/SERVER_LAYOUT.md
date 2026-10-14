@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-14 14:01 CST：MEM剩余反向依赖已实际挂起
+
+- 冠军仍上方原run/1177编排＋9f actor，supervisor3787083，已经开始实际公共控制；不要再启动第二个冠军supervisor。MEM旧v6已停，**新等待MEM**`runs/memlite_final100_20261014_resume_v7`的manifest `a1709991df8902efeb5c0622baf7a0c9c7bd1038d7d290ca5802a8e780f4261a`，576剩余；尚未启动其supervisor/GPU模型。
+- 后继源码`code/final-eval-priority-20261014-v1`固定`ae869bfb13ce51084f0ee500306596d4391d823c`，原MEM actor仍51c。tmux `memlite-final100-after-champion-v7`、queue PID3812967，状态`queue-after-champion/status.json`、外层log `queue-after-champion.log`；真正放行后MEM日志为`queue-after-champion/mem-supervisor.log`。不能将队列实活称MEM已运行。
+- v6行政seal `runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json` SHA `3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040`：390完整/34旧异常/4本次行政/572未启，7模型无推理trace属lazy writer、不是缺失数据。双端验签副本`artifacts/final-eval-20261014/priority-v1/{parent-seal,manifest,authorization,handoff}.json`；Git包同目录source.bundle及RTX`runs/final_eval_preparation_20261014/priority-v1.bundle` SHA `2145eac89a0eac086c58ba970a2a67e704f5eff8f1039569554c4fe5fe269607`。双端144测试过。
+
 ## 2026-10-14 13:54 CST：用户批准冠军优先，实际已切换
 
 - RTX根仍`/run/ti/rl_memlite_stage1_20261006`。**当前运行冠军**`runs/champion_final100_20261013_v2`，原manifest19b056a7/final8000/export9608b3ef；原actor `code/final-eval-continuation-20261013-v1`=9f6e75bd，FIFO编排`code/final-eval-continuation-20261014-v2`=1177a469。tmux `champion-final100-priority-v1`，supervisor3787083，八worker3787168–75，日志`supervisor-priority-v1.log`。不是旧等待队列，不热改这些源。

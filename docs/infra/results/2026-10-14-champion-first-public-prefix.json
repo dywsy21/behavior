@@ -1,0 +1,163 @@
+{
+  "schema": "champion_initial_public_prefix_isolation_v1",
+  "observed_at": "2026-10-14T06:00:23.302567+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+  "manifest_sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297",
+  "workers": [
+    {
+      "gpu": 0,
+      "task": "clean_a_keyboard",
+      "task_id": 93,
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/workers/gpu_0/model/events.jsonl",
+      "prefix_bytes": 120000,
+      "prefix_sha256": "f19611df58ef53e4097bcb52505acb35cc2ce0d18b0d9f2264da4438d62a55a2",
+      "rows": 120,
+      "connections": 4,
+      "deliveries": 112,
+      "physical_status_steps": [
+        500,
+        500,
+        500,
+        500
+      ],
+      "physical_status_time": 1791957615.1050785,
+      "per_connection": [
+        {
+          "connection": "bc83517e7fdc48b791abb5ca2ee169bd",
+          "epoch": 1,
+          "steps": 560,
+          "pred": 28,
+          "stage": 1,
+          "votes": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "connection": "3664a0a4be694710a7f7f6c806aae07b",
+          "epoch": 1,
+          "steps": 560,
+          "pred": 28,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "connection": "d294c8d02e2c4303a2c5be48f8931f60",
+          "epoch": 1,
+          "steps": 560,
+          "pred": 28,
+          "stage": 1,
+          "votes": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "connection": "e43726b5470c42d0b6b6dc7412e3e658",
+          "epoch": 1,
+          "steps": 560,
+          "pred": 28,
+          "stage": 1,
+          "votes": [
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "empty_initial_state": true,
+      "exact_stage_recurrence": true,
+      "independent_inpainting_counts": true,
+      "delivery_not_claimed_physics": true
+    },
+    {
+      "gpu": 1,
+      "task": "turning_on_radio",
+      "task_id": 0,
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "ef627f701aeaa3994aa701ad0837b875e83ddbd582a5c0ab8029ac52ec29d947",
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/workers/gpu_1/model/events.jsonl",
+      "prefix_bytes": 94023,
+      "prefix_sha256": "2cbf22bea00dd7eff21e8381b7d64eb7dc13148f2c9807cfb102fcc90ff4459a",
+      "rows": 96,
+      "connections": 4,
+      "deliveries": 88,
+      "physical_status_steps": [
+        400,
+        400,
+        400,
+        400
+      ],
+      "physical_status_time": 1791957618.9064658,
+      "per_connection": [
+        {
+          "connection": "7f6739dfba5b48cd9e94f5fa24701c33",
+          "epoch": 1,
+          "steps": 440,
+          "pred": 22,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "connection": "2d3f45495084417dae8c10b604916588",
+          "epoch": 1,
+          "steps": 440,
+          "pred": 22,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "connection": "c029737bd0cb49cf8bdccac459c746ad",
+          "epoch": 1,
+          "steps": 440,
+          "pred": 22,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "connection": "4f0b77ee01964bf4b825266ad2652cd6",
+          "epoch": 1,
+          "steps": 440,
+          "pred": 22,
+          "stage": 1,
+          "votes": [
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "empty_initial_state": true,
+      "exact_stage_recurrence": true,
+      "independent_inpainting_counts": true,
+      "delivery_not_claimed_physics": true
+    }
+  ],
+  "all_connections_unique": true,
+  "limitations": [
+    "Only first two live task batches and captured newline-complete prefixes, not all future episodes.",
+    "No original observations or raw actions are present in this journal; no bytewise physical action claim.",
+    "Stage prediction is not MEM-Lite intent, calibrated result-head output, or task success."
+  ],
+  "originals_modified": false
+}
