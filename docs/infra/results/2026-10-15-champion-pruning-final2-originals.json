@@ -1,0 +1,986 @@
+{
+  "schema": "champion_isolated_new_committed_originals_v1",
+  "observed_at": "2026-10-15T01:19:08.333520+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "batches": [
+    {
+      "part": "put_together_a_basic_pruning_kit-n2-i8",
+      "gpu": 5,
+      "records": [
+        {
+          "task": "put_together_a_basic_pruning_kit",
+          "instance_id": 309,
+          "rollout_id": 0,
+          "steps": 16897,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/put_together_a_basic_pruning_kit-n2-i8/json/put_together_a_basic_pruning_kit_309_0.json",
+            "sha256": "dfa63fdc693e88ba3b6194483a4266f8612b94523cc5de771c5131b94b424767"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/put_together_a_basic_pruning_kit-n2-i8/videos/put_together_a_basic_pruning_kit_309_0.mp4",
+            "sha256": "67faeb87a19aedfb5e8aad17df647134a5fb687285cc6e58d0ad52c34784a060"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "16897"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "put_together_a_basic_pruning_kit",
+          "instance_id": 310,
+          "rollout_id": 0,
+          "steps": 16897,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/put_together_a_basic_pruning_kit-n2-i8/json/put_together_a_basic_pruning_kit_310_0.json",
+            "sha256": "61dcbb8e49bdb28da5b33d8250a5352b3cac17136250ece5a8b17652c4b938c6"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/put_together_a_basic_pruning_kit-n2-i8/videos/put_together_a_basic_pruning_kit_310_0.mp4",
+            "sha256": "a861156a0358b697e8750635d209521f3113496a8f535510835773e62946997d"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "16897"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/put_together_a_basic_pruning_kit-n2-i8/attempts/08.json",
+        "sha256": "db2dcd03e5f5d5f68382f7ca1c2fbcc9296eec4b00e13e1e53f4e1e64b8d920c"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "put_together_a_basic_pruning_kit",
+        "indices": [
+          8,
+          9
+        ],
+        "instance_ids": [
+          309,
+          310
+        ],
+        "rollout": 0,
+        "started": 1792024661.2491398,
+        "max_steps": 16896,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792026805.2362013,
+        "seconds": 2143.9863190324977,
+        "actual_applied_controls": [
+          16897,
+          16897
+        ],
+        "unused_delivered_controls": {
+          "0": 3,
+          "1": 3
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 1095709,
+        "task": "put_together_a_basic_pruning_kit",
+        "task_id": 75,
+        "indices": [
+          8,
+          9
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "2ef38ac2c0dceae284086501c55c731da93b6244db9887c7c11bc1a8b15a0da4",
+        "started": 1792024485.4371638,
+        "optimizer_updates": 0,
+        "control_steps": [
+          16800,
+          16800
+        ],
+        "updated": 1792026791.6978285,
+        "finished": 1792026805.2385457,
+        "official_timeout": 16896,
+        "completed": 2
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 32626487,
+        "prefix_sha256": "d3b395f1bf482f323471e300072e3b1a3f533977a465be86b0588a484a468b36",
+        "lines": 26952,
+        "connections": 36,
+        "episodes": 36,
+        "closed_episodes": 36,
+        "active_connections": 0,
+        "deliveries": 26844,
+        "delivered_controls": 536880,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          12,
+          19,
+          30,
+          75
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_5/model-000/events.jsonl",
+        "captured_bytes": 32626487,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241613,
+        "gpu": 5,
+        "started": 1791987613.7776332,
+        "completed_parts": [
+          "preparing_lunch_box-n4-i4",
+          "preparing_lunch_box-n2-i8",
+          "setting_the_fire-n4-i0",
+          "setting_the_fire-n4-i4",
+          "setting_the_fire-n2-i8",
+          "outfit_a_basic_toolbox-n4-i0",
+          "outfit_a_basic_toolbox-n4-i4",
+          "outfit_a_basic_toolbox-n2-i8",
+          "put_together_a_basic_pruning_kit-n4-i0",
+          "put_together_a_basic_pruning_kit-n4-i4",
+          "put_together_a_basic_pruning_kit-n2-i8"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 244175,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_5/model-000",
+        "updated": 1792026812.4379296,
+        "sim_pid": 1150116,
+        "part": "cleaning_up_branches_and_twigs-n4-i0"
+      },
+      "actual_controls": 33794,
+      "controls_per_second": 15.762227445205896
+    }
+  ],
+  "protocols": {
+    "5": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 32626487,
+      "prefix_sha256": "d3b395f1bf482f323471e300072e3b1a3f533977a465be86b0588a484a468b36",
+      "lines": 26952,
+      "connections": 36,
+      "episodes": 36,
+      "closed_episodes": 36,
+      "active_connections": 0,
+      "deliveries": 26844,
+      "delivered_controls": 536880,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        12,
+        19,
+        30,
+        75
+      ],
+      "require_closed": false,
+      "session_summaries": [
+        {
+          "episode": "563d51c4df314904905169effe9342fd/reset-1/task-12",
+          "connection": "563d51c4df314904905169effe9342fd",
+          "epoch": 1,
+          "task": 12,
+          "deliveries": 619,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            2
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "39dfb26557a74a45b4d0a27bc17bfda0/reset-1/task-12",
+          "connection": "39dfb26557a74a45b4d0a27bc17bfda0",
+          "epoch": 1,
+          "task": 12,
+          "deliveries": 619,
+          "stage": 9,
+          "votes": [
+            9,
+            9,
+            9
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "72fafc6dac164271bb00e604ab3289f5/reset-1/task-12",
+          "connection": "72fafc6dac164271bb00e604ab3289f5",
+          "epoch": 1,
+          "task": 12,
+          "deliveries": 619,
+          "stage": 9,
+          "votes": [
+            9,
+            9,
+            9
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "1b4c5c98426f42038aabde3c283578a6/reset-1/task-12",
+          "connection": "1b4c5c98426f42038aabde3c283578a6",
+          "epoch": 1,
+          "task": 12,
+          "deliveries": 619,
+          "stage": 9,
+          "votes": [
+            9,
+            9,
+            9
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "80d56ff846a4410cba0ba099a9c870bc/reset-1/task-12",
+          "connection": "80d56ff846a4410cba0ba099a9c870bc",
+          "epoch": 1,
+          "task": 12,
+          "deliveries": 479,
+          "stage": 4,
+          "votes": [
+            9,
+            9,
+            9
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "6514e44525d445f6b5f8a41ca4352794/reset-1/task-12",
+          "connection": "6514e44525d445f6b5f8a41ca4352794",
+          "epoch": 1,
+          "task": 12,
+          "deliveries": 619,
+          "stage": 9,
+          "votes": [
+            6,
+            6,
+            6
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "da64afd9738d4676a0c4c5c171c7c34f/reset-1/task-30",
+          "connection": "da64afd9738d4676a0c4c5c171c7c34f",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 8,
+          "votes": [
+            8,
+            8
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "d5d4e69debf44448bdc64f3ced320e91/reset-1/task-30",
+          "connection": "d5d4e69debf44448bdc64f3ced320e91",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "2aef19737f4d4ee691cf5b1a6604794c/reset-1/task-30",
+          "connection": "2aef19737f4d4ee691cf5b1a6604794c",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 1,
+          "votes": [
+            8,
+            7,
+            7
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "c6d5641292d349f1ae000a07aa22c8a4/reset-1/task-30",
+          "connection": "c6d5641292d349f1ae000a07aa22c8a4",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 1,
+          "votes": [
+            1,
+            1,
+            1
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "c66d99c951d94d7cb090a3aa4c49aed7/reset-1/task-30",
+          "connection": "c66d99c951d94d7cb090a3aa4c49aed7",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 1,
+          "votes": [
+            1,
+            5,
+            6
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "82bee785b2224d48bfbdc1b8842c5da3/reset-1/task-30",
+          "connection": "82bee785b2224d48bfbdc1b8842c5da3",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 2,
+          "votes": [
+            2,
+            8,
+            2
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "f3188656d3524abc86d7d71c07369287/reset-1/task-30",
+          "connection": "f3188656d3524abc86d7d71c07369287",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 2,
+          "votes": [
+            7,
+            7,
+            7
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "60337864e79343249106f14662cf101f/reset-1/task-30",
+          "connection": "60337864e79343249106f14662cf101f",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 3,
+          "votes": [
+            7,
+            2,
+            3
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "5e30f92a4d9f4dfeb4eacc3db786444d/reset-1/task-30",
+          "connection": "5e30f92a4d9f4dfeb4eacc3db786444d",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 4,
+          "votes": [
+            8,
+            3,
+            8
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "31df588dbffc4fcca78da7f469014aac/reset-1/task-30",
+          "connection": "31df588dbffc4fcca78da7f469014aac",
+          "epoch": 1,
+          "task": 30,
+          "deliveries": 684,
+          "stage": 10,
+          "votes": [
+            10,
+            10,
+            10
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "6f667dd3af5b4c9cb9a277f53ede055c/reset-1/task-19",
+          "connection": "6f667dd3af5b4c9cb9a277f53ede055c",
+          "epoch": 1,
+          "task": 19,
+          "deliveries": 798,
+          "stage": 8,
+          "votes": [
+            4,
+            5,
+            5
+          ],
+          "stages": 12,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "fb1940cc143042a89322791b47c9b896/reset-1/task-19",
+          "connection": "fb1940cc143042a89322791b47c9b896",
+          "epoch": 1,
+          "task": 19,
+          "deliveries": 798,
+          "stage": 7,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 12,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "e652da37a5de4dad91c6db53f542a928/reset-1/task-19",
+          "connection": "e652da37a5de4dad91c6db53f542a928",
+          "epoch": 1,
+          "task": 19,
+          "deliveries": 798,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 12,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "744d6e1988f8469bb25bfc337881aba4/reset-1/task-19",
+          "connection": "744d6e1988f8469bb25bfc337881aba4",
+          "epoch": 1,
+          "task": 19,
+          "deliveries": 798,
+          "stage": 10,
+          "votes": [
+            10,
+            9,
+            9
+          ],
+          "stages": 12,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "f7d3a663e2024a11aab7cfa6e620370f/reset-1/task-19",
+          "connection": "f7d3a663e2024a11aab7cfa6e620370f",
+          "epoch": 1,
+          "task": 19,
+          "deliveries": 798,
+          "stage": 5,
+          "votes": [
+            3,
+            3,
+            2
+          ],
+          "stages": 12,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "c3293da15c1349f381d5059a34e50cdd/reset-1/task-19",
+          "connection": "c3293da15c1349f381d5059a34e50cdd",
+          "epoch": 1,
+          "task": 19,
+          "deliveries": 798,
+          "stage": 5,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 12,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "5911e736c29d4a188e6f52949fd71eb5/reset-1/task-19",
+          "connection": "5911e736c29d4a188e6f52949fd71eb5",
+          "epoch": 1,
+          "task": 19,
+          "deliveries": 798,
+          "stage": 8,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 12,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "6b19729af71242cab6912fb66d6e5aad/reset-1/task-19",
+          "connection": "6b19729af71242cab6912fb66d6e5aad",
+          "epoch": 1,
+          "task": 19,
+          "deliveries": 798,
+          "stage": 8,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 12,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "d21d8e76af1a4b0c84fe4af82f3edecd/reset-1/task-19",
+          "connection": "d21d8e76af1a4b0c84fe4af82f3edecd",
+          "epoch": 1,
+          "task": 19,
+          "deliveries": 798,
+          "stage": 6,
+          "votes": [
+            6,
+            6,
+            6
+          ],
+          "stages": 12,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "e8559a191d2948cea084797b406be5d4/reset-1/task-19",
+          "connection": "e8559a191d2948cea084797b406be5d4",
+          "epoch": 1,
+          "task": 19,
+          "deliveries": 798,
+          "stage": 10,
+          "votes": [
+            6,
+            6,
+            6
+          ],
+          "stages": 12,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "7c2fb71f15aa45c6b6143af2f8ae9076/reset-1/task-75",
+          "connection": "7c2fb71f15aa45c6b6143af2f8ae9076",
+          "epoch": 1,
+          "task": 75,
+          "deliveries": 845,
+          "stage": 8,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "3fa7e8a48f144e439b988c79f6e17557/reset-1/task-75",
+          "connection": "3fa7e8a48f144e439b988c79f6e17557",
+          "epoch": 1,
+          "task": 75,
+          "deliveries": 845,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "ee391803d745443fbbf7249bec60e970/reset-1/task-75",
+          "connection": "ee391803d745443fbbf7249bec60e970",
+          "epoch": 1,
+          "task": 75,
+          "deliveries": 845,
+          "stage": 9,
+          "votes": [
+            3,
+            4,
+            4
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "a3c4458d486c4f3a82c92710df46f1ee/reset-1/task-75",
+          "connection": "a3c4458d486c4f3a82c92710df46f1ee",
+          "epoch": 1,
+          "task": 75,
+          "deliveries": 845,
+          "stage": 0,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "0c15301d6d01445bb94320abb6f6812f/reset-1/task-75",
+          "connection": "0c15301d6d01445bb94320abb6f6812f",
+          "epoch": 1,
+          "task": 75,
+          "deliveries": 845,
+          "stage": 4,
+          "votes": [
+            2,
+            2,
+            4
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "513971ff75094fac8c13992e83515db7/reset-1/task-75",
+          "connection": "513971ff75094fac8c13992e83515db7",
+          "epoch": 1,
+          "task": 75,
+          "deliveries": 845,
+          "stage": 8,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "bbf7d5389b77403fbfe4586d97e8caa7/reset-1/task-75",
+          "connection": "bbf7d5389b77403fbfe4586d97e8caa7",
+          "epoch": 1,
+          "task": 75,
+          "deliveries": 845,
+          "stage": 7,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "38bbac27f33c4d3e88a4adf0a9c4303a/reset-1/task-75",
+          "connection": "38bbac27f33c4d3e88a4adf0a9c4303a",
+          "epoch": 1,
+          "task": 75,
+          "deliveries": 845,
+          "stage": 7,
+          "votes": [
+            7,
+            1,
+            1
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "87c35f88770f41dfa80ffa72eb7864aa/reset-1/task-75",
+          "connection": "87c35f88770f41dfa80ffa72eb7864aa",
+          "epoch": 1,
+          "task": 75,
+          "deliveries": 845,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "0cedac425c53462597a6be1cab2efa70/reset-1/task-75",
+          "connection": "0cedac425c53462597a6be1cab2efa70",
+          "epoch": 1,
+          "task": 75,
+          "deliveries": 845,
+          "stage": 2,
+          "votes": [
+            11,
+            11,
+            6
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        }
+      ],
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_5/model-000/events.jsonl",
+      "captured_bytes": 32626487,
+      "ignored_incomplete_tail_bytes": 0
+    }
+  },
+  "previously_verified_parts": [
+    "boxing_food_after_dinner-n2-i8",
+    "boxing_food_after_dinner-n4-i4",
+    "bringing_paper_to_recycling-n2-i8",
+    "bringing_paper_to_recycling-n4-i0",
+    "bringing_paper_to_recycling-n4-i4",
+    "bringing_water-n2-i8",
+    "bringing_water-n4-i0",
+    "bringing_water-n4-i4",
+    "can_meat-n4-i0",
+    "carrying_out_garden_furniture-n2-i8",
+    "carrying_out_garden_furniture-n4-i0",
+    "carrying_out_garden_furniture-n4-i4",
+    "chopping_wood-n2-i8",
+    "chopping_wood-n4-i0",
+    "chopping_wood-n4-i4",
+    "clean_boxing_gloves-n2-i8",
+    "clean_boxing_gloves-n4-i0",
+    "clean_boxing_gloves-n4-i4",
+    "clean_up_broken_glass-n2-i8",
+    "clean_up_broken_glass-n4-i0",
+    "clean_up_broken_glass-n4-i4",
+    "collecting_aluminum_cans-n2-i8",
+    "collecting_aluminum_cans-n4-i0",
+    "collecting_aluminum_cans-n4-i4",
+    "cook_a_frozen_pie-n2-i8",
+    "cook_a_frozen_pie-n4-i0",
+    "cook_a_frozen_pie-n4-i4",
+    "cook_hot_dogs-n2-i8",
+    "cook_hot_dogs-n4-i0",
+    "cook_hot_dogs-n4-i4",
+    "dispose_of_glass-n2-i8",
+    "dispose_of_glass-n4-i0",
+    "dispose_of_glass-n4-i4",
+    "make_gift_bags_for_baby_showers-n2-i8",
+    "make_gift_bags_for_baby_showers-n4-i0",
+    "make_gift_bags_for_baby_showers-n4-i4",
+    "outfit_a_basic_toolbox-n2-i8",
+    "outfit_a_basic_toolbox-n4-i0",
+    "outfit_a_basic_toolbox-n4-i4",
+    "packing_meal_for_delivery-n2-i8",
+    "packing_meal_for_delivery-n4-i0",
+    "packing_meal_for_delivery-n4-i4",
+    "polishing_shoes-n2-i8",
+    "polishing_shoes-n4-i0",
+    "polishing_shoes-n4-i4",
+    "preparing_lunch_box-n2-i8",
+    "preparing_lunch_box-n4-i4",
+    "put_together_a_basic_pruning_kit-n4-i0",
+    "put_together_a_basic_pruning_kit-n4-i4",
+    "putting_away_toys-n4-i0",
+    "putting_away_toys-n4-i4",
+    "putting_dirty_dishes_in_sink-n4-i0",
+    "putting_shoes_on_rack-n2-i8",
+    "re_shelving_library_books-n2-i8",
+    "re_shelving_library_books-n4-i0",
+    "re_shelving_library_books-n4-i4",
+    "rearranging_kitchen_furniture-n2-i8",
+    "rearranging_kitchen_furniture-n4-i0",
+    "rearranging_kitchen_furniture-n4-i4",
+    "setting_mousetraps-n2-i8",
+    "setting_mousetraps-n4-i0",
+    "setting_mousetraps-n4-i4",
+    "setting_the_fire-n2-i8",
+    "setting_the_fire-n4-i0",
+    "setting_the_fire-n4-i4",
+    "sorting_books_on_shelf-n2-i8",
+    "sorting_books_on_shelf-n4-i0",
+    "sorting_books_on_shelf-n4-i4",
+    "sorting_bottles_cans_and_paper-n2-i8",
+    "sorting_bottles_cans_and_paper-n4-i0",
+    "sorting_bottles_cans_and_paper-n4-i4",
+    "spraying_fruit_trees-n2-i8",
+    "spraying_fruit_trees-n4-i4",
+    "store_produce-n2-i8",
+    "store_produce-n4-i0",
+    "store_produce-n4-i4",
+    "thawing_frozen_food-n2-i8",
+    "thawing_frozen_food-n4-i4",
+    "turning_out_all_lights_before_sleep-n2-i8",
+    "turning_out_all_lights_before_sleep-n4-i0",
+    "turning_out_all_lights_before_sleep-n4-i4",
+    "wash_a_baseball_cap-n2-i8",
+    "wash_a_baseball_cap-n4-i4",
+    "wash_dog_toys-n2-i8",
+    "wash_dog_toys-n4-i0",
+    "wash_dog_toys-n4-i4"
+  ],
+  "remaining_unverified_parts": 0,
+  "summary": {
+    "status": "running",
+    "expected": 1000,
+    "completed": 592,
+    "missing": 408,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.08099259974259976,
+    "completed_only_sr": 0.02702702702702703,
+    "tasks": {
+      "put_together_a_basic_pruning_kit": {
+        "completed": 10,
+        "expected": 10,
+        "q_score_sum": 0,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0
+      }
+    },
+    "coverage": 596,
+    "execution_errors": 4,
+    "unaccounted": 404,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.04794761904761906,
+    "conservative_sr_errors_and_missing_as_zero": 0.016,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0
+  },
+  "supervisor": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {},
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 592,
+    "coverage": 596,
+    "updated": 1792027131.1516154
+  },
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 300108,
+    "started": 1791989042.9684465,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+        "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v2/status.json",
+        "sha256": "643cca0bd67296878a5518bd6de3d786d331fd9bebe00b777b0d7b68a50f2ec5"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-queue-isolation-20261014-v2",
+    "queue_source_commit": "9122b13726bf1862dbe2d6616c0da916822e2487",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "pending_mem_upgrade": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+      "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+    },
+    "updated": 1791989042.9684682
+  },
+  "manual_visual_review": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "validation_scope": "Original committed JSON, MP4 metadata/hash, physical controls, pinned identity/seed/horizon, and per-GPU journal recurrence; no image-content or RNG identity claim.",
+  "previous_evidence": "docs/infra/results/2026-10-15-champion-dishes-dogtoys-new6-originals.json",
+  "previous_evidence_commit": "b0c5b6d3",
+  "final_model_score_pending": true,
+  "external_delivery_deferred": true
+}
