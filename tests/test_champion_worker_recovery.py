@@ -135,10 +135,12 @@ def test_only_exact_failed_batch_disconnect_tail_is_accepted(tmp_path, bad):
         assert report['prefix']['active_connections'] == 4
 
 
-def recovery_fixture(tmp_path, monkeypatch):
+def recovery_fixture(tmp_path, monkeypatch, setup_original=None):
     spec = importlib.util.spec_from_file_location('recovery_parent_fixture', Path(__file__).with_name('test_continue_champion_final.py'))
     f = importlib.util.module_from_spec(spec); spec.loader.exec_module(f)
     old, runtime, seal, original = f.stopped(tmp_path, monkeypatch)
+    if setup_original is not None:
+        setup_original(old, runtime, original)
     c.freeze(old, runtime, seal)
     parent = old.parent / 'parent'
     pm = c.prepare(old, seal, runtime, parent, isolate_batches=True, continue_on_errors=True)

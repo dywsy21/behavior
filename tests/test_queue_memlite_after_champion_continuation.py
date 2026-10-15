@@ -143,6 +143,59 @@ def test_terminal_gate_rejects_only_seven_completed_workers():
     with pytest.raises(ValueError):m.pack.terminal_ready(state,summary)
 
 
+@pytest.mark.parametrize('fault',[None,'sidecar_failed','collection_failed','binding_changed'])
+def test_queue_waits_for_registered_recovery_then_gpu_release_without_stopping_evaluation(tmp_path,monkeypatch,fault):
+    mem,champ,auth,ms,cs,old,root=fixture(tmp_path,monkeypatch)
+    child=tmp_path/'recovery';rs=tmp_path/'recovery-source';cert=child/'certificate.json'
+    save(cert,{'pending':['exact suffix']});rm=dict(gpu=4,source_commit='recovery-commit',certificate=m.c.binding(cert))
+    save(child/'manifest.json',rm)
+    save(child/'status.json',dict(status='running',pid=os.getpid()))
+    st,sm=finished();st.update(status='needs_isolated_worker_recovery',completed_gpus=[i for i in range(8) if i!=4],failed_gpus={'4':{}})
+    save(champ/'status.json',st);save(champ/'summary.json',sm)
+    monkeypatch.setattr(m.pack,'registered_recoveries',lambda job,recs:{4:dict(job=child,source=rs,manifest=rm)})
+    monkeypatch.setattr(m.c,'frozen_source',lambda *a:None)
+    calls=[];sleeps=[];queries=[]
+    def query(argv,**kw):
+        if argv[0]=='git':return 'queue-commit\n'
+        queries.append(1);return '123\n' if len(queries)==1 else ''
+    monkeypatch.setattr(m.subprocess,'check_output',query)
+    def sleep(seconds):
+        assert seconds==30;sleeps.append(1)
+        if len(sleeps)==1:
+            save(child/'status.json',dict(status='needs_isolated_worker_recovery' if fault=='sidecar_failed' else 'completed',
+                                         pid=99999012,finished=25))
+            if fault=='binding_changed':save(child/'manifest.json',rm|dict(source_commit='changed'))
+        else:
+            q=m.c.read(mem/'queue-recovered/status.json')
+            assert q['status']=='waiting_for_gpu_release' and q['phases']==[]
+    monkeypatch.setattr(m.time,'sleep',sleep)
+    def collect(*args,**kw):
+        assert kw['recoveries']==[(child,rs)] and len(sleeps)==1
+        calls.append('collect_parent_and_recovery')
+        if fault=='collection_failed':raise ValueError('changed original')
+        return {'submitted':False}
+    monkeypatch.setattr(m.pack,'package',collect)
+    monkeypatch.setattr(m.mem_pack,'package',lambda *a:calls.append('collect_mem') or {'submitted':False})
+    class Process:
+        pid=99999020
+        def __init__(self,argv,**kw):
+            assert len(sleeps)==2 and calls==['collect_parent_and_recovery']
+            assert argv==m.mem_command(mem,ms);calls.append('launch_same_mem')
+        def wait(self):
+            s,t=finished();save(mem/'status.json',s);save(mem/'summary.json',t);return 0
+    monkeypatch.setattr(m.subprocess,'Popen',Process)
+    out=tmp_path/'out';out.mkdir()
+    args=(mem,champ,auth,ms,cs,old,'queue-recovered',out)
+    if fault:
+        with pytest.raises((RuntimeError,ValueError)):m.run(*args,recoveries=[(child,rs)])
+    else:m.run(*args,recoveries=[(child,rs)])
+    q=m.c.read(mem/'queue-recovered/status.json')
+    assert q['recovery_dependencies']==[dict(job=str(child),source=str(rs),source_commit='recovery-commit',gpu=4)]
+    assert not any((j/'STOP').exists() for j in (mem,champ,child))
+    if fault:assert q['phases']==[]
+    else:assert calls==['collect_parent_and_recovery','launch_same_mem','collect_mem']
+
+
 @pytest.mark.parametrize('bad',[None,'prior','phase','ancestor','live'])
 def test_replace_only_exact_dead_continuation_queue(tmp_path,monkeypatch,bad):
     mem,champ,auth,ms,cs,old,root=fixture(tmp_path,monkeypatch)

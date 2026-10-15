@@ -80,6 +80,25 @@ def test_request_writes_only_waiting_queue_stop_not_champion_or_mem_stop(tmp_pat
     assert not (champ/'STOP').exists() and not (new/'STOP').exists() and not (queue.parent/'STOP').exists()
 
 
+def test_same_mem_job_can_replace_only_its_never_started_waiter(tmp_path,monkeypatch):
+    receipt,old_queue,mem,champ,auth=fixture(tmp_path,monkeypatch)
+    queue=mem/'queue-current';now=time.time()
+    before=dict(status='waiting_for_champion_continuation',pid=os.getpid(),started=now-10,phases=[],
+        mem_job=str(mem),champion_job=str(champ),bindings=[m.m.binding(mem/'manifest.json'),
+        m.m.binding(champ/'manifest.json'),m.m.binding(auth)])
+    save(queue/'status.json',before);save(champ/'status.json',dict(status='running'))
+    output=tmp_path/'same-mem-upgrade.json'
+    m.request(queue,mem,champ,auth,'/same/source','/same/source',output)
+    row=m.m.read(output)
+    assert row['old_mem']==row['new_mem']==str(mem)
+    assert (queue/'STOP').exists() and not (mem/'STOP').exists() and not (champ/'STOP').exists()
+    # Simulate only the stopped waiter's exit, not any evaluation process.
+    row['before']['pid']=99999000;save(output,row)
+    save(queue/'status.json',row['before']|dict(status='needs_diagnosis',finished=time.time()+1,
+         error="InterruptedError('Requested queue stop')"))
+    assert m.verify(output,queue,mem,champ,auth)['scored_cases_replayed']==0
+
+
 @pytest.mark.parametrize('offset',[-0.0003,-0.1,-60.])
 def test_submillisecond_filesystem_quantization_not_unbounded_clock_tolerance(tmp_path,monkeypatch,offset):
     args=fixture(tmp_path,monkeypatch);receipt,queue,*_=args

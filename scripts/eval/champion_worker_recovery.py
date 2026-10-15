@@ -170,11 +170,12 @@ def prepare(parent, gpu, job):
     return m
 
 
-def registration(job, gpu):
+def registration(job, gpu, *, coordinator_source=None):
     job = Path(job).resolve(); m = c.read(job / 'manifest.json')
     if job.parent != ROOT / 'runs' or m['schema'] != SCHEMA or m['gpu'] != gpu:
         raise ValueError('Exact isolated worker registration required')
-    c.frozen_source(c.REPO, m['source_commit']); c.check_binding(m['parent_manifest']); c.check_binding(m['certificate'])
+    c.frozen_source(c.REPO if coordinator_source is None else Path(coordinator_source), m['source_commit'])
+    c.check_binding(m['parent_manifest']); c.check_binding(m['certificate'])
     parent = Path(m['parent']); pm = c.read(parent / 'manifest.json')
     _, original, _ = c.root_registration(parent); cert = c.read(m['certificate']['path'])
     if cert != certify(parent, gpu):

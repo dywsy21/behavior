@@ -88,9 +88,11 @@ def mem_command(mem, mem_source):
 
 
 def run(mem, champion, authorization, mem_source, champion_source, previous_queue, queue_name, output_root,
-        *, pending_mem_upgrade=None):
+        *, pending_mem_upgrade=None, recoveries=()):
     mem_source, champion_source = Path(mem_source).resolve(), Path(champion_source).resolve()
     mem, mm, champion, cm, auth, root = validate_order(mem, champion, authorization, mem_source, champion_source)
+    recovered = pack.registered_recoveries(champion, recoveries)
+    recoveries = [(v['job'], v['source']) for v in recovered.values()]
     queue, old = replacement_queue(mem, root, previous_queue, queue_name, auth, champion,pending_mem_upgrade)
     output_root = Path(output_root).resolve()
     if (not output_root.is_dir() or any((output_root / name).exists() for name in ('champion-results', 'mem-results'))
@@ -106,12 +108,17 @@ def run(mem, champion, authorization, mem_source, champion_source, previous_queu
                 mm['seal'], cm['seal'], c.binding(root / 'manifest.json'), old]
     if pending_mem_upgrade is not None:
         bindings.insert(-1,c.binding(pending_mem_upgrade))
+    for rec in recovered.values():
+        bindings.extend([c.binding(rec['job'] / 'manifest.json'), rec['manifest']['certificate']])
     state = dict(status='waiting_for_champion_continuation', pid=os.getpid(), started=time.time(), phases=[],
         mem_job=str(mem), champion_job=str(champion), champion_root=str(root), bindings=bindings,
         mem_source=str(mem_source), champion_source=str(champion_source), queue_source=str(c.REPO),
         queue_source_commit=commit, automatic_retries=False, output_root=str(output_root))
     if pending_mem_upgrade is not None:
         state['pending_mem_upgrade']=c.binding(pending_mem_upgrade)
+    if recovered:
+        state['recovery_dependencies'] = [dict(job=str(v['job']), source=str(v['source']),
+            source_commit=v['manifest']['source_commit'], gpu=gpu) for gpu, v in recovered.items()]
     def publish():
         state['updated'] = time.time(); c.atomic_json(queue / 'status.json', state)
     def unchanged():
@@ -123,22 +130,30 @@ def run(mem, champion, authorization, mem_source, champion_source, previous_queu
         publish()
         while True:
             unchanged(); status = c.read(champion / 'status.json'); summary = c.read(champion / 'summary.json')
-            ready = pack.terminal_ready(status, summary)
+            ready = (pack.recovered_terminal_ready(champion, recoveries) if recovered
+                     else pack.terminal_ready(status, summary))
             alive = bool(status.get('pid') and Path(f'/proc/{status["pid"]}').exists())
+            if recovered:
+                alive = alive or any(Path('/proc/' + str(c.read(p / 'status.json')['pid'])).exists()
+                                     for p, _ in recoveries)
             if ready and not alive:
                 break
             if not ready and not alive:
                 raise RuntimeError('Champion disappeared without final accounted evidence')
             time.sleep(30)
         state['status'] = 'auditing_and_collecting_champion'; publish()
-        state['champion_collection'] = pack.package(champion, bindings[1]['sha256'], champion_source,
-                                                    output_root / 'champion-results')
+        package_args = (champion, bindings[1]['sha256'], champion_source, output_root / 'champion-results')
+        state['champion_collection'] = (pack.package(*package_args, recoveries=recoveries) if recovered
+                                        else pack.package(*package_args))
         publish(); unchanged()
         validate_order(mem, champion, auth, mem_source, champion_source)
         if (mem / 'status.json').exists():
             raise ValueError('MEM was started by another owner')
-        if subprocess.check_output(['nvidia-smi', '--query-compute-apps=pid', '--format=csv,noheader'], text=True).strip():
-            raise RuntimeError('GPUs still owned; never displace another process')
+        while subprocess.check_output(['nvidia-smi', '--query-compute-apps=pid', '--format=csv,noheader'], text=True).strip():
+            if not recovered:
+                raise RuntimeError('GPUs still owned; never displace another process')
+            state['status'] = 'waiting_for_gpu_release'; publish(); unchanged(); time.sleep(30)
+        unchanged()
         argv = mem_command(mem, mem_source)
         phase = dict(name='remaining_mem', status='running', started=time.time(), argv=argv)
         state['status'] = 'running_mem_remainder'; state['phases'].append(phase); publish()
@@ -165,6 +180,7 @@ if __name__ == '__main__':
         p.add_argument('--' + name, type=Path, required=True)
     p.add_argument('--queue-name', required=True)
     p.add_argument('--pending-mem-upgrade',type=Path)
+    p.add_argument('--recovery',type=Path,nargs=2,action='append',default=[],metavar=('JOB','SOURCE'))
     a = p.parse_args()
     run(a.mem_job, a.champion_job, a.authorization, a.mem_source, a.champion_source,
-        a.previous_queue, a.queue_name, a.output_root,pending_mem_upgrade=a.pending_mem_upgrade)
+        a.previous_queue, a.queue_name, a.output_root,pending_mem_upgrade=a.pending_mem_upgrade,recoveries=a.recovery)
