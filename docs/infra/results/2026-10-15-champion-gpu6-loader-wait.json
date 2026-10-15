@@ -1,0 +1,182 @@
+{
+  "schema": "champion_loader_queue_readonly_snapshot_v1",
+  "observed_at": "2026-10-15T07:06:28.643433+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "manifest_sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45",
+  "coordinator_commit": "f7b728549309b00940861f2a00ba4e9a36419855",
+  "loader_source": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/loader_admission.py",
+    "sha256": "85e995e5753caec7a754a58a4053f9b1b2cdbf1dd127d9977c66c65b21dfea1a"
+  },
+  "active_tickets": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/loader-admission/request-00000140-241609.json",
+      "sha256": "74958960a0b3f54a1a21c8c09cd075c13d1ce8e862368650c9c6c89e7c49f6e5",
+      "ticket": {
+        "status": "admitted",
+        "sequence": 140,
+        "pid": 241609,
+        "process_start_ticks": "538129546",
+        "purpose": "loading",
+        "queued_at": 1792047404.023516,
+        "slot": 0,
+        "admitted_at": 1792047404.0265365
+      },
+      "process": {
+        "pid": 241609,
+        "alive": true,
+        "state": "S",
+        "ppid": 241557,
+        "start_ticks": "538129546"
+      },
+      "identity_matches": true
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/loader-admission/request-00000141-241615.json",
+      "sha256": "41bd8a7e8505a8c86e67ded8aa663a6c949b8ea9950098c123ca9bf745cb772f",
+      "ticket": {
+        "status": "admitted",
+        "sequence": 141,
+        "pid": 241615,
+        "process_start_ticks": "538129547",
+        "purpose": "loading",
+        "queued_at": 1792047549.2842467,
+        "slot": 1,
+        "admitted_at": 1792047549.2867727
+      },
+      "process": {
+        "pid": 241615,
+        "alive": true,
+        "state": "S",
+        "ppid": 241557,
+        "start_ticks": "538129547"
+      },
+      "identity_matches": true
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/loader-admission/request-00000142-241614.json",
+      "sha256": "aa7d235201b244dd23e2fc78786f73fce720d1cb7bc1b76eeb0afe0d95e1a9c1",
+      "ticket": {
+        "status": "waiting",
+        "sequence": 142,
+        "pid": 241614,
+        "process_start_ticks": "538129547",
+        "purpose": "loading",
+        "queued_at": 1792047683.8921967
+      },
+      "process": {
+        "pid": 241614,
+        "alive": true,
+        "state": "S",
+        "ppid": 241557,
+        "start_ticks": "538129547"
+      },
+      "identity_matches": true
+    }
+  ],
+  "kernel_slot_locks": [
+    {
+      "slot": "loader_0.lock",
+      "pid": 241609,
+      "kind": "FLOCK",
+      "mode": "WRITE",
+      "inode": 9072133526,
+      "process": {
+        "pid": 241609,
+        "alive": true,
+        "state": "S",
+        "ppid": 241557,
+        "start_ticks": "538129546"
+      }
+    },
+    {
+      "slot": "loader_1.lock",
+      "pid": 241615,
+      "kind": "FLOCK",
+      "mode": "WRITE",
+      "inode": 9072133527,
+      "process": {
+        "pid": 241615,
+        "alive": true,
+        "state": "S",
+        "ppid": 241557,
+        "start_ticks": "538129547"
+      }
+    }
+  ],
+  "tickets_stable_across_read": true,
+  "worker": {
+    "status": "evaluating",
+    "pid": 241614,
+    "gpu": 6,
+    "started": 1791987613.784483,
+    "completed_parts": [
+      "wash_a_baseball_cap-n4-i4",
+      "wash_a_baseball_cap-n2-i8",
+      "clean_up_broken_glass-n4-i0",
+      "clean_up_broken_glass-n4-i4",
+      "clean_up_broken_glass-n2-i8",
+      "setting_mousetraps-n4-i0",
+      "setting_mousetraps-n4-i4",
+      "setting_mousetraps-n2-i8",
+      "carrying_out_garden_furniture-n4-i0",
+      "carrying_out_garden_furniture-n4-i4",
+      "carrying_out_garden_furniture-n2-i8",
+      "clean_a_patio-n4-i0",
+      "clean_a_patio-n4-i4",
+      "clean_a_patio-n2-i8",
+      "setup_a_bar_for_a_cocktail_party-n4-i0",
+      "setup_a_bar_for_a_cocktail_party-n4-i4"
+    ],
+    "diagnosed_failed_parts": [],
+    "model_generations": [],
+    "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "model_pid": 249502,
+    "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_6/model-000",
+    "updated": 1792047683.8905058,
+    "sim_pid": 1491786,
+    "part": "setup_a_bar_for_a_cocktail_party-n4-i4"
+  },
+  "worker_process": {
+    "pid": 241614,
+    "alive": true,
+    "state": "S",
+    "ppid": 241557,
+    "start_ticks": "538129547"
+  },
+  "model_process": {
+    "pid": 249502,
+    "alive": true,
+    "state": "S",
+    "ppid": 241614,
+    "start_ticks": "538149404"
+  },
+  "model_status": "ready",
+  "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+  "optimizer_updates": 0,
+  "worker_current_tickets": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/loader-admission/request-00000142-241614.json",
+      "sha256": "aa7d235201b244dd23e2fc78786f73fce720d1cb7bc1b76eeb0afe0d95e1a9c1",
+      "ticket": {
+        "status": "waiting",
+        "sequence": 142,
+        "pid": 241614,
+        "process_start_ticks": "538129547",
+        "purpose": "loading",
+        "queued_at": 1792047683.8921967
+      },
+      "process": {
+        "pid": 241614,
+        "alive": true,
+        "state": "S",
+        "ppid": 241557,
+        "start_ticks": "538129547"
+      },
+      "identity_matches": true
+    }
+  ],
+  "original_outputs_modified": false,
+  "processes_or_runtime_changed": false,
+  "scope": "Read-only queue tickets and actual PID/start-tick/kernel flock owners; no acquisition of loader/queue locks or ticket edits. A point-in-time wait diagnosis, not future admission or full task completion."
+}
