@@ -12,6 +12,14 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 12:30 CST / Codex SUBMISSION-FULL-EVAL（只读监控已统一）：** 新观察PID1408396/session23293同时读父run、GPU4侧路、新1404741后继和MEM，显式用恢复worker替代旧GPU4的历史failed项；旧303366已自然退出，不需发送停止信号。实核八有效worker/模型均活、原2a5ce80b加载指纹一致；664完整/8异常/328待为实时计数（已核658，新增6待验），GPU4各6900实控。证据`docs/infra/results/2026-10-15-combined-evaluation-monitor.json`。观察器只读，不改actor/物理/预算或原件；之后继续全量与新增原件审计，终态归档/最终Q/SR仍待。
+
+- **2026-10-15 12:28 CST / Codex SUBMISSION-FULL-EVAL（新后继实际已挂起，八路不停）：** `MEMv8/queue-after-champion-recovered-v1` PID1404741、tmux`mem-after-champion-recovered-v8`真实waiting/零阶段，绑定原父＋42例GPU4侧路及原MEM576；旧300108有序退出/STOP与原件保留，未运行MEM。新源78c364b2，两端186测试过；真实登记/源/证书/优先级逐项验签且八worker的PID/start ticks全部未变。证据`docs/infra/results/2026-10-15-champion-recovered-queue-launch.json`；此刻父662完整/8异常，最新4原件待补核（已核658），GPU4各6000实控仍未产终局。后继只在两路终态、1000明确归属/原件权重验收及GPU释放后启动原793/51c MEM，无外部上传；下一统一只读监控并继续验新增原件。
+
+- **2026-10-15 12:27 CST / Codex SUBMISSION-FULL-EVAL（仅后继等待器有序替换中）：** 目标真实登记复核已验原优先级/MEM576/父run/GPU4侧路证书及独立源78c364b2；当前未完门正确拒绝提前归档。实核旧300108精确argv、零阶段且MEM从未启动后，仅通过`pending_mem_upgrade.py`向旧queue自己的STOP发有序退出请求；未向任何模型、worker、sim或父run发STOP。证据`docs/infra/results/2026-10-15-champion-recovered-queue-precheck.json`；下一验旧等待器退出证书并挂新`queue-after-champion-recovered-v1`，八路评测照常。
+
+- **2026-10-15 12:26 CST / Codex SUBMISSION-FULL-EVAL（目标工具验收/10新原件）：** 独立`code/champion-recovery-collection-20261015-v1`固定78c364b2，目标同186回归全部通过（实际官方network源参与），未碰运行源/环境。父658完整/8异常/334待，新增露台309–310、归碗305–308、整理房间301–304十份JSON/MP4及物理时钟/原seed/配置/journal前缀均验过；证据`docs/infra/results/2026-10-15-champion-patio-dishes-room-new10-originals.json`。露台全10 Q0/SR0；另两task未齐，不作全模型结论。累计父106物理批次审计，GPU4侧路继续且未产完整终局；接下来真实登记预检后只换旧等待器，仍无停健康评测。
+
 - **2026-10-15 12:25 CST / Codex SUBMISSION-FULL-EVAL（父＋恢复线路合账/后继本机验收）：** 新归档器显式绑定GPU4原116恢复源与故障证书，只接42未尝试后缀；终态逐原件核对父/侧路1000去向、原命令/seed/horizon/参数，不改旧父failed记录、不补造JSON。新等待器须等两路实际退出并严格合账，再启动原MEM v8/793的576；GPU仍有上下文则等待释放、不抢占。186项本地回归通过（含完整合账合成夹具、拒绝篡改/重复/漏项和仅换等待器），不代表目标机已部署或全量完成；独立成员审查仍待。12:22父658完整/8异常，12:23GPU4各4400实控，七原worker始终继续。下一冻结独立工具源、目标验收后只替换未启动的旧队列300108，继续评测。
 
 - **2026-10-15 12:12 CST / Codex SUBMISSION-FULL-EVAL（GPU4真实步进恢复）：** 新1364542/1364814/1367556持续实活，冻派309、310各500实际控制；原17/0 seeds、18682官方horizon和原配置/权重2a5ce80b全部一致。两新连接均reset epoch1，71814字节精确journal前缀的task47/阶段/投票/inpainting/交付时钟验过；证据`docs/infra/results/2026-10-15-champion-gpu4-first-controls.json`。这证明首控制恢复，不是任务成功或原图/动作/RNG逐位等价；原七卡始终未停。当前完整原件仍648/8工程异常，侧路尚无完整新原件。下一优先补父run＋42例侧路的终态严格合账及MEM新后继（旧300108不懂侧路），继续监控八卡；不得因旧父worker4仍failed而重复启动它。

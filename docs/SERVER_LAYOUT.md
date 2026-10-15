@@ -1,5 +1,13 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-15 12:28 CST：父＋GPU4恢复后自动接MEM（当前等待器）
+
+- 12:30统一只读观察器PID1408396/session23293已实活，按同一视图跟踪父run、GPU4侧路、新队列及MEM；旧303366已自然退出。实时计数不替代原件审计。证据`docs/infra/results/2026-10-15-combined-evaluation-monitor.json`。
+- 新等待器 `/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/queue-after-champion-recovered-v1/status.json`，PID1404741、tmux `mem-after-champion-recovered-v8`；外层日志同MEM目录的`queue-after-champion-recovered-v1.launch.log`。实际waiting/零阶段，MEM尚未启动。
+- 独立工具源 `code/champion-recovery-collection-20261015-v1` 固定 `78c364b2354928067687388a985eb3782561897a`，本地/目标186回归通过。显式绑定原父f7＋GPU4侧路116，两个实际actor/模拟器仍原9f；终态合账后再运行原MEM v8/793编排＋51c actor、同576剩余。不热改任何现役源码。
+- 旧300108/`queue-after-champion-isolated-v1`已仅等待器有序退出，零阶段与STOP保留，终态SHA `b235e9afbad218a7b8e6b50df8e656af8817fe2e0a04a6719f2c823b772bec41`。同MEM等待器升级证书`runs/final_eval_preparation_20261014/pending-mem-recovery-queue-upgrade-v1.json` SHA `ab5f7614e50297860c84ac92af5126043a70513916beec8eabcbbf1d3ab39bdc`；不删除旧队列或将其重新启动。
+- Git传输包`runs/final_eval_preparation_20261014/champion-recovery-collection-20261015-v1.bundle`，本地`artifacts/final-eval-20261015/recovery-collection-v1/source.bundle`，SHA `69bdf5b4372e5a88db08b1e7c65e2c0e133d44044e6c67251bddc673da04061a`。真实启动/八worker进程未变证据`docs/infra/results/2026-10-15-champion-recovered-queue-launch.json`。内部收集目录仍原`champion-then-mem-collections-v1/`，实际归档待两轮终态。
+
 ## 2026-10-15 12:12 CST：GPU4单卡旁路续评（已实际步进，其余七卡不停）
 
 - 新run `/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1`，tmux `champion-gpu4-recovery-v1`，PID1364542/模型1364814；日志`run.log`、`workers/gpu_4/model-000.log`。13个原分组/42未尝试案例从冻派309–310开始；不重跑冻派305–308的NaN失败批次，不覆盖父run任何原件。

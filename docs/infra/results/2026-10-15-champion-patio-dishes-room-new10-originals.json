@@ -1,0 +1,1003 @@
+{
+  "schema": "champion_isolated_new_committed_originals_v1",
+  "observed_at": "2026-10-15T04:25:10.814534+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "batches": [
+    {
+      "part": "clean_a_patio-n2-i8",
+      "gpu": 6,
+      "records": [
+        {
+          "task": "clean_a_patio",
+          "instance_id": 309,
+          "rollout_id": 0,
+          "steps": 18107,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n2-i8/json/clean_a_patio_309_0.json",
+            "sha256": "c3b408d51fbfd45e79217d12ec3d3129c5ce2a04833c3d6ba29c129123d0b23f"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n2-i8/videos/clean_a_patio_309_0.mp4",
+            "sha256": "5dfb48fb6b0603f4e86bbf424b6d47bc72b0d1856808102e388efee25789ee1c"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18107"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "clean_a_patio",
+          "instance_id": 310,
+          "rollout_id": 0,
+          "steps": 18107,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n2-i8/json/clean_a_patio_310_0.json",
+            "sha256": "28e98cb7be3c6d4da9025c0fa1d7a4d7ac33f2ef2222643d5243045944f4f81c"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n2-i8/videos/clean_a_patio_310_0.mp4",
+            "sha256": "979bf7645a49c4b0b90cf3d6678c206eddcee56e9de790a78ceeff17797797b2"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18107"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n2-i8/attempts/08.json",
+        "sha256": "69ba0f282d548ee918e65c537e5f28b8d9f7d65c68cc3c84d0ff714cfcf44c41"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "clean_a_patio",
+        "indices": [
+          8,
+          9
+        ],
+        "instance_ids": [
+          309,
+          310
+        ],
+        "rollout": 0,
+        "started": 1792035261.816745,
+        "max_steps": 18106,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792037698.2362123,
+        "seconds": 2436.4186126766726,
+        "actual_applied_controls": [
+          18107,
+          18107
+        ],
+        "unused_delivered_controls": {
+          "0": 13,
+          "1": 13
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 1321998,
+        "task": "clean_a_patio",
+        "task_id": 36,
+        "indices": [
+          8,
+          9
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "6a7d2dd9c5c05b744652159d22ff8fb6aaad377c95822b78c8bb2dcb5df4bd4b",
+        "started": 1792035046.7444355,
+        "optimizer_updates": 0,
+        "control_steps": [
+          18100,
+          18100
+        ],
+        "updated": 1792037697.036531,
+        "finished": 1792037698.2385232,
+        "official_timeout": 18106,
+        "completed": 2
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 42948382,
+        "prefix_sha256": "250bcb7f296f5d4452416f80d70705304d2c85ba2e93f6270947a7775e9e76c4",
+        "lines": 35306,
+        "connections": 50,
+        "episodes": 50,
+        "closed_episodes": 46,
+        "active_connections": 4,
+        "deliveries": 35160,
+        "delivered_controls": 703200,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          5,
+          32,
+          36,
+          74,
+          80,
+          97
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_6/model-000/events.jsonl",
+        "captured_bytes": 42948382,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241614,
+        "gpu": 6,
+        "started": 1791987613.784483,
+        "completed_parts": [
+          "wash_a_baseball_cap-n4-i4",
+          "wash_a_baseball_cap-n2-i8",
+          "clean_up_broken_glass-n4-i0",
+          "clean_up_broken_glass-n4-i4",
+          "clean_up_broken_glass-n2-i8",
+          "setting_mousetraps-n4-i0",
+          "setting_mousetraps-n4-i4",
+          "setting_mousetraps-n2-i8",
+          "carrying_out_garden_furniture-n4-i0",
+          "carrying_out_garden_furniture-n4-i4",
+          "carrying_out_garden_furniture-n2-i8",
+          "clean_a_patio-n4-i0",
+          "clean_a_patio-n4-i4",
+          "clean_a_patio-n2-i8"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 249502,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_6/model-000",
+        "updated": 1792037708.8268626,
+        "sim_pid": 1385221,
+        "part": "setup_a_bar_for_a_cocktail_party-n4-i0"
+      },
+      "actual_controls": 36214,
+      "controls_per_second": 14.863619827717107
+    },
+    {
+      "part": "putting_dishes_away_after_cleaning-n4-i4",
+      "gpu": 7,
+      "records": [
+        {
+          "task": "putting_dishes_away_after_cleaning",
+          "instance_id": 305,
+          "rollout_id": 0,
+          "steps": 16431,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dishes_away_after_cleaning-n4-i4/json/putting_dishes_away_after_cleaning_305_0.json",
+            "sha256": "3785c6c024db188dac1c558b273d15d8567aeace30921e6ce04c3d868af33bcc"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dishes_away_after_cleaning-n4-i4/videos/putting_dishes_away_after_cleaning_305_0.mp4",
+            "sha256": "f2f108ebc77efb3cde747c5b3189bc60004dcfb6ad34a9abb9886bfd8db50164"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "16431"
+          },
+          "success": false,
+          "q_score_final": 0.2857142857142857
+        },
+        {
+          "task": "putting_dishes_away_after_cleaning",
+          "instance_id": 306,
+          "rollout_id": 0,
+          "steps": 16431,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dishes_away_after_cleaning-n4-i4/json/putting_dishes_away_after_cleaning_306_0.json",
+            "sha256": "8509a4b20e02aefc018b2849be35419650b0b311dc51408d1e82ffc819e7b68c"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dishes_away_after_cleaning-n4-i4/videos/putting_dishes_away_after_cleaning_306_0.mp4",
+            "sha256": "4c4b306cd1a8f79ab87cec9e1c7289527d88194b5220e19d1930baaae7b9d2ca"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "16431"
+          },
+          "success": false,
+          "q_score_final": 0.35714285714285715
+        },
+        {
+          "task": "putting_dishes_away_after_cleaning",
+          "instance_id": 307,
+          "rollout_id": 0,
+          "steps": 16431,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dishes_away_after_cleaning-n4-i4/json/putting_dishes_away_after_cleaning_307_0.json",
+            "sha256": "e6464053379de5714003dccdf8cbafda5950791203708a8615de51ac273cc1a6"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dishes_away_after_cleaning-n4-i4/videos/putting_dishes_away_after_cleaning_307_0.mp4",
+            "sha256": "83e84ff65394b255ccf6486c571da33c8706d1dd8662987b980aff01972f153a"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "16431"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "putting_dishes_away_after_cleaning",
+          "instance_id": 308,
+          "rollout_id": 0,
+          "steps": 16431,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dishes_away_after_cleaning-n4-i4/json/putting_dishes_away_after_cleaning_308_0.json",
+            "sha256": "84b36af01992983e0ab35ffcb9b904c8b2531f83802a13022dce34879eaee716"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dishes_away_after_cleaning-n4-i4/videos/putting_dishes_away_after_cleaning_308_0.mp4",
+            "sha256": "f7b1719b58704f09c02baa6bbc04368281187ec4ea09efc5c73aac04d878827d"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "16431"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dishes_away_after_cleaning-n4-i4/attempts/04.json",
+        "sha256": "51ab53764db5ee5775c26605e8ad2681785bf7ca2b4de967aae1e22079949c7a"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "putting_dishes_away_after_cleaning",
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "instance_ids": [
+          305,
+          306,
+          307,
+          308
+        ],
+        "rollout": 0,
+        "started": 1792032623.0825148,
+        "max_steps": 16430,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792037526.3553019,
+        "seconds": 4903.272041543387,
+        "actual_applied_controls": [
+          16431,
+          16431,
+          16431,
+          16431
+        ],
+        "unused_delivered_controls": {
+          "0": 9,
+          "1": 9,
+          "2": 9,
+          "3": 9
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 1252988,
+        "task": "putting_dishes_away_after_cleaning",
+        "task_id": 11,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "129bc9d9537459688305a59241f1e28ee1d6a42e6d59f380bde43db548d7c34e",
+        "started": 1792031885.823044,
+        "optimizer_updates": 0,
+        "control_steps": [
+          16400,
+          16400,
+          16400,
+          16400
+        ],
+        "updated": 1792037516.188485,
+        "finished": 1792037526.3581848,
+        "official_timeout": 16430,
+        "completed": 4
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 34154327,
+        "prefix_sha256": "31368fc28f655af3284665bae4fde380177db338f21c7244c32158232aa7f2d6",
+        "lines": 28685,
+        "connections": 46,
+        "episodes": 46,
+        "closed_episodes": 44,
+        "active_connections": 2,
+        "deliveries": 28549,
+        "delivered_controls": 570980,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          11,
+          31,
+          45,
+          67,
+          86
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_7/model-000/events.jsonl",
+        "captured_bytes": 34154327,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241615,
+        "gpu": 7,
+        "started": 1791987613.7802277,
+        "completed_parts": [
+          "boxing_food_after_dinner-n4-i4",
+          "boxing_food_after_dinner-n2-i8",
+          "clean_boxing_gloves-n4-i0",
+          "clean_boxing_gloves-n4-i4",
+          "clean_boxing_gloves-n2-i8",
+          "cook_hot_dogs-n4-i0",
+          "cook_hot_dogs-n4-i4",
+          "cook_hot_dogs-n2-i8",
+          "make_gift_bags_for_baby_showers-n4-i0",
+          "make_gift_bags_for_baby_showers-n4-i4",
+          "make_gift_bags_for_baby_showers-n2-i8",
+          "putting_dishes_away_after_cleaning-n4-i0",
+          "putting_dishes_away_after_cleaning-n4-i4"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 249501,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_7/model-000",
+        "updated": 1792037536.0671244,
+        "sim_pid": 1380648,
+        "part": "putting_dishes_away_after_cleaning-n2-i8"
+      },
+      "actual_controls": 65724,
+      "controls_per_second": 13.404110447706726
+    },
+    {
+      "part": "rearrange_your_room-n4-i0",
+      "gpu": 2,
+      "records": [
+        {
+          "task": "rearrange_your_room",
+          "instance_id": 301,
+          "rollout_id": 0,
+          "steps": 19283,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearrange_your_room-n4-i0/json/rearrange_your_room_301_0.json",
+            "sha256": "21d312ba5cb5d5ad2a010a3488f972ab46054da697a45da9a07673c6ba6bb7f2"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearrange_your_room-n4-i0/videos/rearrange_your_room_301_0.mp4",
+            "sha256": "ec8e1184b115419515fd2a86f16378dc6a7497385263b31795925684fbd3d7e5"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "19283"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "rearrange_your_room",
+          "instance_id": 302,
+          "rollout_id": 0,
+          "steps": 19283,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearrange_your_room-n4-i0/json/rearrange_your_room_302_0.json",
+            "sha256": "b79efd261b6e7eab5e45d5f0c9a21203cccd8de29b66fa80ccb57841867e77cc"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearrange_your_room-n4-i0/videos/rearrange_your_room_302_0.mp4",
+            "sha256": "103fc2522dadf4fd9efc27fbd2f425e1337afb3f7899d765e52809710436e8b4"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "19283"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "rearrange_your_room",
+          "instance_id": 303,
+          "rollout_id": 0,
+          "steps": 19283,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearrange_your_room-n4-i0/json/rearrange_your_room_303_0.json",
+            "sha256": "034dc43fbc54a427ecf9a2183f2faba315c5421dfa72a46d6fb5b450ca1d2930"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearrange_your_room-n4-i0/videos/rearrange_your_room_303_0.mp4",
+            "sha256": "92d13e1e5dd98eda0786018df0d69ac1c2ec4088ca7a1ac879fa19aeccf7ddc6"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "19283"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "rearrange_your_room",
+          "instance_id": 304,
+          "rollout_id": 0,
+          "steps": 19283,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearrange_your_room-n4-i0/json/rearrange_your_room_304_0.json",
+            "sha256": "9bcb45bc9f2cc8f8a6c3afc12a98f2048ef91ff7a865d8f97b8d9277ea6a1ef4"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearrange_your_room-n4-i0/videos/rearrange_your_room_304_0.mp4",
+            "sha256": "95a6a4a9df1e256599d8b89f970168ac37c0ae8fbc8419e42d910a525ee226ea"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "19283"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearrange_your_room-n4-i0/attempts/00.json",
+        "sha256": "902b79ca225abbe648f6d392f09c288ee8254cacfed4bd6e548bdaf4e1b2252b"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "rearrange_your_room",
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "instance_ids": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "rollout": 0,
+        "started": 1792034449.893927,
+        "max_steps": 19282,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792038011.673305,
+        "seconds": 3561.778451296501,
+        "actual_applied_controls": [
+          19283,
+          19283,
+          19283,
+          19283
+        ],
+        "unused_delivered_controls": {
+          "0": 17,
+          "1": 17,
+          "2": 17,
+          "3": 17
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 1306773,
+        "task": "rearrange_your_room",
+        "task_id": 88,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+        "started": 1792034267.362424,
+        "optimizer_updates": 0,
+        "control_steps": [
+          19200,
+          19200,
+          19200,
+          19200
+        ],
+        "updated": 1792037995.6482215,
+        "finished": 1792038011.676294,
+        "official_timeout": 19282,
+        "completed": 4
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 47273781,
+        "prefix_sha256": "a2ae56dd87e73fc97f514f7e37058d96d94ae2fc37d9f73b34156d8ef2a0dc02",
+        "lines": 38892,
+        "connections": 54,
+        "episodes": 54,
+        "closed_episodes": 50,
+        "active_connections": 4,
+        "deliveries": 38734,
+        "delivered_controls": 774680,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          4,
+          39,
+          44,
+          55,
+          76,
+          88
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_2/model-000/events.jsonl",
+        "captured_bytes": 47273781,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241610,
+        "gpu": 2,
+        "started": 1791987613.7338262,
+        "completed_parts": [
+          "spraying_fruit_trees-n4-i4",
+          "spraying_fruit_trees-n2-i8",
+          "dispose_of_glass-n4-i0",
+          "dispose_of_glass-n4-i4",
+          "dispose_of_glass-n2-i8",
+          "re_shelving_library_books-n4-i0",
+          "re_shelving_library_books-n4-i4",
+          "re_shelving_library_books-n2-i8",
+          "chopping_wood-n4-i0",
+          "chopping_wood-n4-i4",
+          "chopping_wood-n2-i8",
+          "can_meat-n4-i0",
+          "can_meat-n4-i4",
+          "can_meat-n2-i8",
+          "rearrange_your_room-n4-i0"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 241664,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_2/model-000",
+        "updated": 1792038020.887703,
+        "sim_pid": 1393258,
+        "part": "rearrange_your_room-n4-i4"
+      },
+      "actual_controls": 77132,
+      "controls_per_second": 21.655473818682815
+    }
+  ],
+  "protocols": {
+    "2": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 47273781,
+      "prefix_sha256": "a2ae56dd87e73fc97f514f7e37058d96d94ae2fc37d9f73b34156d8ef2a0dc02",
+      "lines": 38892,
+      "connections": 54,
+      "episodes": 54,
+      "closed_episodes": 50,
+      "active_connections": 4,
+      "deliveries": 38734,
+      "delivered_controls": 774680,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        4,
+        39,
+        44,
+        55,
+        76,
+        88
+      ],
+      "require_closed": false,
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_2/model-000/events.jsonl",
+      "captured_bytes": 47273781,
+      "ignored_incomplete_tail_bytes": 0
+    },
+    "6": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 42948382,
+      "prefix_sha256": "250bcb7f296f5d4452416f80d70705304d2c85ba2e93f6270947a7775e9e76c4",
+      "lines": 35306,
+      "connections": 50,
+      "episodes": 50,
+      "closed_episodes": 46,
+      "active_connections": 4,
+      "deliveries": 35160,
+      "delivered_controls": 703200,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        5,
+        32,
+        36,
+        74,
+        80,
+        97
+      ],
+      "require_closed": false,
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_6/model-000/events.jsonl",
+      "captured_bytes": 42948382,
+      "ignored_incomplete_tail_bytes": 0
+    },
+    "7": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 34154327,
+      "prefix_sha256": "31368fc28f655af3284665bae4fde380177db338f21c7244c32158232aa7f2d6",
+      "lines": 28685,
+      "connections": 46,
+      "episodes": 46,
+      "closed_episodes": 44,
+      "active_connections": 2,
+      "deliveries": 28549,
+      "delivered_controls": 570980,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        11,
+        31,
+        45,
+        67,
+        86
+      ],
+      "require_closed": false,
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_7/model-000/events.jsonl",
+      "captured_bytes": 34154327,
+      "ignored_incomplete_tail_bytes": 0
+    }
+  },
+  "protocol_session_summaries_omitted": true,
+  "successful_episodes": 16,
+  "previously_verified_parts": [
+    "boxing_food_after_dinner-n2-i8",
+    "boxing_food_after_dinner-n4-i4",
+    "bringing_paper_to_recycling-n2-i8",
+    "bringing_paper_to_recycling-n4-i0",
+    "bringing_paper_to_recycling-n4-i4",
+    "bringing_water-n2-i8",
+    "bringing_water-n4-i0",
+    "bringing_water-n4-i4",
+    "can_meat-n2-i8",
+    "can_meat-n4-i0",
+    "can_meat-n4-i4",
+    "carrying_out_garden_furniture-n2-i8",
+    "carrying_out_garden_furniture-n4-i0",
+    "carrying_out_garden_furniture-n4-i4",
+    "chopping_wood-n2-i8",
+    "chopping_wood-n4-i0",
+    "chopping_wood-n4-i4",
+    "clean_a_patio-n4-i0",
+    "clean_a_patio-n4-i4",
+    "clean_boxing_gloves-n2-i8",
+    "clean_boxing_gloves-n4-i0",
+    "clean_boxing_gloves-n4-i4",
+    "clean_up_broken_glass-n2-i8",
+    "clean_up_broken_glass-n4-i0",
+    "clean_up_broken_glass-n4-i4",
+    "cleaning_up_branches_and_twigs-n4-i0",
+    "cleaning_up_branches_and_twigs-n4-i4",
+    "collecting_aluminum_cans-n2-i8",
+    "collecting_aluminum_cans-n4-i0",
+    "collecting_aluminum_cans-n4-i4",
+    "cook_a_frozen_pie-n2-i8",
+    "cook_a_frozen_pie-n4-i0",
+    "cook_a_frozen_pie-n4-i4",
+    "cook_hot_dogs-n2-i8",
+    "cook_hot_dogs-n4-i0",
+    "cook_hot_dogs-n4-i4",
+    "dispose_of_glass-n2-i8",
+    "dispose_of_glass-n4-i0",
+    "dispose_of_glass-n4-i4",
+    "freeze_pies-n4-i0",
+    "make_gift_bags_for_baby_showers-n2-i8",
+    "make_gift_bags_for_baby_showers-n4-i0",
+    "make_gift_bags_for_baby_showers-n4-i4",
+    "outfit_a_basic_toolbox-n2-i8",
+    "outfit_a_basic_toolbox-n4-i0",
+    "outfit_a_basic_toolbox-n4-i4",
+    "packing_meal_for_delivery-n2-i8",
+    "packing_meal_for_delivery-n4-i0",
+    "packing_meal_for_delivery-n4-i4",
+    "polishing_shoes-n2-i8",
+    "polishing_shoes-n4-i0",
+    "polishing_shoes-n4-i4",
+    "preparing_lunch_box-n2-i8",
+    "preparing_lunch_box-n4-i4",
+    "put_together_a_basic_pruning_kit-n2-i8",
+    "put_together_a_basic_pruning_kit-n4-i0",
+    "put_together_a_basic_pruning_kit-n4-i4",
+    "putting_away_toys-n2-i8",
+    "putting_away_toys-n4-i0",
+    "putting_away_toys-n4-i4",
+    "putting_dirty_dishes_in_sink-n2-i8",
+    "putting_dirty_dishes_in_sink-n4-i0",
+    "putting_dirty_dishes_in_sink-n4-i4",
+    "putting_dishes_away_after_cleaning-n4-i0",
+    "putting_shoes_on_rack-n2-i8",
+    "re_shelving_library_books-n2-i8",
+    "re_shelving_library_books-n4-i0",
+    "re_shelving_library_books-n4-i4",
+    "rearranging_kitchen_furniture-n2-i8",
+    "rearranging_kitchen_furniture-n4-i0",
+    "rearranging_kitchen_furniture-n4-i4",
+    "setting_mousetraps-n2-i8",
+    "setting_mousetraps-n4-i0",
+    "setting_mousetraps-n4-i4",
+    "setting_the_fire-n2-i8",
+    "setting_the_fire-n4-i0",
+    "setting_the_fire-n4-i4",
+    "sorting_books_on_shelf-n2-i8",
+    "sorting_books_on_shelf-n4-i0",
+    "sorting_books_on_shelf-n4-i4",
+    "sorting_bottles_cans_and_paper-n2-i8",
+    "sorting_bottles_cans_and_paper-n4-i0",
+    "sorting_bottles_cans_and_paper-n4-i4",
+    "spraying_fruit_trees-n2-i8",
+    "spraying_fruit_trees-n4-i4",
+    "store_produce-n2-i8",
+    "store_produce-n4-i0",
+    "store_produce-n4-i4",
+    "thawing_frozen_food-n2-i8",
+    "thawing_frozen_food-n4-i4",
+    "tidying_bedroom-n2-i8",
+    "tidying_bedroom-n4-i0",
+    "tidying_bedroom-n4-i4",
+    "tidying_living_room-n4-i0",
+    "tidying_living_room-n4-i4",
+    "turning_out_all_lights_before_sleep-n2-i8",
+    "turning_out_all_lights_before_sleep-n4-i0",
+    "turning_out_all_lights_before_sleep-n4-i4",
+    "wash_a_baseball_cap-n2-i8",
+    "wash_a_baseball_cap-n4-i4",
+    "wash_dog_toys-n2-i8",
+    "wash_dog_toys-n4-i0",
+    "wash_dog_toys-n4-i4"
+  ],
+  "remaining_unverified_parts": 0,
+  "summary": {
+    "status": "running",
+    "expected": 1000,
+    "completed": 658,
+    "missing": 342,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.07815168620639748,
+    "completed_only_sr": 0.0243161094224924,
+    "tasks": {
+      "putting_dishes_away_after_cleaning": {
+        "completed": 8,
+        "expected": 10,
+        "q_score_sum": 1.1428571428571428,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0.11428571428571428,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0.14285714285714285
+      },
+      "clean_a_patio": {
+        "completed": 10,
+        "expected": 10,
+        "q_score_sum": 0,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0
+      },
+      "rearrange_your_room": {
+        "completed": 4,
+        "expected": 10,
+        "q_score_sum": 0,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0
+      }
+    },
+    "coverage": 666,
+    "execution_errors": 8,
+    "unaccounted": 334,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.05142380952380954,
+    "conservative_sr_errors_and_missing_as_zero": 0.016,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0
+  },
+  "supervisor": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {
+      "4": {
+        "status": "needs_diagnosis",
+        "pid": 241612,
+        "gpu": 4,
+        "started": 1791987613.778339,
+        "completed_parts": [
+          "putting_shoes_on_rack-n2-i8",
+          "bringing_water-n4-i0",
+          "bringing_water-n4-i4",
+          "bringing_water-n2-i8",
+          "sorting_bottles_cans_and_paper-n4-i0",
+          "sorting_bottles_cans_and_paper-n4-i4",
+          "sorting_bottles_cans_and_paper-n2-i8",
+          "wash_dog_toys-n4-i0",
+          "wash_dog_toys-n4-i4",
+          "wash_dog_toys-n2-i8",
+          "freeze_pies-n4-i0"
+        ],
+        "diagnosed_failed_parts": [
+          "freeze_pies-n4-i4"
+        ],
+        "model_generations": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000/result.json",
+            "sha256": "5b31fa8941c88208eb48b08a9ef636767559e5ba3b0d6a3fa00231505f91f209"
+          }
+        ],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 1339445,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-001",
+        "updated": 1792035845.8495996,
+        "sim_pid": 1276109,
+        "part": "freeze_pies-n4-i4",
+        "error": "RuntimeError('Frozen model loading failed/timed out/stopped')",
+        "final_verification_error": "FileNotFoundError(2, 'No such file or directory')",
+        "finished": 1792035845.8495977
+      }
+    },
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 658,
+    "coverage": 666,
+    "updated": 1792038291.5619109
+  },
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 300108,
+    "started": 1791989042.9684465,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+        "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v2/status.json",
+        "sha256": "643cca0bd67296878a5518bd6de3d786d331fd9bebe00b777b0d7b68a50f2ec5"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-queue-isolation-20261014-v2",
+    "queue_source_commit": "9122b13726bf1862dbe2d6616c0da916822e2487",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "pending_mem_upgrade": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+      "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+    },
+    "updated": 1791989042.9684682
+  },
+  "manual_visual_review": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "validation_scope": "Original committed JSON, MP4 metadata/hash, physical controls, pinned identity/seed/horizon, and per-GPU journal recurrence; no image-content or RNG identity claim."
+}
