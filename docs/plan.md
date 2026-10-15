@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 13:09 CST / Codex SUBMISSION-FULL-EVAL（父run新增6原件补核/合计674）：** 卸车301–304各16986实控、Q0；收碗309–310各16431实控、Q为3/7和5/14，均未完整成功。六份原JSON/MP4 SHA、视频帧数、物理回执、原seed/horizon/源配置及GPU1/7精确journal前缀全部通过；收碗全10平均Q0.192857/SR0，卸车仅4/10。证据`docs/infra/results/2026-10-15-champion-car-dishes-new6-originals.json`。父672＋侧路2＝674完整已核，8工程异常/318尚待；父111物理批＋侧路1批验过，仍16官方成功仅已完成子集，不称全模型成绩。八实际worker/1404741后继均持续，原低分/异常不重跑挑优；fetch成功，origin/main仍33677bd0，本轮因自有待提交证据未再次pull（续接前已pull成功）。下一继续实际进度/新增原件及冠军→MEM终态链，不热改运行源或启动外部交付。
+
+- **2026-10-15 13:08 CST / Codex SUBMISSION-FULL-EVAL（GPU4接续首2完整原件）：** 冻派309–310各18683实控/帧、Q0/success=false；原JSON/MP4 SHA、672×448/30fps、完成物理回执及原17/0 seeds/18682 horizon全部验过，manifest45830ff3/证书a33c0f3f/原9f源绑定未变。精确2384337字节journal前缀含两个独立且已关闭会话，task47阶段/投票/inpainting/交付时钟验过；仅加载参数指纹，非终态权重证明或人工全片检查。证据`docs/infra/results/2026-10-15-champion-recovery-freeze-final2-originals.json`。13:04合计668完整已核/8工程异常/324待；侧路原1364542已自动进入搬柴首4，未重跑305–308异常。13:07实时另增父run6原件待补核，总674；七原worker、侧路worker及1404741后继持续，未因低分或核验停机。下一补核卸车/收碗原件并继续两轮全量，最终Q/SR与内部归档仍待。
+
 - **2026-10-15 12:45 CST / Codex SUBMISSION-FULL-EVAL（长加载已自然进入控制/会话复核）：** GPU0圣诞装饰首次加载超过10min；两次`py-spy --nonblocking`分别采到相机初始化/render及实例reset观测转换，随后同PID1407742已四例各200实控，未停/重启/热改。稀疏采样只证明阶段前进，不把全部等待归因于某一函数。GPU0(task9)/GPU3(task25)各四个独立新连接/reset epoch1、原2a5ce80b加载指纹及阶段/投票/inpainting/交付时钟的精确日志前缀全部通过；GPU3各2700实控。证据`docs/infra/results/2026-10-15-champion-christmas-load-and-isolated-sessions.json`；不是完整任务成功、原图/动作/RNG逐位一致或MEM-Lite隔离证明。完整原件仍666/8工程异常，八有效worker与1404741后继继续；下一续核新增终局与GPU4侧路，最终全量/包仍待。
 
 - **2026-10-15 12:37 CST / Codex SUBMISSION-FULL-EVAL（清枝叶尾2原件验过）：** 309–310各18791实控/Q0/success=false，原JSON/MP4 SHA、帧数、物理回执、原seed/horizon及GPU5 journal精确前缀通过；清枝叶全10 Q0/SR0，已自动转入清理盘子食物。累计666完整原件/109物理批已核、8工程异常/326待，无新错误；证据`docs/infra/results/2026-10-15-champion-branches-final2-originals.json`。只读资源检查余盘4.956TB，GPU3下一批已实际控制、GPU0仍新场景加载，不把加载或单次低利用率当停机；GPU4各9200实控，八有效worker/新后继继续。Git首次TLS握手失败后安全重试pull成功、本地与origin同8141a8d2，未热拉取远端运行源。下一持续监控及核新原件，最终全量/归档仍待。
