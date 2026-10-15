@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 13:12 CST / Codex SUBMISSION-FULL-EVAL（GPU4跨task状态隔离实查）：** 原1364542/1364814自然由冻派task47切到搬柴task15，新1447484四例各400真实控制；2499232字节稳定journal前缀SHA be012b00…c938逐事件通过，两个旧会话已关闭，四个新连接各reset epoch1、初始stage/vote/inpainting及后续交付时钟独立递推。原9f actor/配置/2a加载指纹不变；证据`docs/infra/results/2026-10-15-champion-recovery-cross-task-sessions.json`。这是冠军协议可观察隔离，不冒称MEM-Lite语义记忆、原图/动作/RNG逐位一致或任务成功。GPU7已自然转sorting_vegetables加载，八worker/1404741后继继续；674完整已核/8旧工程异常/318待，无新故障、停机或热改。新增原件证据已提交推送d9efc8ff；下一继续原评测和新增原件核账，两轮终态/最终归档仍未完成。
+
 - **2026-10-15 13:09 CST / Codex SUBMISSION-FULL-EVAL（父run新增6原件补核/合计674）：** 卸车301–304各16986实控、Q0；收碗309–310各16431实控、Q为3/7和5/14，均未完整成功。六份原JSON/MP4 SHA、视频帧数、物理回执、原seed/horizon/源配置及GPU1/7精确journal前缀全部通过；收碗全10平均Q0.192857/SR0，卸车仅4/10。证据`docs/infra/results/2026-10-15-champion-car-dishes-new6-originals.json`。父672＋侧路2＝674完整已核，8工程异常/318尚待；父111物理批＋侧路1批验过，仍16官方成功仅已完成子集，不称全模型成绩。八实际worker/1404741后继均持续，原低分/异常不重跑挑优；fetch成功，origin/main仍33677bd0，本轮因自有待提交证据未再次pull（续接前已pull成功）。下一继续实际进度/新增原件及冠军→MEM终态链，不热改运行源或启动外部交付。
 
 - **2026-10-15 13:08 CST / Codex SUBMISSION-FULL-EVAL（GPU4接续首2完整原件）：** 冻派309–310各18683实控/帧、Q0/success=false；原JSON/MP4 SHA、672×448/30fps、完成物理回执及原17/0 seeds/18682 horizon全部验过，manifest45830ff3/证书a33c0f3f/原9f源绑定未变。精确2384337字节journal前缀含两个独立且已关闭会话，task47阶段/投票/inpainting/交付时钟验过；仅加载参数指纹，非终态权重证明或人工全片检查。证据`docs/infra/results/2026-10-15-champion-recovery-freeze-final2-originals.json`。13:04合计668完整已核/8工程异常/324待；侧路原1364542已自动进入搬柴首4，未重跑305–308异常。13:07实时另增父run6原件待补核，总674；七原worker、侧路worker及1404741后继持续，未因低分或核验停机。下一补核卸车/收碗原件并继续两轮全量，最终Q/SR与内部归档仍待。
