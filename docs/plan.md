@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 12:12 CST / Codex SUBMISSION-FULL-EVAL（GPU4真实步进恢复）：** 新1364542/1364814/1367556持续实活，冻派309、310各500实际控制；原17/0 seeds、18682官方horizon和原配置/权重2a5ce80b全部一致。两新连接均reset epoch1，71814字节精确journal前缀的task47/阶段/投票/inpainting/交付时钟验过；证据`docs/infra/results/2026-10-15-champion-gpu4-first-controls.json`。这证明首控制恢复，不是任务成功或原图/动作/RNG逐位等价；原七卡始终未停。当前完整原件仍648/8工程异常，侧路尚无完整新原件。下一优先补父run＋42例侧路的终态严格合账及MEM新后继（旧300108不懂侧路），继续监控八卡；不得因旧父worker4仍failed而重复启动它。
+
 - **2026-10-15 12:09 CST / Codex SUBMISSION-FULL-EVAL（七卡新增10原件已补核）：** 清枝叶305–308各18791实控/Q0，客厅305–308各18849/Q0；卧室309–310各16557、Q为2/3和1/3，十例均success=false。原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置与三GPU精确journal前缀全部通过；证据`docs/infra/results/2026-10-15-champion-branches-bedroom-living-new10-originals.json`。累计648完整/8工程异常/344待、16官方完整成功；卧室全10平均Q0.233333/SR0，其余两task仅8/10，非全模型结论。GPU4旁路模型ready但场景仍loading/尚无新原件；七卡持续，不因核验停机。下一验GPU4首控制、实现父＋旁路终态合账/新MEM等待链。
 
 - **2026-10-15 12:07 CST / Codex SUBMISSION-FULL-EVAL（GPU4模型已ready，场景加载中）：** 原恢复1364542/模型1364814实活，加载参数指纹仍`2a5ce80b…f53975`、0更新，原9f actor/原gpu4配置与新116 launcher身份均明确；冻派309–310新模拟器1367556已启动，尚未核到真实控制，不能称已完成恢复闭环。证据`docs/infra/results/2026-10-15-champion-gpu4-model-ready.json`；原七worker未换/继续，父648完整/8异常，10新原件仍待补核。下一核首控制并完善父＋旁路合账/新MEM后继（旧300108只等父run），不停止其余评测。

@@ -1,0 +1,144 @@
+{
+  "observed_at": "2026-10-15T04:12:33.452483+00:00",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/manifest.json",
+    "sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46"
+  },
+  "certificate": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parent-worker-certificate.json",
+    "sha256": "a33c0f3fa746b3e3f72750154deae9919f8219812fe5fbe91ca89bf714627bfd"
+  },
+  "coordinator_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+  "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+  "worker": {
+    "status": "evaluating",
+    "pid": 1364542,
+    "gpu": 4,
+    "started": 1792036977.438476,
+    "completed_parts": [],
+    "diagnosed_failed_parts": [],
+    "model_generations": [],
+    "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "model_pid": 1364814,
+    "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/workers/gpu_4/model-000",
+    "updated": 1792037067.5443187,
+    "sim_pid": 1367556,
+    "part": "freeze_pies-n2-i8"
+  },
+  "physical_status": {
+    "status": "running",
+    "pid": 1367556,
+    "task": "freeze_pies",
+    "task_id": 47,
+    "indices": [
+      8,
+      9
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+    "started": 1792037067.6667871,
+    "optimizer_updates": 0,
+    "control_steps": [
+      500,
+      500
+    ],
+    "updated": 1792037545.3939657
+  },
+  "attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parts/freeze_pies-n2-i8/attempts/08.json",
+    "sha256": "f4cf60d77140084cebd56ecb7fa3f637219f4079e647c62d239641ed162f6b57"
+  },
+  "original_attempt": {
+    "status": "running",
+    "task": "freeze_pies",
+    "indices": [
+      8,
+      9
+    ],
+    "instance_ids": [
+      309,
+      310
+    ],
+    "rollout": 0,
+    "started": 1792037424.3622808,
+    "max_steps": 18682,
+    "policy_seed": 17,
+    "simulator_seed": 0
+  },
+  "protocol_prefix": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 71814,
+    "prefix_sha256": "ed5ef0f4ba3ed1f35decb9eedc4b44edd2b96b48e941253309236fa6f3912e43",
+    "lines": 60,
+    "connections": 2,
+    "episodes": 2,
+    "closed_episodes": 0,
+    "active_connections": 2,
+    "deliveries": 56,
+    "delivered_controls": 1120,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      47
+    ],
+    "require_closed": false,
+    "session_summaries": [
+      {
+        "episode": "0bfd2f0fcc6f44ee898045e7bc6bb191/reset-1/task-47",
+        "connection": "0bfd2f0fcc6f44ee898045e7bc6bb191",
+        "epoch": 1,
+        "task": 47,
+        "deliveries": 28,
+        "stage": 0,
+        "votes": [
+          0,
+          0,
+          0
+        ],
+        "stages": 14,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "2c6d1dedc92b45fcab448e59de2ef478/reset-1/task-47",
+        "connection": "2c6d1dedc92b45fcab448e59de2ef478",
+        "epoch": 1,
+        "task": 47,
+        "deliveries": 28,
+        "stage": 0,
+        "votes": [
+          0,
+          0,
+          0
+        ],
+        "stages": 14,
+        "legacy": true,
+        "closed": false
+      }
+    ],
+    "original_outputs_modified": false,
+    "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/workers/gpu_4/model-000/events.jsonl",
+    "captured_bytes": 71814,
+    "ignored_incomplete_tail_bytes": 0
+  },
+  "model": {
+    "status": "ready",
+    "pid": 1364814,
+    "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+    "launcher_source_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c"
+  },
+  "scope": "First actual control counters, original instance/seed/horizon and per-session recorded identity/recurrence; not task success or raw image/action/RNG equality.",
+  "original_outputs_modified": false,
+  "healthy_workers_stopped": false,
+  "author": "Codex / SUBMISSION-FULL-EVAL",
+  "external_delivery_deferred": true,
+  "queue_union_integration_pending": true
+}
