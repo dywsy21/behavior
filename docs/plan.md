@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 13:40 CST / Codex SUBMISSION-FULL-EVAL（鸡尾酒吧首4原件）：** 原八有效worker持续运行，本轮既有观察器23293/1408396连续只读等待到新批完成；未重复启动作业或监控器。setup_a_bar_for_a_cocktail_party301–304各20129实控/帧，Q依次0.05/0/0/0、全部success=false；4原JSON/MP4 SHA、672×448/30fps、原17/0 seeds/20128 horizon/9f源配置和物理回执核合，GPU6的47808725字节精确journal前缀通过。证据`docs/infra/results/2026-10-15-champion-cocktail-first4-originals.json`；仅该task4/10，非全task/全模型成绩或人工全片检查。父680＋侧路2＝682完整已核，8旧工程异常/310待，父113物理批＋侧路1批验过；仍16官方成功仅已完成子集。GPU6原249502模型保留、下一305–308已自动加载；七其他卡继续实控、1404741后继存活。下一继续冠军→MEM及原件核账，最终全量/归档仍待；本轮未改任何运行源/权重/官方时限。
+
 - **2026-10-15 13:25 CST / Codex SUBMISSION-FULL-EVAL（慢加载自然完成/新增4原件）：** GPU7蔬菜分类同PID1457931已四例各200实控；46旧会话关闭、4新task20连接各reset epoch1，35984145字节稳定journal前缀SHA aa5ac931…eb49的stage/vote/inpainting/交付时钟通过，原2a加载指纹不变。证据`docs/infra/results/2026-10-15-champion-vegetables-first-controls.json`，不是完整任务成功或原图/动作/RNG等价；未因约14min加载而重启。整理房间305–308各19283实控/帧，Q依次0/0/0/1⁄3、全未成功；4原JSON/MP4 SHA、原种子/官方时限/物理回执和GPU2精确前缀验过，已自动加载309–310，证据`docs/infra/results/2026-10-15-champion-room305308-originals.json`。父676＋侧路2＝678完整已核，8旧工程异常/314待；父112物理批＋侧路1批已核，仍16官方成功仅已完成子集。八有效worker与MEM1404741后继持续，无新故障/停机/热改，下一继续原件核账和完整冠军→MEM终态/归档。
 
 - **2026-10-15 13:22 CST / Codex SUBMISSION-FULL-EVAL（慢加载非暂停采样）：** GPU7蔬菜分类原PID1457931在13:19:19采到官方USD物体/材质初始化，13:21:33采到机器人/碰撞过滤初始化；PID/start ticks未变，两次均`py-spy --nonblocking`、不收locals/不暂停或改源，原始栈留忽略的artifacts/read-only-probes并绑定SHA。证据`docs/infra/results/2026-10-15-champion-vegetables-loading-samples.json`。这说明采样位置有变化，不能给整个延迟归因或证明加载最终完成；目前scene.ready=false、未有首实控，继续等原加载，不重启。其余七卡实际控制持续增长，八worker/1404741后继实活；674完整已核/8旧工程异常不变，完整冠军→MEM终态仍待。下一关注首控制及整理房间下一批原件，不机械重复采样或修改官方物理。
