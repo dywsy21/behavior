@@ -1,0 +1,2049 @@
+{
+  "schema": "champion_isolated_new_committed_originals_v1",
+  "observed_at": "2026-10-15T01:13:11.536851+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "batches": [
+    {
+      "part": "putting_dirty_dishes_in_sink-n4-i0",
+      "gpu": 3,
+      "records": [
+        {
+          "task": "putting_dirty_dishes_in_sink",
+          "instance_id": 301,
+          "rollout_id": 0,
+          "steps": 18223,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dirty_dishes_in_sink-n4-i0/json/putting_dirty_dishes_in_sink_301_0.json",
+            "sha256": "10a476136b5b3063dbc6b389d531c4f0264b017e2a1a4b56b161bcc988183de2"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dirty_dishes_in_sink-n4-i0/videos/putting_dirty_dishes_in_sink_301_0.mp4",
+            "sha256": "ddee7ff5c97511224367df1b80abe84f8963bccf0a1cbefcb4356a088e55675d"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18223"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "putting_dirty_dishes_in_sink",
+          "instance_id": 302,
+          "rollout_id": 0,
+          "steps": 18223,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dirty_dishes_in_sink-n4-i0/json/putting_dirty_dishes_in_sink_302_0.json",
+            "sha256": "ed27079e1d31404217d2ec3da1d48f7c012b83815db2f7941971ea2cb33cdadd"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dirty_dishes_in_sink-n4-i0/videos/putting_dirty_dishes_in_sink_302_0.mp4",
+            "sha256": "a24f868015c165ab055d3675210d40fdffc7c33a2db01cd13d643d06c349c9a2"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18223"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "putting_dirty_dishes_in_sink",
+          "instance_id": 303,
+          "rollout_id": 0,
+          "steps": 18223,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dirty_dishes_in_sink-n4-i0/json/putting_dirty_dishes_in_sink_303_0.json",
+            "sha256": "99a35957be4b7cb1364a03be04a7ba0fe385f3ffd8004ea93bc7dcb1f71b48b9"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dirty_dishes_in_sink-n4-i0/videos/putting_dirty_dishes_in_sink_303_0.mp4",
+            "sha256": "ae5ac9408f8b8d1bd350dd2d2afca1be5e90f23c213dbedf624f49a4846f9aca"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18223"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "putting_dirty_dishes_in_sink",
+          "instance_id": 304,
+          "rollout_id": 0,
+          "steps": 18223,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dirty_dishes_in_sink-n4-i0/json/putting_dirty_dishes_in_sink_304_0.json",
+            "sha256": "6d4b315d5ea59d7d0c1984a44d0d24b6d005f8aebc5a7c42e52ebccf3d231ccb"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dirty_dishes_in_sink-n4-i0/videos/putting_dirty_dishes_in_sink_304_0.mp4",
+            "sha256": "48683ab7cb9b89472e6b377f6337dc3e9ed45dd509555415165efc7ce120e0d0"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18223"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dirty_dishes_in_sink-n4-i0/attempts/00.json",
+        "sha256": "a08f4c072b000cf6ec928f71409fa1d07b5d3def548919d73516a1bcdda48581"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "putting_dirty_dishes_in_sink",
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "instance_ids": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "rollout": 0,
+        "started": 1792022150.7321372,
+        "max_steps": 18222,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792026211.4656649,
+        "seconds": 4060.732912915759,
+        "actual_applied_controls": [
+          18223,
+          18223,
+          18223,
+          18223
+        ],
+        "unused_delivered_controls": {
+          "0": 17,
+          "1": 17,
+          "2": 17,
+          "3": 17
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 1038659,
+        "task": "putting_dirty_dishes_in_sink",
+        "task_id": 85,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "78067a2510a97b7874a3550d2a759f5716351c33c5c1fc671e41fb2e2e290e9d",
+        "started": 1792021782.5506642,
+        "optimizer_updates": 0,
+        "control_steps": [
+          18200,
+          18200,
+          18200,
+          18200
+        ],
+        "updated": 1792026205.713187,
+        "finished": 1792026211.4684677,
+        "official_timeout": 18222,
+        "completed": 4
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 36410870,
+        "prefix_sha256": "8e57f160c4eac5d8c806d6117091a7cb708a48ed4ee062e1867517f9088aad72",
+        "lines": 30376,
+        "connections": 44,
+        "episodes": 44,
+        "closed_episodes": 40,
+        "active_connections": 4,
+        "deliveries": 30248,
+        "delivered_controls": 604960,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          8,
+          61,
+          70,
+          85,
+          87
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_3/model-000/events.jsonl",
+        "captured_bytes": 36410870,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241611,
+        "gpu": 3,
+        "started": 1791987613.7789094,
+        "completed_parts": [
+          "thawing_frozen_food-n4-i4",
+          "thawing_frozen_food-n2-i8",
+          "rearranging_kitchen_furniture-n4-i0",
+          "rearranging_kitchen_furniture-n4-i4",
+          "rearranging_kitchen_furniture-n2-i8",
+          "collecting_aluminum_cans-n4-i0",
+          "collecting_aluminum_cans-n4-i4",
+          "collecting_aluminum_cans-n2-i8",
+          "bringing_paper_to_recycling-n4-i0",
+          "bringing_paper_to_recycling-n4-i4",
+          "bringing_paper_to_recycling-n2-i8",
+          "putting_dirty_dishes_in_sink-n4-i0"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 246666,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_3/model-000",
+        "updated": 1792026221.8288884,
+        "sim_pid": 1136584,
+        "part": "putting_dirty_dishes_in_sink-n4-i4"
+      },
+      "actual_controls": 72892,
+      "controls_per_second": 17.950454157710364
+    },
+    {
+      "part": "wash_dog_toys-n2-i8",
+      "gpu": 4,
+      "records": [
+        {
+          "task": "wash_dog_toys",
+          "instance_id": 309,
+          "rollout_id": 0,
+          "steps": 16835,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/wash_dog_toys-n2-i8/json/wash_dog_toys_309_0.json",
+            "sha256": "77e02b649ffbfec29a20a1a3a545e135c5060bbedbd598dab5f2dee1b366ec4d"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/wash_dog_toys-n2-i8/videos/wash_dog_toys_309_0.mp4",
+            "sha256": "962da9e6cb0224243a4b53cb8d0e8ee11646de95088ab032c35772cc9cfc6e20"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "16835"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "wash_dog_toys",
+          "instance_id": 310,
+          "rollout_id": 0,
+          "steps": 16835,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/wash_dog_toys-n2-i8/json/wash_dog_toys_310_0.json",
+            "sha256": "d475bcc1a1833af0cba188b37ebcb9016df6021c2792979b1bef650409d1973b"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/wash_dog_toys-n2-i8/videos/wash_dog_toys_310_0.mp4",
+            "sha256": "49a326cc50f930a09cea2fd50140580e75c5aad7f6acc3b2d80a4b2d28291637"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "16835"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/wash_dog_toys-n2-i8/attempts/08.json",
+        "sha256": "a74add7ad75d8c37e381dfceca27d16bbbd0bf6bf410fe743fc6be2d2872c83e"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "wash_dog_toys",
+        "indices": [
+          8,
+          9
+        ],
+        "instance_ids": [
+          309,
+          310
+        ],
+        "rollout": 0,
+        "started": 1792024087.9022095,
+        "max_steps": 16834,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792026730.475774,
+        "seconds": 2642.5728153977543,
+        "actual_applied_controls": [
+          16835,
+          16835
+        ],
+        "unused_delivered_controls": {
+          "0": 5,
+          "1": 5
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 1079356,
+        "task": "wash_dog_toys",
+        "task_id": 33,
+        "indices": [
+          8,
+          9
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+        "started": 1792023759.7157097,
+        "optimizer_updates": 0,
+        "control_steps": [
+          16800,
+          16800
+        ],
+        "updated": 1792026724.7547,
+        "finished": 1792026730.4778469,
+        "official_timeout": 16834,
+        "completed": 2
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 29580003,
+        "prefix_sha256": "534d972b5fa10239ea243adae864448d3f601d5b544dbcf08178698ab4ff9651",
+        "lines": 24392,
+        "connections": 32,
+        "episodes": 32,
+        "closed_episodes": 32,
+        "active_connections": 0,
+        "deliveries": 24296,
+        "delivered_controls": 485920,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          17,
+          22,
+          33,
+          52
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000/events.jsonl",
+        "captured_bytes": 29580003,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241612,
+        "gpu": 4,
+        "started": 1791987613.778339,
+        "completed_parts": [
+          "putting_shoes_on_rack-n2-i8",
+          "bringing_water-n4-i0",
+          "bringing_water-n4-i4",
+          "bringing_water-n2-i8",
+          "sorting_bottles_cans_and_paper-n4-i0",
+          "sorting_bottles_cans_and_paper-n4-i4",
+          "sorting_bottles_cans_and_paper-n2-i8",
+          "wash_dog_toys-n4-i0",
+          "wash_dog_toys-n4-i4",
+          "wash_dog_toys-n2-i8"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 246626,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000",
+        "updated": 1792026737.5649292,
+        "sim_pid": 1147585,
+        "part": "freeze_pies-n4-i0"
+      },
+      "actual_controls": 33670,
+      "controls_per_second": 12.74137075951569
+    }
+  ],
+  "protocols": {
+    "3": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 36410870,
+      "prefix_sha256": "8e57f160c4eac5d8c806d6117091a7cb708a48ed4ee062e1867517f9088aad72",
+      "lines": 30376,
+      "connections": 44,
+      "episodes": 44,
+      "closed_episodes": 40,
+      "active_connections": 4,
+      "deliveries": 30248,
+      "delivered_controls": 604960,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        8,
+        61,
+        70,
+        85,
+        87
+      ],
+      "require_closed": false,
+      "session_summaries": [
+        {
+          "episode": "252c28db4ce04ce1a82f7bfa38c8962f/reset-1/task-70",
+          "connection": "252c28db4ce04ce1a82f7bfa38c8962f",
+          "epoch": 1,
+          "task": 70,
+          "deliveries": 618,
+          "stage": 4,
+          "votes": [
+            4
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "f6eb4dd2f76a4eaa83935ed966bd6e53/reset-1/task-70",
+          "connection": "f6eb4dd2f76a4eaa83935ed966bd6e53",
+          "epoch": 1,
+          "task": 70,
+          "deliveries": 618,
+          "stage": 5,
+          "votes": [
+            3,
+            2,
+            2
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "dbfd495f05e74521a49201b508ff86df/reset-1/task-70",
+          "connection": "dbfd495f05e74521a49201b508ff86df",
+          "epoch": 1,
+          "task": 70,
+          "deliveries": 618,
+          "stage": 4,
+          "votes": [
+            4,
+            3,
+            3
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "5b8fe7999670420092299475e5455533/reset-1/task-70",
+          "connection": "5b8fe7999670420092299475e5455533",
+          "epoch": 1,
+          "task": 70,
+          "deliveries": 618,
+          "stage": 3,
+          "votes": [
+            3,
+            3,
+            3
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "4511d99c9af341c09426acbe69ca2dad/reset-1/task-70",
+          "connection": "4511d99c9af341c09426acbe69ca2dad",
+          "epoch": 1,
+          "task": 70,
+          "deliveries": 618,
+          "stage": 4,
+          "votes": [
+            1,
+            1,
+            1
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "8d7d933f1689413a90498a348c388b05/reset-1/task-70",
+          "connection": "8d7d933f1689413a90498a348c388b05",
+          "epoch": 1,
+          "task": 70,
+          "deliveries": 618,
+          "stage": 4,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 9,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "28c7bf98a4474385a2824892bc42c1cb/reset-1/task-8",
+          "connection": "28c7bf98a4474385a2824892bc42c1cb",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 9,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "a2c9c1e72b7f4ba795890b18cdafe2ea/reset-1/task-8",
+          "connection": "a2c9c1e72b7f4ba795890b18cdafe2ea",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 4,
+          "votes": [
+            4,
+            4,
+            6
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "22069f8cda354daa833b5df0c1057751/reset-1/task-8",
+          "connection": "22069f8cda354daa833b5df0c1057751",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 1,
+          "votes": [
+            9,
+            9,
+            9
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "01a2dbc2ba7749be8100b45f593bef27/reset-1/task-8",
+          "connection": "01a2dbc2ba7749be8100b45f593bef27",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "28c032f8a84b42b2829afd2ff1c7bb40/reset-1/task-8",
+          "connection": "28c032f8a84b42b2829afd2ff1c7bb40",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 9,
+          "votes": [
+            3,
+            3,
+            3
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "8c31531beee9418ea81e3a316ef1a2eb/reset-1/task-8",
+          "connection": "8c31531beee9418ea81e3a316ef1a2eb",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 9,
+          "votes": [
+            7,
+            2,
+            2
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "8c54db0062324f45be4a7910e921225a/reset-1/task-8",
+          "connection": "8c54db0062324f45be4a7910e921225a",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 7,
+          "votes": [
+            7,
+            7,
+            7
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "7fdfa50d7314479e9813b20f448b1d08/reset-1/task-8",
+          "connection": "7fdfa50d7314479e9813b20f448b1d08",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 7,
+          "votes": [
+            3,
+            3,
+            3
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "09807fbf275f4091901689e8bb8d9c43/reset-1/task-8",
+          "connection": "09807fbf275f4091901689e8bb8d9c43",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 6,
+          "votes": [
+            6,
+            4,
+            6
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "e1ba973ce8f34b478219ffc6715703cc/reset-1/task-8",
+          "connection": "e1ba973ce8f34b478219ffc6715703cc",
+          "epoch": 1,
+          "task": 8,
+          "deliveries": 671,
+          "stage": 9,
+          "votes": [
+            6,
+            6,
+            6
+          ],
+          "stages": 10,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "b9be5cb73879481e9db7621a94f94168/reset-1/task-87",
+          "connection": "b9be5cb73879481e9db7621a94f94168",
+          "epoch": 1,
+          "task": 87,
+          "deliveries": 766,
+          "stage": 3,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "01a5473424b04c0c95514a7b5b02ecb1/reset-1/task-87",
+          "connection": "01a5473424b04c0c95514a7b5b02ecb1",
+          "epoch": 1,
+          "task": 87,
+          "deliveries": 766,
+          "stage": 0,
+          "votes": [
+            6,
+            7,
+            7
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "50563259e51b4462a912d79c24e69b0c/reset-1/task-87",
+          "connection": "50563259e51b4462a912d79c24e69b0c",
+          "epoch": 1,
+          "task": 87,
+          "deliveries": 766,
+          "stage": 5,
+          "votes": [
+            3,
+            3,
+            3
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "6701954a35c04d56a0414161d04acab4/reset-1/task-87",
+          "connection": "6701954a35c04d56a0414161d04acab4",
+          "epoch": 1,
+          "task": 87,
+          "deliveries": 766,
+          "stage": 6,
+          "votes": [
+            2,
+            2,
+            2
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "a882b343f1c24082a7325a1527c5f086/reset-1/task-87",
+          "connection": "a882b343f1c24082a7325a1527c5f086",
+          "epoch": 1,
+          "task": 87,
+          "deliveries": 766,
+          "stage": 2,
+          "votes": [
+            2,
+            2,
+            2
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "a09cae96975f4af3848bc139f75c1775/reset-1/task-87",
+          "connection": "a09cae96975f4af3848bc139f75c1775",
+          "epoch": 1,
+          "task": 87,
+          "deliveries": 766,
+          "stage": 0,
+          "votes": [
+            7,
+            7,
+            7
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "8609cfde0110486b88c2905405e1222a/reset-1/task-87",
+          "connection": "8609cfde0110486b88c2905405e1222a",
+          "epoch": 1,
+          "task": 87,
+          "deliveries": 766,
+          "stage": 6,
+          "votes": [
+            2,
+            3,
+            2
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "09804f6a4ffd4290ad3d3e13c17a8dc7/reset-1/task-87",
+          "connection": "09804f6a4ffd4290ad3d3e13c17a8dc7",
+          "epoch": 1,
+          "task": 87,
+          "deliveries": 766,
+          "stage": 2,
+          "votes": [
+            2,
+            1,
+            4
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "e8e3b86babe144f2a6009e3e87530de9/reset-1/task-87",
+          "connection": "e8e3b86babe144f2a6009e3e87530de9",
+          "epoch": 1,
+          "task": 87,
+          "deliveries": 766,
+          "stage": 9,
+          "votes": [
+            2,
+            9,
+            9
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "142fcf3be9ec44ad80b0343dff5d5ea3/reset-1/task-87",
+          "connection": "142fcf3be9ec44ad80b0343dff5d5ea3",
+          "epoch": 1,
+          "task": 87,
+          "deliveries": 766,
+          "stage": 2,
+          "votes": [
+            8,
+            2,
+            2
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "110abb4c89d04a1182bbba3ea279047b/reset-1/task-61",
+          "connection": "110abb4c89d04a1182bbba3ea279047b",
+          "epoch": 1,
+          "task": 61,
+          "deliveries": 842,
+          "stage": 0,
+          "votes": [
+            11,
+            11,
+            11
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "c5f9d6451b2941f996923f02980a40a7/reset-1/task-61",
+          "connection": "c5f9d6451b2941f996923f02980a40a7",
+          "epoch": 1,
+          "task": 61,
+          "deliveries": 842,
+          "stage": 1,
+          "votes": [],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "02c3b68ed7d84886822c97d8f0801743/reset-1/task-61",
+          "connection": "02c3b68ed7d84886822c97d8f0801743",
+          "epoch": 1,
+          "task": 61,
+          "deliveries": 842,
+          "stage": 1,
+          "votes": [
+            2,
+            1,
+            1
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "59a7c1ce9c814097b773c26c94eb1fc0/reset-1/task-61",
+          "connection": "59a7c1ce9c814097b773c26c94eb1fc0",
+          "epoch": 1,
+          "task": 61,
+          "deliveries": 842,
+          "stage": 4,
+          "votes": [
+            1,
+            1,
+            1
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "3b656ce5b65b496080c92f2a34758be9/reset-1/task-61",
+          "connection": "3b656ce5b65b496080c92f2a34758be9",
+          "epoch": 1,
+          "task": 61,
+          "deliveries": 842,
+          "stage": 1,
+          "votes": [
+            1,
+            1,
+            1
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "87e7963d2ced4070b3c084357b3c2247/reset-1/task-61",
+          "connection": "87e7963d2ced4070b3c084357b3c2247",
+          "epoch": 1,
+          "task": 61,
+          "deliveries": 842,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "f011708e671f4ad69c12d0eeb2d8bee9/reset-1/task-61",
+          "connection": "f011708e671f4ad69c12d0eeb2d8bee9",
+          "epoch": 1,
+          "task": 61,
+          "deliveries": 842,
+          "stage": 3,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "77e50e203fb44c11975601158c31b201/reset-1/task-61",
+          "connection": "77e50e203fb44c11975601158c31b201",
+          "epoch": 1,
+          "task": 61,
+          "deliveries": 842,
+          "stage": 0,
+          "votes": [
+            0,
+            8,
+            0
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "8a4ca5f80e80423f93815502aabd1114/reset-1/task-61",
+          "connection": "8a4ca5f80e80423f93815502aabd1114",
+          "epoch": 1,
+          "task": 61,
+          "deliveries": 842,
+          "stage": 8,
+          "votes": [
+            1,
+            2,
+            1
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "b17002e20b5f4a848592933072c48216/reset-1/task-61",
+          "connection": "b17002e20b5f4a848592933072c48216",
+          "epoch": 1,
+          "task": 61,
+          "deliveries": 842,
+          "stage": 1,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 12,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "af582dedbe8a4d2388e8caa2608fbea8/reset-1/task-85",
+          "connection": "af582dedbe8a4d2388e8caa2608fbea8",
+          "epoch": 1,
+          "task": 85,
+          "deliveries": 912,
+          "stage": 2,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 13,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "903b7c458afd49999c6efed01f1de39a/reset-1/task-85",
+          "connection": "903b7c458afd49999c6efed01f1de39a",
+          "epoch": 1,
+          "task": 85,
+          "deliveries": 912,
+          "stage": 1,
+          "votes": [
+            6,
+            6,
+            7
+          ],
+          "stages": 13,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "3f6422841bca43ce9708ecae8bdd896f/reset-1/task-85",
+          "connection": "3f6422841bca43ce9708ecae8bdd896f",
+          "epoch": 1,
+          "task": 85,
+          "deliveries": 912,
+          "stage": 3,
+          "votes": [
+            9,
+            9,
+            8
+          ],
+          "stages": 13,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "a5b6ee5981bb481ba97d81434a4ed92e/reset-1/task-85",
+          "connection": "a5b6ee5981bb481ba97d81434a4ed92e",
+          "epoch": 1,
+          "task": 85,
+          "deliveries": 912,
+          "stage": 6,
+          "votes": [
+            6,
+            6,
+            6
+          ],
+          "stages": 13,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "e016277aa11c4f9fb719d07ff8928166/reset-1/task-85",
+          "connection": "e016277aa11c4f9fb719d07ff8928166",
+          "epoch": 1,
+          "task": 85,
+          "deliveries": 26,
+          "stage": 1,
+          "votes": [
+            0
+          ],
+          "stages": 13,
+          "legacy": false,
+          "closed": false
+        },
+        {
+          "episode": "1943f8e219b54757bcc3406ccaa56771/reset-1/task-85",
+          "connection": "1943f8e219b54757bcc3406ccaa56771",
+          "epoch": 1,
+          "task": 85,
+          "deliveries": 26,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 13,
+          "legacy": false,
+          "closed": false
+        },
+        {
+          "episode": "3b7b6c0f6bb94ce68f6845883d3e0682/reset-1/task-85",
+          "connection": "3b7b6c0f6bb94ce68f6845883d3e0682",
+          "epoch": 1,
+          "task": 85,
+          "deliveries": 25,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 13,
+          "legacy": false,
+          "closed": false
+        },
+        {
+          "episode": "5124a6a7c31749e487df1a8fb946150c/reset-1/task-85",
+          "connection": "5124a6a7c31749e487df1a8fb946150c",
+          "epoch": 1,
+          "task": 85,
+          "deliveries": 25,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 13,
+          "legacy": false,
+          "closed": false
+        }
+      ],
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_3/model-000/events.jsonl",
+      "captured_bytes": 36410870,
+      "ignored_incomplete_tail_bytes": 0
+    },
+    "4": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 29580003,
+      "prefix_sha256": "534d972b5fa10239ea243adae864448d3f601d5b544dbcf08178698ab4ff9651",
+      "lines": 24392,
+      "connections": 32,
+      "episodes": 32,
+      "closed_episodes": 32,
+      "active_connections": 0,
+      "deliveries": 24296,
+      "delivered_controls": 485920,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        17,
+        22,
+        33,
+        52
+      ],
+      "require_closed": false,
+      "session_summaries": [
+        {
+          "episode": "180f0cbc71c2455099bf8308b39445b0/reset-1/task-22",
+          "connection": "180f0cbc71c2455099bf8308b39445b0",
+          "epoch": 1,
+          "task": 22,
+          "deliveries": 580,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 9,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "92f1b3cb8291492c844ad98ae5d762b8/reset-1/task-22",
+          "connection": "92f1b3cb8291492c844ad98ae5d762b8",
+          "epoch": 1,
+          "task": 22,
+          "deliveries": 516,
+          "stage": 8,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 9,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "c4e6b72dfc4c433e9328795a9b8b42a6/reset-1/task-17",
+          "connection": "c4e6b72dfc4c433e9328795a9b8b42a6",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 4,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "2b6b65aecb494888b83265bbaad66000/reset-1/task-17",
+          "connection": "2b6b65aecb494888b83265bbaad66000",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 4,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "98d462ce99334f7d832986e3e08d5075/reset-1/task-17",
+          "connection": "98d462ce99334f7d832986e3e08d5075",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 4,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "5e49311fd1ea4877a6ee0761a16aef34/reset-1/task-17",
+          "connection": "5e49311fd1ea4877a6ee0761a16aef34",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 8,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "6bc53ebd7cc5434f8ac4aaca0e4883bd/reset-1/task-17",
+          "connection": "6bc53ebd7cc5434f8ac4aaca0e4883bd",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "701df01ef42744ed8d0adaa93c46c9ac/reset-1/task-17",
+          "connection": "701df01ef42744ed8d0adaa93c46c9ac",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 7,
+          "votes": [
+            7,
+            6,
+            7
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "7dd0d597c15b40e1a0a3e99f1a8535e1/reset-1/task-17",
+          "connection": "7dd0d597c15b40e1a0a3e99f1a8535e1",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 4,
+          "votes": [
+            7,
+            7,
+            7
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "16c19d6b627748f2b34313dfdd75a622/reset-1/task-17",
+          "connection": "16c19d6b627748f2b34313dfdd75a622",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 7,
+          "votes": [
+            5,
+            7,
+            7
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "c200dd909aa54d2891c1b0d0376fb587/reset-1/task-17",
+          "connection": "c200dd909aa54d2891c1b0d0376fb587",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 4,
+          "votes": [
+            3,
+            3,
+            4
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "4fb676b9284144e2ac25dcca27fe71d5/reset-1/task-17",
+          "connection": "4fb676b9284144e2ac25dcca27fe71d5",
+          "epoch": 1,
+          "task": 17,
+          "deliveries": 708,
+          "stage": 4,
+          "votes": [
+            4,
+            4,
+            4
+          ],
+          "stages": 11,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "683235173c5e4915833b2fda27bdcc31/reset-1/task-52",
+          "connection": "683235173c5e4915833b2fda27bdcc31",
+          "epoch": 1,
+          "task": 52,
+          "deliveries": 770,
+          "stage": 3,
+          "votes": [
+            2,
+            3,
+            1
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "8e96ad3490534a86baab10aeaa519cf8/reset-1/task-52",
+          "connection": "8e96ad3490534a86baab10aeaa519cf8",
+          "epoch": 1,
+          "task": 52,
+          "deliveries": 770,
+          "stage": 8,
+          "votes": [
+            8,
+            8
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "3102ebda5bb546b0b0a6ebc8ea2246fe/reset-1/task-52",
+          "connection": "3102ebda5bb546b0b0a6ebc8ea2246fe",
+          "epoch": 1,
+          "task": 52,
+          "deliveries": 770,
+          "stage": 3,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "13de7fc065c640c9acfba6e1afaee43f/reset-1/task-52",
+          "connection": "13de7fc065c640c9acfba6e1afaee43f",
+          "epoch": 1,
+          "task": 52,
+          "deliveries": 770,
+          "stage": 4,
+          "votes": [
+            2,
+            5,
+            1
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "4c1e6ab20b8945eea8542b292e87b086/reset-1/task-52",
+          "connection": "4c1e6ab20b8945eea8542b292e87b086",
+          "epoch": 1,
+          "task": 52,
+          "deliveries": 770,
+          "stage": 7,
+          "votes": [
+            1,
+            1,
+            1
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "0bb307b62936469f90a86b3134d4f764/reset-1/task-52",
+          "connection": "0bb307b62936469f90a86b3134d4f764",
+          "epoch": 1,
+          "task": 52,
+          "deliveries": 770,
+          "stage": 4,
+          "votes": [
+            7,
+            7,
+            8
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "bfe3cc37e7984761b51fe062703c987f/reset-1/task-52",
+          "connection": "bfe3cc37e7984761b51fe062703c987f",
+          "epoch": 1,
+          "task": 52,
+          "deliveries": 770,
+          "stage": 10,
+          "votes": [
+            7,
+            7,
+            7
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "bb78ad1058e84481b211e41a53f2f225/reset-1/task-52",
+          "connection": "bb78ad1058e84481b211e41a53f2f225",
+          "epoch": 1,
+          "task": 52,
+          "deliveries": 770,
+          "stage": 8,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "5b688c8cd2c541679b82ee54b58a5ef5/reset-1/task-52",
+          "connection": "5b688c8cd2c541679b82ee54b58a5ef5",
+          "epoch": 1,
+          "task": 52,
+          "deliveries": 770,
+          "stage": 3,
+          "votes": [
+            7,
+            7,
+            1
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "64723f1dcfb3465fa9ba97068e0a5b54/reset-1/task-52",
+          "connection": "64723f1dcfb3465fa9ba97068e0a5b54",
+          "epoch": 1,
+          "task": 52,
+          "deliveries": 770,
+          "stage": 10,
+          "votes": [
+            2,
+            2,
+            2
+          ],
+          "stages": 11,
+          "legacy": false,
+          "closed": true
+        },
+        {
+          "episode": "359e5138dce14970bed62c17ea1ee7ae/reset-1/task-33",
+          "connection": "359e5138dce14970bed62c17ea1ee7ae",
+          "epoch": 1,
+          "task": 33,
+          "deliveries": 842,
+          "stage": 7,
+          "votes": [],
+          "stages": 13,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "9843cdc7a868403aa331fa7b9769cd6f/reset-1/task-33",
+          "connection": "9843cdc7a868403aa331fa7b9769cd6f",
+          "epoch": 1,
+          "task": 33,
+          "deliveries": 842,
+          "stage": 8,
+          "votes": [
+            7,
+            8,
+            7
+          ],
+          "stages": 13,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "216e3dc7554b46a4ad4b1dfcdcdb800e/reset-1/task-33",
+          "connection": "216e3dc7554b46a4ad4b1dfcdcdb800e",
+          "epoch": 1,
+          "task": 33,
+          "deliveries": 842,
+          "stage": 11,
+          "votes": [
+            8,
+            8,
+            8
+          ],
+          "stages": 13,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "94542a95d91341d98414a8f4f845bd16/reset-1/task-33",
+          "connection": "94542a95d91341d98414a8f4f845bd16",
+          "epoch": 1,
+          "task": 33,
+          "deliveries": 842,
+          "stage": 11,
+          "votes": [
+            7,
+            7,
+            7
+          ],
+          "stages": 13,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "7aa2585a3afd449b8922da29d92d97a7/reset-1/task-33",
+          "connection": "7aa2585a3afd449b8922da29d92d97a7",
+          "epoch": 1,
+          "task": 33,
+          "deliveries": 842,
+          "stage": 10,
+          "votes": [
+            5,
+            5,
+            6
+          ],
+          "stages": 13,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "1f86e34385f64b919d2971937e4fe56a/reset-1/task-33",
+          "connection": "1f86e34385f64b919d2971937e4fe56a",
+          "epoch": 1,
+          "task": 33,
+          "deliveries": 842,
+          "stage": 7,
+          "votes": [
+            7
+          ],
+          "stages": 13,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "655ad429d499416d917d0f0bc93d9e90/reset-1/task-33",
+          "connection": "655ad429d499416d917d0f0bc93d9e90",
+          "epoch": 1,
+          "task": 33,
+          "deliveries": 842,
+          "stage": 7,
+          "votes": [
+            12,
+            12,
+            12
+          ],
+          "stages": 13,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "95fb10bb540a4beeb22a578253c648a4/reset-1/task-33",
+          "connection": "95fb10bb540a4beeb22a578253c648a4",
+          "epoch": 1,
+          "task": 33,
+          "deliveries": 842,
+          "stage": 5,
+          "votes": [
+            4,
+            4,
+            5
+          ],
+          "stages": 13,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "eb04f6f83e0842a285e31e34f7676f79/reset-1/task-33",
+          "connection": "eb04f6f83e0842a285e31e34f7676f79",
+          "epoch": 1,
+          "task": 33,
+          "deliveries": 842,
+          "stage": 5,
+          "votes": [
+            5,
+            5,
+            5
+          ],
+          "stages": 13,
+          "legacy": true,
+          "closed": true
+        },
+        {
+          "episode": "c62de0c3e5294473ab929b0bfc35b428/reset-1/task-33",
+          "connection": "c62de0c3e5294473ab929b0bfc35b428",
+          "epoch": 1,
+          "task": 33,
+          "deliveries": 842,
+          "stage": 7,
+          "votes": [
+            7,
+            7,
+            7
+          ],
+          "stages": 13,
+          "legacy": true,
+          "closed": true
+        }
+      ],
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000/events.jsonl",
+      "captured_bytes": 29580003,
+      "ignored_incomplete_tail_bytes": 0
+    }
+  },
+  "previously_verified_parts": [
+    "boxing_food_after_dinner-n2-i8",
+    "boxing_food_after_dinner-n4-i4",
+    "bringing_paper_to_recycling-n2-i8",
+    "bringing_paper_to_recycling-n4-i0",
+    "bringing_paper_to_recycling-n4-i4",
+    "bringing_water-n2-i8",
+    "bringing_water-n4-i0",
+    "bringing_water-n4-i4",
+    "can_meat-n4-i0",
+    "carrying_out_garden_furniture-n2-i8",
+    "carrying_out_garden_furniture-n4-i0",
+    "carrying_out_garden_furniture-n4-i4",
+    "chopping_wood-n2-i8",
+    "chopping_wood-n4-i0",
+    "chopping_wood-n4-i4",
+    "clean_boxing_gloves-n2-i8",
+    "clean_boxing_gloves-n4-i0",
+    "clean_boxing_gloves-n4-i4",
+    "clean_up_broken_glass-n2-i8",
+    "clean_up_broken_glass-n4-i0",
+    "clean_up_broken_glass-n4-i4",
+    "collecting_aluminum_cans-n2-i8",
+    "collecting_aluminum_cans-n4-i0",
+    "collecting_aluminum_cans-n4-i4",
+    "cook_a_frozen_pie-n2-i8",
+    "cook_a_frozen_pie-n4-i0",
+    "cook_a_frozen_pie-n4-i4",
+    "cook_hot_dogs-n2-i8",
+    "cook_hot_dogs-n4-i0",
+    "cook_hot_dogs-n4-i4",
+    "dispose_of_glass-n2-i8",
+    "dispose_of_glass-n4-i0",
+    "dispose_of_glass-n4-i4",
+    "make_gift_bags_for_baby_showers-n2-i8",
+    "make_gift_bags_for_baby_showers-n4-i0",
+    "make_gift_bags_for_baby_showers-n4-i4",
+    "outfit_a_basic_toolbox-n2-i8",
+    "outfit_a_basic_toolbox-n4-i0",
+    "outfit_a_basic_toolbox-n4-i4",
+    "packing_meal_for_delivery-n2-i8",
+    "packing_meal_for_delivery-n4-i0",
+    "packing_meal_for_delivery-n4-i4",
+    "polishing_shoes-n2-i8",
+    "polishing_shoes-n4-i0",
+    "polishing_shoes-n4-i4",
+    "preparing_lunch_box-n2-i8",
+    "preparing_lunch_box-n4-i4",
+    "put_together_a_basic_pruning_kit-n4-i0",
+    "put_together_a_basic_pruning_kit-n4-i4",
+    "putting_away_toys-n4-i0",
+    "putting_away_toys-n4-i4",
+    "putting_shoes_on_rack-n2-i8",
+    "re_shelving_library_books-n2-i8",
+    "re_shelving_library_books-n4-i0",
+    "re_shelving_library_books-n4-i4",
+    "rearranging_kitchen_furniture-n2-i8",
+    "rearranging_kitchen_furniture-n4-i0",
+    "rearranging_kitchen_furniture-n4-i4",
+    "setting_mousetraps-n2-i8",
+    "setting_mousetraps-n4-i0",
+    "setting_mousetraps-n4-i4",
+    "setting_the_fire-n2-i8",
+    "setting_the_fire-n4-i0",
+    "setting_the_fire-n4-i4",
+    "sorting_books_on_shelf-n2-i8",
+    "sorting_books_on_shelf-n4-i0",
+    "sorting_books_on_shelf-n4-i4",
+    "sorting_bottles_cans_and_paper-n2-i8",
+    "sorting_bottles_cans_and_paper-n4-i0",
+    "sorting_bottles_cans_and_paper-n4-i4",
+    "spraying_fruit_trees-n2-i8",
+    "spraying_fruit_trees-n4-i4",
+    "store_produce-n2-i8",
+    "store_produce-n4-i0",
+    "store_produce-n4-i4",
+    "thawing_frozen_food-n2-i8",
+    "thawing_frozen_food-n4-i4",
+    "turning_out_all_lights_before_sleep-n2-i8",
+    "turning_out_all_lights_before_sleep-n4-i0",
+    "turning_out_all_lights_before_sleep-n4-i4",
+    "wash_a_baseball_cap-n2-i8",
+    "wash_a_baseball_cap-n4-i4",
+    "wash_dog_toys-n4-i0",
+    "wash_dog_toys-n4-i4"
+  ],
+  "remaining_unverified_parts": 0,
+  "summary": {
+    "status": "running",
+    "expected": 1000,
+    "completed": 590,
+    "missing": 410,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.08126715092816789,
+    "completed_only_sr": 0.02711864406779661,
+    "tasks": {
+      "wash_dog_toys": {
+        "completed": 10,
+        "expected": 10,
+        "q_score_sum": 0.3333333333333333,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0.03333333333333333,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0.03333333333333333
+      },
+      "putting_dirty_dishes_in_sink": {
+        "completed": 4,
+        "expected": 10,
+        "q_score_sum": 0,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0
+      }
+    },
+    "coverage": 594,
+    "execution_errors": 4,
+    "unaccounted": 406,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.04794761904761906,
+    "conservative_sr_errors_and_missing_as_zero": 0.016,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0
+  },
+  "supervisor": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {},
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 590,
+    "coverage": 594,
+    "updated": 1792026770.2224708
+  },
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 300108,
+    "started": 1791989042.9684465,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+        "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v2/status.json",
+        "sha256": "643cca0bd67296878a5518bd6de3d786d331fd9bebe00b777b0d7b68a50f2ec5"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-queue-isolation-20261014-v2",
+    "queue_source_commit": "9122b13726bf1862dbe2d6616c0da916822e2487",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "pending_mem_upgrade": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+      "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+    },
+    "updated": 1791989042.9684682
+  },
+  "manual_visual_review": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "validation_scope": "Original committed JSON, MP4 metadata/hash, physical controls, pinned identity/seed/horizon, and per-GPU journal recurrence; no image-content or RNG identity claim.",
+  "incremental_audit_count": 6,
+  "previous_audited_completed": 584,
+  "previous_audit_commit": "4a70abcd",
+  "live_monitor_snapshot": {
+    "observed_at": "2026-10-15T01:12:42.624745+00:00",
+    "monitor_pid": 303366,
+    "champion": {
+      "status": {
+        "status": "running",
+        "pid": 241557,
+        "started": 1791987613.4638016,
+        "completed_gpus": [],
+        "failed_gpus": {},
+        "worker_pids": {
+          "0": 241608,
+          "1": 241609,
+          "2": 241610,
+          "3": 241611,
+          "4": 241612,
+          "5": 241613,
+          "6": 241614,
+          "7": 241615
+        },
+        "completed": 590,
+        "coverage": 594,
+        "updated": 1792026740.139529
+      },
+      "supervisor_alive": true,
+      "summary": {
+        "status": "running",
+        "completed": 590,
+        "coverage": 594,
+        "execution_errors": 4,
+        "unaccounted": 406,
+        "official_full_q_score": null,
+        "official_full_sr": null
+      },
+      "workers": [
+        {
+          "gpu": 0,
+          "alive": true,
+          "status": "evaluating",
+          "part": "putting_away_toys-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            5200,
+            5200
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 1,
+          "alive": true,
+          "status": "evaluating",
+          "part": "tidying_bedroom-n4-i0",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            8100,
+            8100,
+            8100,
+            8100
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 2,
+          "alive": true,
+          "status": "evaluating",
+          "part": "can_meat-n4-i4",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            4100,
+            4100,
+            4100,
+            4100
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 3,
+          "alive": true,
+          "status": "evaluating",
+          "part": "putting_dirty_dishes_in_sink-n4-i4",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            300,
+            300,
+            300,
+            300
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 4,
+          "alive": true,
+          "status": "evaluating",
+          "part": "freeze_pies-n4-i0",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": null,
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 5,
+          "alive": true,
+          "status": "evaluating",
+          "part": "put_together_a_basic_pruning_kit-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            16500,
+            16500
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 6,
+          "alive": true,
+          "status": "evaluating",
+          "part": "clean_a_patio-n4-i0",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            1900,
+            1900,
+            1900,
+            1900
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 7,
+          "alive": true,
+          "status": "evaluating",
+          "part": "putting_dishes_away_after_cleaning-n4-i0",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            2500,
+            2500,
+            2500,
+            2500
+          ],
+          "error": null,
+          "final_verification_error": null
+        }
+      ]
+    },
+    "mem": {
+      "status": null,
+      "supervisor_alive": false,
+      "summary": null,
+      "workers": []
+    },
+    "queue": {
+      "status": "waiting_for_champion_continuation",
+      "pid": 300108,
+      "alive": true,
+      "phases": [],
+      "error": null
+    }
+  },
+  "notes": [
+    "Dog-toy washing now has all ten original instances; dirty dishes has only four and is not a full-task result.",
+    "Exact stable journal prefixes are evidence for recorded per-session recurrence only, not raw observation/action/RNG identity or physical success.",
+    "No manual full-video review, active source/model/physical changes, stop, reroll, or fabricated metrics."
+  ]
+}
