@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 10:22 CST / Codex SUBMISSION-FULL-EVAL（肉罐头/庭院/脏碗新增12原件）：** 冠军610完整/4继承异常/386待，原241557/八worker及MEM300108后继继续实活、无新增工程异常。肉罐头305–308各17771实控、清庭院301–304各18107、脏碗305–308各18223，12例均Q0/success=false；原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置及三GPU精确journal前缀通过，证据`docs/infra/results/2026-10-15-champion-meat-patio-dishes-new12-originals.json`。三task分别仅8/10、4/10、8/10，不称完整task或全模型成绩。观察输出曾延迟，10:05独立SSH及原303366 watch随后均确认原作业连续推进，未据观察超时重启。GPU2原sim自然结束后等下一加载，worker/模型仍活；正常卡不停、不改actor/重跑。下一继续冠军→MEM与终态内部归档，外部交付暂缓。
+
 - **2026-10-15 09:50 CST / Codex SUBMISSION-FULL-EVAL（玩具/卧室新增6原件）：** 冠军598完整/4继承异常/398待，原241557/八worker与MEM300108后继实活、无新增故障。收玩具309–310各16946实控/Q0；整理卧室301–304各16557实控/Q为1/3、1/3、0、0，六例均未完整成功。原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置及两GPU精确journal前缀均验过，证据`docs/infra/results/2026-10-15-champion-toys-bedroom-new6-originals.json`（只省重复逐会话摘要，原trace/边界/SHA保留）。收玩具全10平均Q0.0875/SR0，卧室仅4/10，不称全模型成绩。GPU0转客厅、GPU1续305–308；冻派已自然加载并真实各4700控制，无重启/停机/改actor。下一继续冠军→MEM及终态内部归档，外部交付暂缓。
 
 - **2026-10-15 09:27 CST / Codex SUBMISSION-FULL-EVAL（交接文档校准/资源复核）：** `FINAL_EVAL_CONTINUATION.md`新增当前f7冠军/793 MEM/912队列及单卡隔离边界，`FULL_EVAL_20261012.md`把旧PID、旧全局STOP与旧ETA明确降为历史；说明覆盖1000案例不等于伪造1000有效JSON，最终包仍待。已逐段核当前worker/supervisor/queue源码，并确认相关文件与冻结commit无差异；仅文档变更、不部署/热改/重跑。09:22只读实核原241557/八worker/300108/303366非僵尸且start ticks未换，磁盘约4.96TB、RAM约527GiB、显存约11–29/71.7GiB；证据`docs/infra/results/2026-10-15-continuous-eval-resource-check-0922.json`，GPU4当时加载不当作故障。下一继续冠军→MEM与新原件/终态归档，外部交付暂缓。
