@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 11:27 CST / Codex SUBMISSION-FULL-EVAL（连续评测的时间风险复核）：** 99个已完成隔离batch复算：2/4环境总体吞吐13.62/16.19实控/s，最近各10批12.39/15.66；冠军仍634完整/4旧异常/362待，原241557/八worker与MEM300108后继不变、无新增故障。按原逐GPU时限减实控、逐物理batch计加载，冠军均速/近期场景剩23.44/24.54h，MEM历史速率场景另33.75h，两轮约10/17 20:38/21:44 CST；近期吞吐＋慢加载场景10/18 01:01，均非上下界且未计额外排队/故障/归档。今日再核官方updates及submission，截止仍10/17 19:59 CST，已无可靠串行余量；证据`docs/infra/results/2026-10-15-isolated-eval-time-risk-1127.json`。保持用户要求连续冠军→MEM，不停机、不改权重/时限/原件或擅自交付；下一继续新原件核验与终态内部归档，外部交付仍暂缓。
+
 - **2026-10-15 11:19 CST / Codex SUBMISSION-FULL-EVAL（肉罐头尾2原件）：** 冠军634完整/4继承异常/362待，原241557/八worker与MEM300108后继实活、无新增故障。肉罐头309–310各17771实控/Q0/success=false，该task全10已齐、平均Q0/SR0；两份原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置及GPU2精确journal前缀通过，证据`docs/infra/results/2026-10-15-champion-canned-meat-final2-originals.json`。连同下条本轮8新原件已核，累计官方完整成功16例仍非全模型成绩。GPU2已转重新布置房间，其余卡继续；未停机/改actor/重跑。下一继续冠军→MEM与终态内部归档，外部交付暂缓。
 
 - **2026-10-15 11:12 CST / Codex SUBMISSION-FULL-EVAL（脏碗尾批/卧室新增6原件）：** 冠军632完整/4继承异常/364待，原241557/八worker及MEM300108后继持续实活、无新增工程故障。脏碗309–310各18223实控/Q0，该task全10平均Q0/SR0；卧室305–308各16557实控/Q为0、0、1/3、1/3，仍仅8/10，六例均success=false。原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置及两GPU精确journal前缀通过，证据`docs/infra/results/2026-10-15-champion-dishes-final-bedroom-new6-originals.json`；只压缩重复摘要、未减少检查或改原trace。GPU3已转餐桌食物入冰箱，GPU1续尾批；未停机/改actor/重跑，不称全模型最终成绩。下一继续冠军→MEM及终态内部归档，外部交付暂缓。

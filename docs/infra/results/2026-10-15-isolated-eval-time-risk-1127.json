@@ -1,0 +1,3824 @@
+{
+  "schema": "isolated_continuation_deadline_scenarios_v1",
+  "observed_at": "2026-10-15T03:27:07.278216+00:00",
+  "champion_manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "mem_manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+    "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+  },
+  "champion_statistics": {
+    "2": {
+      "completed_batches": 33,
+      "weighted_rate": 13.615287249004881,
+      "recent10_weighted_rate": 12.38631915075817,
+      "recent10_batches": 10,
+      "median_load": 214.47570598125458,
+      "p90_load": 359.69724748134615,
+      "load_samples": 34
+    },
+    "4": {
+      "completed_batches": 66,
+      "weighted_rate": 16.191997947615654,
+      "recent10_weighted_rate": 15.660358705095586,
+      "recent10_batches": 10,
+      "median_load": 409.04581904411316,
+      "p90_load": 736.9788039684296,
+      "load_samples": 73
+    }
+  },
+  "completed_batch_evidence": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_a_frozen_pie-n4-i0/attempts/00.json",
+      "sha256": "7b2ffd0df9940be53a8a7035992d5bdbf6d79b1d4e45043e4bd1aaca253bd850",
+      "gpu": 0,
+      "part": "cook_a_frozen_pie-n4-i0",
+      "num_envs": 4,
+      "controls": 52008,
+      "seconds": 2701.149429211393,
+      "finished": 1791991107.972877
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_a_frozen_pie-n4-i4/attempts/04.json",
+      "sha256": "30e520c5b09ae0d9659ee7aadba4fdfb2ea6be4b58bbf8f5e5c3e01cd1e2cdb5",
+      "gpu": 0,
+      "part": "cook_a_frozen_pie-n4-i4",
+      "num_envs": 4,
+      "controls": 52008,
+      "seconds": 2565.705592119135,
+      "finished": 1791993911.0049646
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_a_frozen_pie-n2-i8/attempts/08.json",
+      "sha256": "d6808d2ff1d6ede7990d6bb145e32568510ac0955fcd5c75c9dea1422509ea60",
+      "gpu": 0,
+      "part": "cook_a_frozen_pie-n2-i8",
+      "num_envs": 2,
+      "controls": 26004,
+      "seconds": 1551.6583016971126,
+      "finished": 1791995602.5382297
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/store_produce-n4-i0/attempts/00.json",
+      "sha256": "93895c436260465c54b9cfba369aac407afe8d057fec2088c6f0026089bbbcd2",
+      "gpu": 0,
+      "part": "store_produce-n4-i0",
+      "num_envs": 4,
+      "controls": 57136,
+      "seconds": 2933.1024290341884,
+      "finished": 1791998852.6224244
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/store_produce-n4-i4/attempts/04.json",
+      "sha256": "4cf42e65b42829629943a6f43dc979e40ef2bf810049cae6b6afe709778d4e6a",
+      "gpu": 0,
+      "part": "store_produce-n4-i4",
+      "num_envs": 4,
+      "controls": 57136,
+      "seconds": 2902.8042038995773,
+      "finished": 1792002144.888841
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/store_produce-n2-i8/attempts/08.json",
+      "sha256": "eeb406f4684c4a88855eb4dc81ea4bfd597b4cbbaa8ae193785dd2dd23898122",
+      "gpu": 0,
+      "part": "store_produce-n2-i8",
+      "num_envs": 2,
+      "controls": 28568,
+      "seconds": 1785.9460008256137,
+      "finished": 1792004383.0649576
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/polishing_shoes-n4-i0/attempts/00.json",
+      "sha256": "d71f57a0829c3d48bf5ca08339bde7e79bfed40dcbcde497ff22766c9909263c",
+      "gpu": 0,
+      "part": "polishing_shoes-n4-i0",
+      "num_envs": 4,
+      "controls": 64428,
+      "seconds": 3182.556135090068,
+      "finished": 1792007921.6660056
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/polishing_shoes-n4-i4/attempts/04.json",
+      "sha256": "08280f14143f9f95a83f9b380cea91c15d6a44e60b01f01a59b68156c255f19c",
+      "gpu": 0,
+      "part": "polishing_shoes-n4-i4",
+      "num_envs": 4,
+      "controls": 64428,
+      "seconds": 3132.6165239987895,
+      "finished": 1792011257.8586867
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/polishing_shoes-n2-i8/attempts/08.json",
+      "sha256": "d1b2356032e1163d0ade6008ca69be0e644f87a600da183e4b79eee65a3b8877",
+      "gpu": 0,
+      "part": "polishing_shoes-n2-i8",
+      "num_envs": 2,
+      "controls": 32214,
+      "seconds": 1919.4360600989312,
+      "finished": 1792013308.7992759
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_away_toys-n4-i0/attempts/00.json",
+      "sha256": "7b60568b895c17740905d74ce8b364fab21b7639e688e42842abfe1a4efd8eb5",
+      "gpu": 0,
+      "part": "putting_away_toys-n4-i0",
+      "num_envs": 4,
+      "controls": 67784,
+      "seconds": 5144.565652339719,
+      "finished": 1792019179.0909684
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_away_toys-n4-i4/attempts/04.json",
+      "sha256": "420079e0b921518e28fb180898e0790241db62526d8dfe67d73d50f961aa42b1",
+      "gpu": 0,
+      "part": "putting_away_toys-n4-i4",
+      "num_envs": 4,
+      "controls": 67784,
+      "seconds": 5152.3796327747405,
+      "finished": 1792025266.3290827
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_away_toys-n2-i8/attempts/08.json",
+      "sha256": "a8be7bfc0930c13a6c251a32b4a3eb25d23d5135447ec4a1486048ea2481e158",
+      "gpu": 0,
+      "part": "putting_away_toys-n2-i8",
+      "num_envs": 2,
+      "controls": 33892,
+      "seconds": 2925.9128048103303,
+      "finished": 1792028760.734862
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/tidying_living_room-n4-i0/attempts/00.json",
+      "sha256": "160acb5271ce209fd8882417f5e2e02f20fc5993be1893515ba5d57ce44115cd",
+      "gpu": 0,
+      "part": "tidying_living_room-n4-i0",
+      "num_envs": 4,
+      "controls": 75396,
+      "seconds": 3573.209295370616,
+      "finished": 1792032517.3736224
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/sorting_books_on_shelf-n4-i0/attempts/00.json",
+      "sha256": "d782c4e970bf306a5098f65377d70e118887ae3cbd8c7209656f4e9c834f4d7e",
+      "gpu": 1,
+      "part": "sorting_books_on_shelf-n4-i0",
+      "num_envs": 4,
+      "controls": 46440,
+      "seconds": 2119.721031972207,
+      "finished": 1791990121.9198043
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/sorting_books_on_shelf-n4-i4/attempts/04.json",
+      "sha256": "a0d41101bbd2fde89dfbfe95a2d4ab719ce07f5aca0cb213fa728abcd7029b95",
+      "gpu": 1,
+      "part": "sorting_books_on_shelf-n4-i4",
+      "num_envs": 4,
+      "controls": 46440,
+      "seconds": 2190.6476283743978,
+      "finished": 1791992493.9584866
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/sorting_books_on_shelf-n2-i8/attempts/08.json",
+      "sha256": "dd121f462726fee1d7f6e9d56f01eb90ccd38642d9beb935025cfd76928cafc4",
+      "gpu": 1,
+      "part": "sorting_books_on_shelf-n2-i8",
+      "num_envs": 2,
+      "controls": 23220,
+      "seconds": 1361.8060500621796,
+      "finished": 1791994215.7453337
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/packing_meal_for_delivery-n4-i0/attempts/00.json",
+      "sha256": "1f5419b5327fa413b893dc87fc713c8436900347ab6519b6c2d48619de3c2103",
+      "gpu": 1,
+      "part": "packing_meal_for_delivery-n4-i0",
+      "num_envs": 4,
+      "controls": 53160,
+      "seconds": 2680.188989456743,
+      "finished": 1791997176.7616007
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/packing_meal_for_delivery-n4-i4/attempts/04.json",
+      "sha256": "af968b26a15dcf559c17efdf520d778b6d4c65172f806b6b519d618db4d2f6b3",
+      "gpu": 1,
+      "part": "packing_meal_for_delivery-n4-i4",
+      "num_envs": 4,
+      "controls": 53160,
+      "seconds": 2690.211736254394,
+      "finished": 1792000146.9964828
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/packing_meal_for_delivery-n2-i8/attempts/08.json",
+      "sha256": "c0af7e4d64437311086b113c1279b7089760d92a45c5090bf56d7c73e6247601",
+      "gpu": 1,
+      "part": "packing_meal_for_delivery-n2-i8",
+      "num_envs": 2,
+      "controls": 26580,
+      "seconds": 1691.6485038921237,
+      "finished": 1792001994.9642735
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/turning_out_all_lights_before_sleep-n4-i0/attempts/00.json",
+      "sha256": "1ef4865f8bedf25ae3c4ef3ba6b72b48ef96015fb56e6d1a8cbbb53d4385dc6f",
+      "gpu": 1,
+      "part": "turning_out_all_lights_before_sleep-n4-i0",
+      "num_envs": 4,
+      "controls": 60040,
+      "seconds": 7573.008341909386,
+      "finished": 1792010426.8110285
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/turning_out_all_lights_before_sleep-n4-i4/attempts/04.json",
+      "sha256": "75891a654309fc05b5486175470f1cd1a333f1028797701f6e05deb7b33ceb2d",
+      "gpu": 1,
+      "part": "turning_out_all_lights_before_sleep-n4-i4",
+      "num_envs": 4,
+      "controls": 60040,
+      "seconds": 7816.652885617688,
+      "finished": 1792019065.871069
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/turning_out_all_lights_before_sleep-n2-i8/attempts/08.json",
+      "sha256": "9c3740f154eaa6524f2a4c8aa9fd9627fb0503fed0fc213be5622780a317f2c4",
+      "gpu": 1,
+      "part": "turning_out_all_lights_before_sleep-n2-i8",
+      "num_envs": 2,
+      "controls": 30020,
+      "seconds": 4345.8681615060195,
+      "finished": 1792024094.2223432
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/tidying_bedroom-n4-i0/attempts/00.json",
+      "sha256": "59c1e6b11c9d7c8eff9049dfab3c77e7d1cec435ba24e00ef0a2b1780dcbd67b",
+      "gpu": 1,
+      "part": "tidying_bedroom-n4-i0",
+      "num_envs": 4,
+      "controls": 66228,
+      "seconds": 4198.739063466899,
+      "finished": 1792028902.4149537
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/tidying_bedroom-n4-i4/attempts/04.json",
+      "sha256": "7fa4ed924e2d87acbc399475fbb0be690dbf10e0821be66fef48dc3a41bbf054",
+      "gpu": 1,
+      "part": "tidying_bedroom-n4-i4",
+      "num_envs": 4,
+      "controls": 66228,
+      "seconds": 4234.199951048009,
+      "finished": 1792033755.6963391
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/spraying_fruit_trees-n4-i4/attempts/04.json",
+      "sha256": "b708dee32afab228762a547cb3cb7ded0cd6eed00c5a0ab440926aec81e01146",
+      "gpu": 2,
+      "part": "spraying_fruit_trees-n4-i4",
+      "num_envs": 4,
+      "controls": 50076,
+      "seconds": 2862.5509756812826,
+      "finished": 1791991071.1620753
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/spraying_fruit_trees-n2-i8/attempts/08.json",
+      "sha256": "39d131126c84b0cc3d21f93363843e39c3ef1f879a9ffc7d1013ebe828fb6eff",
+      "gpu": 2,
+      "part": "spraying_fruit_trees-n2-i8",
+      "num_envs": 2,
+      "controls": 25038,
+      "seconds": 1753.3618061328307,
+      "finished": 1791993059.4134724
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/dispose_of_glass-n4-i0/attempts/00.json",
+      "sha256": "a7030c5035d7f73bb6b1ad763b5387cb9b6d74bb37229f54bcaf1541a9e7fe92",
+      "gpu": 2,
+      "part": "dispose_of_glass-n4-i0",
+      "num_envs": 4,
+      "controls": 55172,
+      "seconds": 2600.4917042404413,
+      "finished": 1791995862.2152126
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/dispose_of_glass-n4-i4/attempts/04.json",
+      "sha256": "8616d578c8bb36f087c848fab42ea3695180e55af57ca7571744756a140bc2f0",
+      "gpu": 2,
+      "part": "dispose_of_glass-n4-i4",
+      "num_envs": 4,
+      "controls": 55172,
+      "seconds": 2590.2026863908395,
+      "finished": 1791998659.677568
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/dispose_of_glass-n2-i8/attempts/08.json",
+      "sha256": "d83f620dc90a3293bbaa1dca66cf4bd517c9dc0696d54004d677f02aea5a0e2c",
+      "gpu": 2,
+      "part": "dispose_of_glass-n2-i8",
+      "num_envs": 2,
+      "controls": 27586,
+      "seconds": 1612.1738225976005,
+      "finished": 1792000619.8632147
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/re_shelving_library_books-n4-i0/attempts/00.json",
+      "sha256": "c9fc9ff846def8047a09eebea8a431377b993ec8b96c279c40a45899b647736b",
+      "gpu": 2,
+      "part": "re_shelving_library_books-n4-i0",
+      "num_envs": 4,
+      "controls": 57172,
+      "seconds": 2686.790034113452,
+      "finished": 1792003483.4646463
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/re_shelving_library_books-n4-i4/attempts/04.json",
+      "sha256": "b017df35b3b519fa6f45bc22edaf8daf61c4b704a876e62e345a1c0accf09ea4",
+      "gpu": 2,
+      "part": "re_shelving_library_books-n4-i4",
+      "num_envs": 4,
+      "controls": 57172,
+      "seconds": 2682.242283500731,
+      "finished": 1792006343.900551
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/re_shelving_library_books-n2-i8/attempts/08.json",
+      "sha256": "769ecea88ba259e6932039329b52e0553bbf0dbed1af325b963f27f0647aa07d",
+      "gpu": 2,
+      "part": "re_shelving_library_books-n2-i8",
+      "num_envs": 2,
+      "controls": 28586,
+      "seconds": 1654.8936086045578,
+      "finished": 1792008118.6761174
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/chopping_wood-n4-i0/attempts/00.json",
+      "sha256": "275e478dcfcd8d273eb14e8b92347cdacfe6462b52a82c3471ced7f50af9991f",
+      "gpu": 2,
+      "part": "chopping_wood-n4-i0",
+      "num_envs": 4,
+      "controls": 64512,
+      "seconds": 3653.3055185275152,
+      "finished": 1792012189.2750313
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/chopping_wood-n4-i4/attempts/04.json",
+      "sha256": "8dcb8cf48c15e0ce816a58b6e840dc4eb884ce899b1875006d88901885da4cd0",
+      "gpu": 2,
+      "part": "chopping_wood-n4-i4",
+      "num_envs": 4,
+      "controls": 64512,
+      "seconds": 3617.6384424921125,
+      "finished": 1792016232.0482666
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/chopping_wood-n2-i8/attempts/08.json",
+      "sha256": "c9518c03eeca8932d7dafba65904e80429482e4baf8671c09a8c14ffa5be2c9f",
+      "gpu": 2,
+      "part": "chopping_wood-n2-i8",
+      "num_envs": 2,
+      "controls": 32256,
+      "seconds": 2188.6093697641045,
+      "finished": 1792018656.2782214
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/can_meat-n4-i0/attempts/00.json",
+      "sha256": "d96eb0eb514f13a25dfce796cc42e0b5ea27d939487b2274cc47b0edf05a743b",
+      "gpu": 2,
+      "part": "can_meat-n4-i0",
+      "num_envs": 4,
+      "controls": 71084,
+      "seconds": 5362.110881052911,
+      "finished": 1792024733.0719204
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/can_meat-n4-i4/attempts/04.json",
+      "sha256": "5b26a710d150ee1516e9f4895e4abb5ccf9a89bf8d0fb6a95b03790042debf60",
+      "gpu": 2,
+      "part": "can_meat-n4-i4",
+      "num_envs": 4,
+      "controls": 71084,
+      "seconds": 5336.747017403133,
+      "finished": 1792030821.5835176
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/can_meat-n2-i8/attempts/08.json",
+      "sha256": "6f1a101f668b7ed1215cea573958fd0030505771cdb73acb745355ca13f00cca",
+      "gpu": 2,
+      "part": "can_meat-n2-i8",
+      "num_envs": 2,
+      "controls": 35542,
+      "seconds": 3002.515061453916,
+      "finished": 1792034259.4249098
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/thawing_frozen_food-n4-i4/attempts/04.json",
+      "sha256": "2cd4ca61f010ec1e5b7700c6fddedd4d326461b5d4e3853e2b8009ec19c9657a",
+      "gpu": 3,
+      "part": "thawing_frozen_food-n4-i4",
+      "num_envs": 4,
+      "controls": 49380,
+      "seconds": 2850.147060997784,
+      "finished": 1791991823.9499598
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/thawing_frozen_food-n2-i8/attempts/08.json",
+      "sha256": "15242588c776a586bf9ea20c1908f46daf416b2e3a467a525c11c78d5d5dad1f",
+      "gpu": 3,
+      "part": "thawing_frozen_food-n2-i8",
+      "num_envs": 2,
+      "controls": 24690,
+      "seconds": 1743.1646180525422,
+      "finished": 1791993789.9825044
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearranging_kitchen_furniture-n4-i0/attempts/00.json",
+      "sha256": "d88cc17810996705c0e519f555d7b5ea6c778632299bcfa3d41b8c623c79d63b",
+      "gpu": 3,
+      "part": "rearranging_kitchen_furniture-n4-i0",
+      "num_envs": 4,
+      "controls": 53660,
+      "seconds": 2975.436346337199,
+      "finished": 1791997177.460242
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearranging_kitchen_furniture-n4-i4/attempts/04.json",
+      "sha256": "00e59846bb972f0c95b8f23a17008cb07da8a8eefc9fce1e629b9f6dfb48ca89",
+      "gpu": 3,
+      "part": "rearranging_kitchen_furniture-n4-i4",
+      "num_envs": 4,
+      "controls": 53660,
+      "seconds": 3038.6452579051256,
+      "finished": 1792000640.4718878
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearranging_kitchen_furniture-n2-i8/attempts/08.json",
+      "sha256": "a405c75d569973bc2dd489ba2dbfcc55e9aad23db0be4189fd433c31e006aee8",
+      "gpu": 3,
+      "part": "rearranging_kitchen_furniture-n2-i8",
+      "num_envs": 2,
+      "controls": 26830,
+      "seconds": 1898.9288303237408,
+      "finished": 1792002768.5436788
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/collecting_aluminum_cans-n4-i0/attempts/00.json",
+      "sha256": "edcd0f758548c5f4c467c9c83d9eb62710ed9c2ccf1d1ab061324140ba395a18",
+      "gpu": 3,
+      "part": "collecting_aluminum_cans-n4-i0",
+      "num_envs": 4,
+      "controls": 61220,
+      "seconds": 2766.868239042349,
+      "finished": 1792005800.98329
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/collecting_aluminum_cans-n4-i4/attempts/04.json",
+      "sha256": "1bec1b1b13e625fdc1d147f0a7a9d7f38ad5309456992928d22a85293ca0f7ba",
+      "gpu": 3,
+      "part": "collecting_aluminum_cans-n4-i4",
+      "num_envs": 4,
+      "controls": 61220,
+      "seconds": 2746.470663270913,
+      "finished": 1792008738.8401105
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/collecting_aluminum_cans-n2-i8/attempts/08.json",
+      "sha256": "276c6dd1964de8fe0eea3f673a6cc4f9c9dfee09305794d3776921a1cefb44ff",
+      "gpu": 3,
+      "part": "collecting_aluminum_cans-n2-i8",
+      "num_envs": 2,
+      "controls": 30610,
+      "seconds": 1703.7430178346112,
+      "finished": 1792010570.0212371
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/bringing_paper_to_recycling-n4-i0/attempts/00.json",
+      "sha256": "11bfba3717365f9d9791e1a2e67846a70e06fbdaa4bea3cb0fb7be1ee3ce6565",
+      "gpu": 3,
+      "part": "bringing_paper_to_recycling-n4-i0",
+      "num_envs": 4,
+      "controls": 67288,
+      "seconds": 3732.235883090645,
+      "finished": 1792014703.0977833
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/bringing_paper_to_recycling-n4-i4/attempts/04.json",
+      "sha256": "679fc6e4cc1ebe1ac734e06f56fac9be85f3a3f03f7791ff836fdc9f82dc0bb8",
+      "gpu": 3,
+      "part": "bringing_paper_to_recycling-n4-i4",
+      "num_envs": 4,
+      "controls": 67288,
+      "seconds": 3773.25009061303,
+      "finished": 1792018905.3691645
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/bringing_paper_to_recycling-n2-i8/attempts/08.json",
+      "sha256": "08249cc8bbda1fbddfaeb6d1a5bfb2bfe296ad28d6ca00e29eb400a4bfd3179e",
+      "gpu": 3,
+      "part": "bringing_paper_to_recycling-n2-i8",
+      "num_envs": 2,
+      "controls": 33644,
+      "seconds": 2417.3058669930324,
+      "finished": 1792021773.6819103
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dirty_dishes_in_sink-n4-i0/attempts/00.json",
+      "sha256": "a08f4c072b000cf6ec928f71409fa1d07b5d3def548919d73516a1bcdda48581",
+      "gpu": 3,
+      "part": "putting_dirty_dishes_in_sink-n4-i0",
+      "num_envs": 4,
+      "controls": 72892,
+      "seconds": 4060.732912915759,
+      "finished": 1792026211.4656649
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dirty_dishes_in_sink-n4-i4/attempts/04.json",
+      "sha256": "10b32770926024fc3e8e19f4e1691ce7340f634cb37ebc050dacfe2ef1d150dd",
+      "gpu": 3,
+      "part": "putting_dirty_dishes_in_sink-n4-i4",
+      "num_envs": 4,
+      "controls": 72892,
+      "seconds": 4150.53899587132,
+      "finished": 1792030734.682744
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dirty_dishes_in_sink-n2-i8/attempts/08.json",
+      "sha256": "c63f831202e44584331b56ce558854179cee3c6dfc0ab07c0dd0c3ebfaf4fb90",
+      "gpu": 3,
+      "part": "putting_dirty_dishes_in_sink-n2-i8",
+      "num_envs": 2,
+      "controls": 36446,
+      "seconds": 2490.7250333148986,
+      "finished": 1792033436.196964
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_shoes_on_rack-n2-i8/attempts/08.json",
+      "sha256": "5d271a5db66602f55ef2be1dd876c5ee6c8a5661610d0c98787b1de3b50f2375",
+      "gpu": 4,
+      "part": "putting_shoes_on_rack-n2-i8",
+      "num_envs": 2,
+      "controls": 21893,
+      "seconds": 1529.0144354123622,
+      "finished": 1791990122.6972628
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/bringing_water-n4-i0/attempts/00.json",
+      "sha256": "265b5192fa243951b81e428e6cb033c42cec5d25fbb8081f3e835f8b7751b3ec",
+      "gpu": 4,
+      "part": "bringing_water-n4-i0",
+      "num_envs": 4,
+      "controls": 56632,
+      "seconds": 4024.53538205754,
+      "finished": 1791994907.4903138
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/bringing_water-n4-i4/attempts/04.json",
+      "sha256": "81ea77e6c4e21d756c9930129093e9cce3f9f463629a03b668ac566cd8691c68",
+      "gpu": 4,
+      "part": "bringing_water-n4-i4",
+      "num_envs": 4,
+      "controls": 56632,
+      "seconds": 4028.67739889957,
+      "finished": 1791999831.7445638
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/bringing_water-n2-i8/attempts/08.json",
+      "sha256": "46fd16febb539a4afef1b113cc8f0330519aee0c7f4cabd13ba3132395943e89",
+      "gpu": 4,
+      "part": "bringing_water-n2-i8",
+      "num_envs": 2,
+      "controls": 28316,
+      "seconds": 2314.3247784236446,
+      "finished": 1792002523.9674602
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/sorting_bottles_cans_and_paper-n4-i0/attempts/00.json",
+      "sha256": "62e1ed3e30f8dca379b3f3687dc710e227047d0691434bd13e447f5c08405b4a",
+      "gpu": 4,
+      "part": "sorting_bottles_cans_and_paper-n4-i0",
+      "num_envs": 4,
+      "controls": 61584,
+      "seconds": 3683.1769598620012,
+      "finished": 1792006689.9879673
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/sorting_bottles_cans_and_paper-n4-i4/attempts/04.json",
+      "sha256": "9dd14ad4130b2a63d0db158d268fc04b005fb3d8a7b479735817999962f02525",
+      "gpu": 4,
+      "part": "sorting_bottles_cans_and_paper-n4-i4",
+      "num_envs": 4,
+      "controls": 61584,
+      "seconds": 3702.1691543646157,
+      "finished": 1792010816.2210143
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/sorting_bottles_cans_and_paper-n2-i8/attempts/08.json",
+      "sha256": "7636757a6bbb08a64e833f554b61aab139ebcefb6ae2870dfb41853ec178f3c8",
+      "gpu": 4,
+      "part": "sorting_bottles_cans_and_paper-n2-i8",
+      "num_envs": 2,
+      "controls": 30792,
+      "seconds": 2183.8471330385655,
+      "finished": 1792013377.0280955
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/wash_dog_toys-n4-i0/attempts/00.json",
+      "sha256": "5176a6d4d989620685f813927ab21bacfd6e58b0a85c64dd9d314848761382bf",
+      "gpu": 4,
+      "part": "wash_dog_toys-n4-i0",
+      "num_envs": 4,
+      "controls": 67340,
+      "seconds": 4527.774742106907,
+      "finished": 1792018518.8769968
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/wash_dog_toys-n4-i4/attempts/04.json",
+      "sha256": "0dd85150cb6c8d205d913d0eab6ca236aa894609b235acb829f00618cb755b1b",
+      "gpu": 4,
+      "part": "wash_dog_toys-n4-i4",
+      "num_envs": 4,
+      "controls": 67340,
+      "seconds": 4598.8662620848045,
+      "finished": 1792023749.3495245
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/wash_dog_toys-n2-i8/attempts/08.json",
+      "sha256": "a74add7ad75d8c37e381dfceca27d16bbbd0bf6bf410fe743fc6be2d2872c83e",
+      "gpu": 4,
+      "part": "wash_dog_toys-n2-i8",
+      "num_envs": 2,
+      "controls": 33670,
+      "seconds": 2642.5728153977543,
+      "finished": 1792026730.475774
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/freeze_pies-n4-i0/attempts/00.json",
+      "sha256": "6b21762d3ba7b93da8f3aef1c27cdc4156573567315e9faa629cabcf7666c465",
+      "gpu": 4,
+      "part": "freeze_pies-n4-i0",
+      "num_envs": 4,
+      "controls": 74732,
+      "seconds": 5479.307819880545,
+      "finished": 1792032967.1058056
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/preparing_lunch_box-n4-i4/attempts/04.json",
+      "sha256": "fb5fddd50720e34a1aa1cf5e0f053bdd3bf667197818ce50ae1bcfd264a235e8",
+      "gpu": 5,
+      "part": "preparing_lunch_box-n4-i4",
+      "num_envs": 4,
+      "controls": 49472,
+      "seconds": 3792.7448319345713,
+      "finished": 1791992435.5610893
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/preparing_lunch_box-n2-i8/attempts/08.json",
+      "sha256": "44844c884efb858139003391598b0e75b30962681e30a9aedc345ce68c2ca947",
+      "gpu": 5,
+      "part": "preparing_lunch_box-n2-i8",
+      "num_envs": 2,
+      "controls": 21942,
+      "seconds": 2056.4857429433614,
+      "finished": 1791994853.1436038
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_the_fire-n4-i0/attempts/00.json",
+      "sha256": "e05c00d927b38a6d721ed87fb46eaa10c5596f33a4ee978e122a04325975936c",
+      "gpu": 5,
+      "part": "setting_the_fire-n4-i0",
+      "num_envs": 4,
+      "controls": 54712,
+      "seconds": 3054.8285838468,
+      "finished": 1791998315.0019476
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_the_fire-n4-i4/attempts/04.json",
+      "sha256": "a0130958f271e4cea30927d0bce8e30611a9e84cb6e2d8d94f1bec8a51d4c554",
+      "gpu": 5,
+      "part": "setting_the_fire-n4-i4",
+      "num_envs": 4,
+      "controls": 54712,
+      "seconds": 3112.1020377036184,
+      "finished": 1792001832.7316198
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_the_fire-n2-i8/attempts/08.json",
+      "sha256": "508a54845ba6e640b9421e98b3c34037982b4e1efdfab6159bcb60fae5930db6",
+      "gpu": 5,
+      "part": "setting_the_fire-n2-i8",
+      "num_envs": 2,
+      "controls": 27356,
+      "seconds": 1866.0585640221834,
+      "finished": 1792003923.4591687
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/outfit_a_basic_toolbox-n4-i0/attempts/00.json",
+      "sha256": "aa525dc1f1ebb57a76aadc1b6469ee22246777a72663052f874552d739f7ba51",
+      "gpu": 5,
+      "part": "outfit_a_basic_toolbox-n4-i0",
+      "num_envs": 4,
+      "controls": 63828,
+      "seconds": 4162.141923592426,
+      "finished": 1792008709.5902612
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/outfit_a_basic_toolbox-n4-i4/attempts/04.json",
+      "sha256": "12f68cad55c96b9fc46fcc6e1075d5457803ccd59352d811d997de764f7064d6",
+      "gpu": 5,
+      "part": "outfit_a_basic_toolbox-n4-i4",
+      "num_envs": 4,
+      "controls": 63828,
+      "seconds": 4136.950187315233,
+      "finished": 1792013479.1765263
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/outfit_a_basic_toolbox-n2-i8/attempts/08.json",
+      "sha256": "e85e007c6c045f5f8ce41710a5179ba039b4502820e6c82dbb06a3f6ba7e210e",
+      "gpu": 5,
+      "part": "outfit_a_basic_toolbox-n2-i8",
+      "num_envs": 2,
+      "controls": 31914,
+      "seconds": 2470.217614869587,
+      "finished": 1792016781.3800917
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/put_together_a_basic_pruning_kit-n4-i0/attempts/00.json",
+      "sha256": "04eec7db0b18d8b80daf04a0af041d04f2b93d89dd5494e812e4bb474688c9a0",
+      "gpu": 5,
+      "part": "put_together_a_basic_pruning_kit-n4-i0",
+      "num_envs": 4,
+      "controls": 67588,
+      "seconds": 3507.2913942877203,
+      "finished": 1792020609.3047965
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/put_together_a_basic_pruning_kit-n4-i4/attempts/04.json",
+      "sha256": "afb62deec3bceebb006834136354068bb80233f7373fe65a393d27a79ce5964e",
+      "gpu": 5,
+      "part": "put_together_a_basic_pruning_kit-n4-i4",
+      "num_envs": 4,
+      "controls": 67588,
+      "seconds": 3532.3268989948556,
+      "finished": 1792024478.1342008
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/put_together_a_basic_pruning_kit-n2-i8/attempts/08.json",
+      "sha256": "db2dcd03e5f5d5f68382f7ca1c2fbcc9296eec4b00e13e1e53f4e1e64b8d920c",
+      "gpu": 5,
+      "part": "put_together_a_basic_pruning_kit-n2-i8",
+      "num_envs": 2,
+      "controls": 33794,
+      "seconds": 2143.9863190324977,
+      "finished": 1792026805.2362013
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cleaning_up_branches_and_twigs-n4-i0/attempts/00.json",
+      "sha256": "eb5a3bfd15c5acea9f85912359ba1c7a424d7c5bc17fae41378ced4bddf3c0a7",
+      "gpu": 5,
+      "part": "cleaning_up_branches_and_twigs-n4-i0",
+      "num_envs": 4,
+      "controls": 75164,
+      "seconds": 4303.569399323314,
+      "finished": 1792031530.6195254
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/wash_a_baseball_cap-n4-i4/attempts/04.json",
+      "sha256": "e5dcac6d12727856f420076246fdf68b5cca2a2c979d18a6efe847b98e145d75",
+      "gpu": 6,
+      "part": "wash_a_baseball_cap-n4-i4",
+      "num_envs": 4,
+      "controls": 50100,
+      "seconds": 3284.974024631083,
+      "finished": 1791992880.5000508
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/wash_a_baseball_cap-n2-i8/attempts/08.json",
+      "sha256": "d7fac16b09d6609cae355fc7028c13beccf5068adeba1204ae56c8e4e08e3151",
+      "gpu": 6,
+      "part": "wash_a_baseball_cap-n2-i8",
+      "num_envs": 2,
+      "controls": 25050,
+      "seconds": 1891.3343797512352,
+      "finished": 1791995096.7112846
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_up_broken_glass-n4-i0/attempts/00.json",
+      "sha256": "1abe0811be29d117212fb40fd483d4031883d40fcd423a03985580c15fb5ef13",
+      "gpu": 6,
+      "part": "clean_up_broken_glass-n4-i0",
+      "num_envs": 4,
+      "controls": 52152,
+      "seconds": 2797.6159577649087,
+      "finished": 1791998478.0516577
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_up_broken_glass-n4-i4/attempts/04.json",
+      "sha256": "369b5703e414c432c2f6b1c109d18dc45ef3296924bf938980164c5d0bf5111c",
+      "gpu": 6,
+      "part": "clean_up_broken_glass-n4-i4",
+      "num_envs": 4,
+      "controls": 52152,
+      "seconds": 2808.294383252971,
+      "finished": 1792001934.8633254
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_up_broken_glass-n2-i8/attempts/08.json",
+      "sha256": "5713085d970a3aca2988232253f21daa8ea3f466722068c0852a61582ddf124c",
+      "gpu": 6,
+      "part": "clean_up_broken_glass-n2-i8",
+      "num_envs": 2,
+      "controls": 26076,
+      "seconds": 1690.5769261587411,
+      "finished": 1792003850.7767332
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_mousetraps-n4-i0/attempts/00.json",
+      "sha256": "3d2bc19a2ac3969c7f0f0c8fc13dbc9f224fa2058cead7ef005cd8e796750cd0",
+      "gpu": 6,
+      "part": "setting_mousetraps-n4-i0",
+      "num_envs": 4,
+      "controls": 54450,
+      "seconds": 2627.6399571886286,
+      "finished": 1792006654.268936
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_mousetraps-n4-i4/attempts/04.json",
+      "sha256": "ffa6da1fe39213ca7cf134ff2e3808149327d33f29e50160c89509c3bfc4de7f",
+      "gpu": 6,
+      "part": "setting_mousetraps-n4-i4",
+      "num_envs": 4,
+      "controls": 61180,
+      "seconds": 2676.6811883626506,
+      "finished": 1792009509.0331593
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/setting_mousetraps-n2-i8/attempts/08.json",
+      "sha256": "8b871942109028f56dd27fff870be9b2006f8b7f768eff88ab39f8759f031e72",
+      "gpu": 6,
+      "part": "setting_mousetraps-n2-i8",
+      "num_envs": 2,
+      "controls": 30590,
+      "seconds": 1637.0317039666697,
+      "finished": 1792011258.3248503
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/carrying_out_garden_furniture-n4-i0/attempts/00.json",
+      "sha256": "c5770aa578e06b61b80c5883a6b249f2ae11face6125913e09908e542cde17c9",
+      "gpu": 6,
+      "part": "carrying_out_garden_furniture-n4-i0",
+      "num_envs": 4,
+      "controls": 66356,
+      "seconds": 4819.153962792829,
+      "finished": 1792016822.5195603
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/carrying_out_garden_furniture-n4-i4/attempts/04.json",
+      "sha256": "4680bf8c3d99694b6e9ecf7a0148e53f4794aeceb7d6cb32579b1fc4a492b092",
+      "gpu": 6,
+      "part": "carrying_out_garden_furniture-n4-i4",
+      "num_envs": 4,
+      "controls": 66356,
+      "seconds": 4740.298431797884,
+      "finished": 1792022315.8205707
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/carrying_out_garden_furniture-n2-i8/attempts/08.json",
+      "sha256": "9b2544a16473a2502ded3f575ce1ca9634fc87b0834794cf55e124101b71fa7e",
+      "gpu": 6,
+      "part": "carrying_out_garden_furniture-n2-i8",
+      "num_envs": 2,
+      "controls": 33178,
+      "seconds": 2750.40232036449,
+      "finished": 1792025447.3860738
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n4-i0/attempts/00.json",
+      "sha256": "32d0c84492bafb75001ee4380b4e082661ffdfc53d2990b46eb7c1c2771175a4",
+      "gpu": 6,
+      "part": "clean_a_patio-n4-i0",
+      "num_envs": 4,
+      "controls": 72428,
+      "seconds": 4242.982056279667,
+      "finished": 1792030485.0442617
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/boxing_food_after_dinner-n4-i4/attempts/04.json",
+      "sha256": "94a246fdba70f94368aefb778985440ca2a148b2e601c789324a1a6210fd1c46",
+      "gpu": 7,
+      "part": "boxing_food_after_dinner-n4-i4",
+      "num_envs": 4,
+      "controls": 40188,
+      "seconds": 3015.738110506907,
+      "finished": 1791992376.002849
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/boxing_food_after_dinner-n2-i8/attempts/08.json",
+      "sha256": "0bf921391dc2610a3895abb35664ec4bf0c5346f2a06051a748b0be50019cd74",
+      "gpu": 7,
+      "part": "boxing_food_after_dinner-n2-i8",
+      "num_envs": 2,
+      "controls": 20094,
+      "seconds": 1706.3428499046713,
+      "finished": 1791994450.9224703
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_boxing_gloves-n4-i0/attempts/00.json",
+      "sha256": "bdc2c7a260372870861b24b0d133b65c5783e2de155591ab48d0c064c7311ebb",
+      "gpu": 7,
+      "part": "clean_boxing_gloves-n4-i0",
+      "num_envs": 4,
+      "controls": 46468,
+      "seconds": 3209.3925796970725,
+      "finished": 1791998276.0986717
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_boxing_gloves-n4-i4/attempts/04.json",
+      "sha256": "02727a6a5798715919c72544eb91bdfc3b4ec145acbbfd136165adb3053fd11c",
+      "gpu": 7,
+      "part": "clean_boxing_gloves-n4-i4",
+      "num_envs": 4,
+      "controls": 49416,
+      "seconds": 3191.1775377439335,
+      "finished": 1792002082.2459664
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_boxing_gloves-n2-i8/attempts/08.json",
+      "sha256": "8c5c56824ab97292dbad631d0c5961f2926d0fd05c97221d521e9ed5d7e5493f",
+      "gpu": 7,
+      "part": "clean_boxing_gloves-n2-i8",
+      "num_envs": 2,
+      "controls": 21189,
+      "seconds": 1818.3512356737629,
+      "finished": 1792004280.6353312
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_hot_dogs-n4-i0/attempts/00.json",
+      "sha256": "c7aba1036486f2e1dee31941b03ca0b93de77229b2f7a2082aaee9c07b343477",
+      "gpu": 7,
+      "part": "cook_hot_dogs-n4-i0",
+      "num_envs": 4,
+      "controls": 49596,
+      "seconds": 4109.608372237533,
+      "finished": 1792009111.5650766
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_hot_dogs-n4-i4/attempts/04.json",
+      "sha256": "ba80eccf6e393f146e02ff60993fcfda9e1754a91e15480947ec0b5314c26746",
+      "gpu": 7,
+      "part": "cook_hot_dogs-n4-i4",
+      "num_envs": 4,
+      "controls": 43265,
+      "seconds": 4093.582098800689,
+      "finished": 1792013947.6709716
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cook_hot_dogs-n2-i8/attempts/08.json",
+      "sha256": "dbe90f818814c10c7272335561ac0a1cc268464fa46c324d166720608125179b",
+      "gpu": 7,
+      "part": "cook_hot_dogs-n2-i8",
+      "num_envs": 2,
+      "controls": 19587,
+      "seconds": 2159.7929026354104,
+      "finished": 1792016554.0337217
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/make_gift_bags_for_baby_showers-n4-i0/attempts/00.json",
+      "sha256": "d5083a023f2563a38473c6b8ece328b1e87cd2412b66af20751dbd33d6cbe7d5",
+      "gpu": 7,
+      "part": "make_gift_bags_for_baby_showers-n4-i0",
+      "num_envs": 4,
+      "controls": 57908,
+      "seconds": 3012.6989672565833,
+      "finished": 1792019848.9438171
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/make_gift_bags_for_baby_showers-n4-i4/attempts/04.json",
+      "sha256": "be49b104223faff50b156b75488bfb875d49f9f3ba5fef4118811a1cbb130bcf",
+      "gpu": 7,
+      "part": "make_gift_bags_for_baby_showers-n4-i4",
+      "num_envs": 4,
+      "controls": 57908,
+      "seconds": 3069.23537523672,
+      "finished": 1792023190.4779842
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/make_gift_bags_for_baby_showers-n2-i8/attempts/08.json",
+      "sha256": "b97e0cdb3c8bca55259f56dba34fa23ad2fda2d401f12d7f6ca4dbfc06178f52",
+      "gpu": 7,
+      "part": "make_gift_bags_for_baby_showers-n2-i8",
+      "num_envs": 2,
+      "controls": 28954,
+      "seconds": 1847.104759930633,
+      "finished": 1792025198.021189
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dishes_away_after_cleaning-n4-i0/attempts/00.json",
+      "sha256": "04bbedd87fefcbb2db566499d35aed08001eb4f38465d974df55b0e40e70dc0d",
+      "gpu": 7,
+      "part": "putting_dishes_away_after_cleaning-n4-i0",
+      "num_envs": 4,
+      "controls": 65724,
+      "seconds": 5934.128906099126,
+      "finished": 1792031874.1426759
+    }
+  ],
+  "loading_samples": {
+    "2": [
+      {
+        "part": "cook_a_frozen_pie-n2-i8",
+        "seconds": 131.96991419792175
+      },
+      {
+        "part": "store_produce-n2-i8",
+        "seconds": 129.7922441959381
+      },
+      {
+        "part": "polishing_shoes-n2-i8",
+        "seconds": 121.07874822616577
+      },
+      {
+        "part": "putting_away_toys-n2-i8",
+        "seconds": 344.31833958625793
+      },
+      {
+        "part": "sorting_books_on_shelf-n2-i8",
+        "seconds": 103.73558068275452
+      },
+      {
+        "part": "packing_meal_for_delivery-n2-i8",
+        "seconds": 150.62356734275818
+      },
+      {
+        "part": "turning_out_all_lights_before_sleep-n2-i8",
+        "seconds": 387.25343012809753
+      },
+      {
+        "part": "tidying_bedroom-n2-i8",
+        "seconds": 307.99220061302185
+      },
+      {
+        "part": "spraying_fruit_trees-n2-i8",
+        "seconds": 225.4971420764923
+      },
+      {
+        "part": "dispose_of_glass-n2-i8",
+        "seconds": 110.27532052993774
+      },
+      {
+        "part": "re_shelving_library_books-n2-i8",
+        "seconds": 109.08358979225159
+      },
+      {
+        "part": "chopping_wood-n2-i8",
+        "seconds": 222.6743245124817
+      },
+      {
+        "part": "can_meat-n2-i8",
+        "seconds": 358.16894030570984
+      },
+      {
+        "part": "thawing_frozen_food-n2-i8",
+        "seconds": 213.35832333564758
+      },
+      {
+        "part": "rearranging_kitchen_furniture-n2-i8",
+        "seconds": 211.92768001556396
+      },
+      {
+        "part": "collecting_aluminum_cans-n2-i8",
+        "seconds": 113.81513118743896
+      },
+      {
+        "part": "bringing_paper_to_recycling-n2-i8",
+        "seconds": 201.26698327064514
+      },
+      {
+        "part": "putting_dirty_dishes_in_sink-n2-i8",
+        "seconds": 204.07129311561584
+      },
+      {
+        "part": "putting_shoes_on_rack-n2-i8",
+        "seconds": 184.6185986995697
+      },
+      {
+        "part": "bringing_water-n2-i8",
+        "seconds": 367.84192180633545
+      },
+      {
+        "part": "sorting_bottles_cans_and_paper-n2-i8",
+        "seconds": 216.559641122818
+      },
+      {
+        "part": "wash_dog_toys-n2-i8",
+        "seconds": 328.18649983406067
+      },
+      {
+        "part": "preparing_lunch_box-n2-i8",
+        "seconds": 352.45910692214966
+      },
+      {
+        "part": "setting_the_fire-n2-i8",
+        "seconds": 213.84897375106812
+      },
+      {
+        "part": "outfit_a_basic_toolbox-n2-i8",
+        "seconds": 316.0532352924347
+      },
+      {
+        "part": "put_together_a_basic_pruning_kit-n2-i8",
+        "seconds": 175.81197595596313
+      },
+      {
+        "part": "wash_a_baseball_cap-n2-i8",
+        "seconds": 315.8651473522186
+      },
+      {
+        "part": "clean_up_broken_glass-n2-i8",
+        "seconds": 215.10243821144104
+      },
+      {
+        "part": "setting_mousetraps-n2-i8",
+        "seconds": 102.81009554862976
+      },
+      {
+        "part": "carrying_out_garden_furniture-n2-i8",
+        "seconds": 370.81470251083374
+      },
+      {
+        "part": "boxing_food_after_dinner-n2-i8",
+        "seconds": 360.35223627090454
+      },
+      {
+        "part": "clean_boxing_gloves-n2-i8",
+        "seconds": 296.5270712375641
+      },
+      {
+        "part": "cook_hot_dogs-n2-i8",
+        "seconds": 356.5683763027191
+      },
+      {
+        "part": "make_gift_bags_for_baby_showers-n2-i8",
+        "seconds": 153.8749816417694
+      }
+    ],
+    "4": [
+      {
+        "part": "cook_a_frozen_pie-n4-i0",
+        "seconds": 194.1595492362976
+      },
+      {
+        "part": "cook_a_frozen_pie-n4-i4",
+        "seconds": 229.45800924301147
+      },
+      {
+        "part": "store_produce-n4-i0",
+        "seconds": 235.35625314712524
+      },
+      {
+        "part": "store_produce-n4-i4",
+        "seconds": 229.53718400001526
+      },
+      {
+        "part": "polishing_shoes-n4-i0",
+        "seconds": 187.81136989593506
+      },
+      {
+        "part": "polishing_shoes-n4-i4",
+        "seconds": 195.53193593025208
+      },
+      {
+        "part": "putting_away_toys-n4-i0",
+        "seconds": 719.0942983627319
+      },
+      {
+        "part": "putting_away_toys-n4-i4",
+        "seconds": 740.454735994339
+      },
+      {
+        "part": "tidying_living_room-n4-i0",
+        "seconds": 175.15558004379272
+      },
+      {
+        "part": "tidying_living_room-n4-i4",
+        "seconds": 167.00445413589478
+      },
+      {
+        "part": "sorting_books_on_shelf-n4-i0",
+        "seconds": 132.9975643157959
+      },
+      {
+        "part": "sorting_books_on_shelf-n4-i4",
+        "seconds": 171.1049621105194
+      },
+      {
+        "part": "packing_meal_for_delivery-n4-i0",
+        "seconds": 269.8991816043854
+      },
+      {
+        "part": "packing_meal_for_delivery-n4-i4",
+        "seconds": 271.91669154167175
+      },
+      {
+        "part": "turning_out_all_lights_before_sleep-n4-i0",
+        "seconds": 794.0342304706573
+      },
+      {
+        "part": "turning_out_all_lights_before_sleep-n4-i4",
+        "seconds": 811.2994430065155
+      },
+      {
+        "part": "tidying_bedroom-n4-i0",
+        "seconds": 597.8188118934631
+      },
+      {
+        "part": "tidying_bedroom-n4-i4",
+        "seconds": 610.705717086792
+      },
+      {
+        "part": "spraying_fruit_trees-n4-i4",
+        "seconds": 341.40505838394165
+      },
+      {
+        "part": "dispose_of_glass-n4-i0",
+        "seconds": 194.130521774292
+      },
+      {
+        "part": "dispose_of_glass-n4-i4",
+        "seconds": 198.99475121498108
+      },
+      {
+        "part": "re_shelving_library_books-n4-i0",
+        "seconds": 168.19911074638367
+      },
+      {
+        "part": "re_shelving_library_books-n4-i4",
+        "seconds": 169.95534110069275
+      },
+      {
+        "part": "chopping_wood-n4-i0",
+        "seconds": 409.54323291778564
+      },
+      {
+        "part": "chopping_wood-n4-i4",
+        "seconds": 413.942617893219
+      },
+      {
+        "part": "can_meat-n4-i0",
+        "seconds": 708.915634393692
+      },
+      {
+        "part": "can_meat-n4-i4",
+        "seconds": 741.0705153942108
+      },
+      {
+        "part": "rearrange_your_room-n4-i0",
+        "seconds": 182.531503200531
+      },
+      {
+        "part": "thawing_frozen_food-n4-i4",
+        "seconds": 378.45608949661255
+      },
+      {
+        "part": "rearranging_kitchen_furniture-n4-i0",
+        "seconds": 406.3731632232666
+      },
+      {
+        "part": "rearranging_kitchen_furniture-n4-i4",
+        "seconds": 413.10266852378845
+      },
+      {
+        "part": "collecting_aluminum_cans-n4-i0",
+        "seconds": 177.59049582481384
+      },
+      {
+        "part": "collecting_aluminum_cans-n4-i4",
+        "seconds": 182.851256608963
+      },
+      {
+        "part": "bringing_paper_to_recycling-n4-i0",
+        "seconds": 391.68629908561707
+      },
+      {
+        "part": "bringing_paper_to_recycling-n4-i4",
+        "seconds": 418.5587737560272
+      },
+      {
+        "part": "putting_dirty_dishes_in_sink-n4-i0",
+        "seconds": 368.1814730167389
+      },
+      {
+        "part": "putting_dirty_dishes_in_sink-n4-i4",
+        "seconds": 362.06503033638
+      },
+      {
+        "part": "clearing_food_from_table_into_fridge-n4-i0",
+        "seconds": 418.79468870162964
+      },
+      {
+        "part": "bringing_water-n4-i0",
+        "seconds": 747.0368797779083
+      },
+      {
+        "part": "bringing_water-n4-i4",
+        "seconds": 731.1270229816437
+      },
+      {
+        "part": "sorting_bottles_cans_and_paper-n4-i0",
+        "seconds": 409.04581904411316
+      },
+      {
+        "part": "sorting_bottles_cans_and_paper-n4-i4",
+        "seconds": 416.1435663700104
+      },
+      {
+        "part": "wash_dog_toys-n4-i0",
+        "seconds": 607.0678398609161
+      },
+      {
+        "part": "wash_dog_toys-n4-i4",
+        "seconds": 621.1301836967468
+      },
+      {
+        "part": "freeze_pies-n4-i0",
+        "seconds": 749.1090869903564
+      },
+      {
+        "part": "freeze_pies-n4-i4",
+        "seconds": 755.9183785915375
+      },
+      {
+        "part": "preparing_lunch_box-n4-i4",
+        "seconds": 638.4312484264374
+      },
+      {
+        "part": "setting_the_fire-n4-i0",
+        "seconds": 398.74954319000244
+      },
+      {
+        "part": "setting_the_fire-n4-i4",
+        "seconds": 395.8739643096924
+      },
+      {
+        "part": "outfit_a_basic_toolbox-n4-i0",
+        "seconds": 616.9983842372894
+      },
+      {
+        "part": "outfit_a_basic_toolbox-n4-i4",
+        "seconds": 622.124073266983
+      },
+      {
+        "part": "put_together_a_basic_pruning_kit-n4-i0",
+        "seconds": 309.38886427879333
+      },
+      {
+        "part": "put_together_a_basic_pruning_kit-n4-i4",
+        "seconds": 329.0874571800232
+      },
+      {
+        "part": "cleaning_up_branches_and_twigs-n4-i0",
+        "seconds": 414.4905319213867
+      },
+      {
+        "part": "cleaning_up_branches_and_twigs-n4-i4",
+        "seconds": 426.25450801849365
+      },
+      {
+        "part": "wash_a_baseball_cap-n4-i4",
+        "seconds": 619.8450858592987
+      },
+      {
+        "part": "clean_up_broken_glass-n4-i0",
+        "seconds": 417.4492127895355
+      },
+      {
+        "part": "clean_up_broken_glass-n4-i4",
+        "seconds": 399.7022798061371
+      },
+      {
+        "part": "setting_mousetraps-n4-i0",
+        "seconds": 169.88214206695557
+      },
+      {
+        "part": "setting_mousetraps-n4-i4",
+        "seconds": 167.7306866645813
+      },
+      {
+        "part": "carrying_out_garden_furniture-n4-i0",
+        "seconds": 734.1568903923035
+      },
+      {
+        "part": "carrying_out_garden_furniture-n4-i4",
+        "seconds": 734.520085811615
+      },
+      {
+        "part": "clean_a_patio-n4-i0",
+        "seconds": 403.8422610759735
+      },
+      {
+        "part": "clean_a_patio-n4-i4",
+        "seconds": 396.28300619125366
+      },
+      {
+        "part": "boxing_food_after_dinner-n4-i4",
+        "seconds": 714.8879189491272
+      },
+      {
+        "part": "clean_boxing_gloves-n4-i0",
+        "seconds": 605.5152745246887
+      },
+      {
+        "part": "clean_boxing_gloves-n4-i4",
+        "seconds": 605.946270942688
+      },
+      {
+        "part": "cook_hot_dogs-n4-i0",
+        "seconds": 714.1364824771881
+      },
+      {
+        "part": "cook_hot_dogs-n4-i4",
+        "seconds": 731.11279296875
+      },
+      {
+        "part": "make_gift_bags_for_baby_showers-n4-i0",
+        "seconds": 270.5434057712555
+      },
+      {
+        "part": "make_gift_bags_for_baby_showers-n4-i4",
+        "seconds": 262.7149393558502
+      },
+      {
+        "part": "putting_dishes_away_after_cleaning-n4-i0",
+        "seconds": 735.8561370372772
+      },
+      {
+        "part": "putting_dishes_away_after_cleaning-n4-i4",
+        "seconds": 737.2594707012177
+      }
+    ]
+  },
+  "champion_remaining": [
+    {
+      "gpu": 0,
+      "remaining_cases": 36,
+      "parts": [
+        {
+          "part": "tidying_living_room-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 30596,
+          "credited_coarse_physical_controls": 44800,
+          "load_pending": false
+        },
+        {
+          "part": "tidying_living_room-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 37698,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "putting_up_Christmas_decorations_inside-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 82316,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "putting_up_Christmas_decorations_inside-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 82316,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "putting_up_Christmas_decorations_inside-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 41158,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "slicing_vegetables-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 89072,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "slicing_vegetables-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 89072,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "slicing_vegetables-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 44536,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "assembling_gift_baskets-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 156364,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "assembling_gift_baskets-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 156364,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "assembling_gift_baskets-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 78182,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 1,
+      "remaining_cases": 52,
+      "parts": [
+        {
+          "part": "tidying_bedroom-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 23114,
+          "credited_coarse_physical_controls": 10000,
+          "load_pending": false
+        },
+        {
+          "part": "unloading_the_car-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 67944,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "unloading_the_car-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 67944,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "unloading_the_car-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 33972,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "freeze_fruit-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 75716,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "freeze_fruit-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 75716,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "freeze_fruit-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 37858,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "putting_away_Halloween_decorations-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 82732,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "putting_away_Halloween_decorations-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 82732,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "putting_away_Halloween_decorations-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 41366,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "clean_your_rusty_garden_tools-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 90948,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "clean_your_rusty_garden_tools-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 90948,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "clean_your_rusty_garden_tools-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 45474,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "boxing_books_up_for_storage-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 145368,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "boxing_books_up_for_storage-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 145368,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "boxing_books_up_for_storage-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 72684,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 2,
+      "remaining_cases": 40,
+      "parts": [
+        {
+          "part": "rearrange_your_room-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 69132,
+          "credited_coarse_physical_controls": 8000,
+          "load_pending": false
+        },
+        {
+          "part": "rearrange_your_room-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 77132,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "rearrange_your_room-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 38566,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "cook_cabbage-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 84872,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "cook_cabbage-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 84872,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "cook_cabbage-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 42436,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "cook_brussels_sprouts-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 93972,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "cook_brussels_sprouts-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 93972,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "cook_brussels_sprouts-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 46986,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "canning_food-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 137856,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "canning_food-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 137856,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "canning_food-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 68928,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 3,
+      "remaining_cases": 40,
+      "parts": [
+        {
+          "part": "clearing_food_from_table_into_fridge-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 62412,
+          "credited_coarse_physical_controls": 16000,
+          "load_pending": false
+        },
+        {
+          "part": "clearing_food_from_table_into_fridge-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 78412,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "clearing_food_from_table_into_fridge-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 39206,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "laying_tile_floors-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 86108,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "laying_tile_floors-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 86108,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "laying_tile_floors-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 43054,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "getting_organized_for_work-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 94028,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "getting_organized_for_work-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 94028,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "getting_organized_for_work-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 47014,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "clean_up_your_desk-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 128508,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "clean_up_your_desk-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 128508,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "clean_up_your_desk-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 64254,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 4,
+      "remaining_cases": 46,
+      "parts": [
+        {
+          "part": "freeze_pies-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 60732,
+          "credited_coarse_physical_controls": 14000,
+          "load_pending": false
+        },
+        {
+          "part": "freeze_pies-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 37366,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "bringing_in_wood-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 81216,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "bringing_in_wood-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 81216,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "bringing_in_wood-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 40608,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "organizing_school_stuff-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 87552,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "organizing_school_stuff-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 87552,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "organizing_school_stuff-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 43776,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_household_items-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 94848,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_household_items-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 94848,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_household_items-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 47424,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "storing_food-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 119216,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "storing_food-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 119216,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "storing_food-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 59608,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 5,
+      "remaining_cases": 46,
+      "parts": [
+        {
+          "part": "cleaning_up_branches_and_twigs-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 25164,
+          "credited_coarse_physical_controls": 50000,
+          "load_pending": false
+        },
+        {
+          "part": "cleaning_up_branches_and_twigs-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 37582,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "cleaning_up_plates_and_food-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 82180,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "cleaning_up_plates_and_food-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 82180,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "cleaning_up_plates_and_food-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 41090,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "moving_boxes_to_storage-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 87580,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "moving_boxes_to_storage-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 87580,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "moving_boxes_to_storage-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 43790,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "stacking_wood-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 95640,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "stacking_wood-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 95640,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "stacking_wood-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 47820,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "loading_the_car-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 115360,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "loading_the_car-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 115360,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "loading_the_car-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 57680,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 6,
+      "remaining_cases": 46,
+      "parts": [
+        {
+          "part": "clean_a_patio-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 4028,
+          "credited_coarse_physical_controls": 68400,
+          "load_pending": false
+        },
+        {
+          "part": "clean_a_patio-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 36214,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "setup_a_bar_for_a_cocktail_party-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 80516,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "setup_a_bar_for_a_cocktail_party-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 80516,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "setup_a_bar_for_a_cocktail_party-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 40258,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "dispose_of_batteries-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 86572,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "dispose_of_batteries-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 86572,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "dispose_of_batteries-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 43286,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "setting_the_table-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 106852,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "setting_the_table-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 106852,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "setting_the_table-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 53426,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "make_pizza-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 115124,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "make_pizza-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 115124,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "make_pizza-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 57562,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 7,
+      "remaining_cases": 56,
+      "parts": [
+        {
+          "part": "putting_dishes_away_after_cleaning-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 37324,
+          "credited_coarse_physical_controls": 28400,
+          "load_pending": false
+        },
+        {
+          "part": "putting_dishes_away_after_cleaning-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 32862,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_vegetables-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 71424,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_vegetables-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 71424,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_vegetables-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 35712,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "tidying_bathroom-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 78020,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "tidying_bathroom-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 78020,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "tidying_bathroom-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 39010,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "carrying_in_groceries-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 85652,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "carrying_in_groceries-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 85652,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "carrying_in_groceries-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 42826,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "picking_up_toys-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 113344,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "picking_up_toys-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 113344,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "picking_up_toys-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 56672,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "collecting_childrens_toys-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 115120,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "collecting_childrens_toys-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 115120,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        },
+        {
+          "part": "collecting_childrens_toys-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 57560,
+          "credited_coarse_physical_controls": 0,
+          "load_pending": true
+        }
+      ]
+    }
+  ],
+  "mem_remaining": [
+    {
+      "gpu": 0,
+      "remaining_cases": 60,
+      "parts": [
+        {
+          "part": "polishing_shoes-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 64428,
+          "load_pending": true
+        },
+        {
+          "part": "polishing_shoes-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 64428,
+          "load_pending": true
+        },
+        {
+          "part": "polishing_shoes-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 32214,
+          "load_pending": true
+        },
+        {
+          "part": "putting_away_toys-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 67784,
+          "load_pending": true
+        },
+        {
+          "part": "putting_away_toys-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 67784,
+          "load_pending": true
+        },
+        {
+          "part": "putting_away_toys-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 33892,
+          "load_pending": true
+        },
+        {
+          "part": "tidying_living_room-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 75396,
+          "load_pending": true
+        },
+        {
+          "part": "tidying_living_room-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 75396,
+          "load_pending": true
+        },
+        {
+          "part": "tidying_living_room-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 37698,
+          "load_pending": true
+        },
+        {
+          "part": "putting_up_Christmas_decorations_inside-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 82316,
+          "load_pending": true
+        },
+        {
+          "part": "putting_up_Christmas_decorations_inside-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 82316,
+          "load_pending": true
+        },
+        {
+          "part": "putting_up_Christmas_decorations_inside-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 41158,
+          "load_pending": true
+        },
+        {
+          "part": "slicing_vegetables-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 89072,
+          "load_pending": true
+        },
+        {
+          "part": "slicing_vegetables-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 89072,
+          "load_pending": true
+        },
+        {
+          "part": "slicing_vegetables-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 44536,
+          "load_pending": true
+        },
+        {
+          "part": "assembling_gift_baskets-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 156364,
+          "load_pending": true
+        },
+        {
+          "part": "assembling_gift_baskets-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 156364,
+          "load_pending": true
+        },
+        {
+          "part": "assembling_gift_baskets-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 78182,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 1,
+      "remaining_cases": 70,
+      "parts": [
+        {
+          "part": "turning_out_all_lights_before_sleep-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 60040,
+          "load_pending": true
+        },
+        {
+          "part": "turning_out_all_lights_before_sleep-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 60040,
+          "load_pending": true
+        },
+        {
+          "part": "turning_out_all_lights_before_sleep-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 30020,
+          "load_pending": true
+        },
+        {
+          "part": "tidying_bedroom-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 66228,
+          "load_pending": true
+        },
+        {
+          "part": "tidying_bedroom-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 66228,
+          "load_pending": true
+        },
+        {
+          "part": "tidying_bedroom-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 33114,
+          "load_pending": true
+        },
+        {
+          "part": "unloading_the_car-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 67944,
+          "load_pending": true
+        },
+        {
+          "part": "unloading_the_car-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 67944,
+          "load_pending": true
+        },
+        {
+          "part": "unloading_the_car-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 33972,
+          "load_pending": true
+        },
+        {
+          "part": "freeze_fruit-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 75716,
+          "load_pending": true
+        },
+        {
+          "part": "freeze_fruit-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 75716,
+          "load_pending": true
+        },
+        {
+          "part": "freeze_fruit-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 37858,
+          "load_pending": true
+        },
+        {
+          "part": "putting_away_Halloween_decorations-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 82732,
+          "load_pending": true
+        },
+        {
+          "part": "putting_away_Halloween_decorations-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 82732,
+          "load_pending": true
+        },
+        {
+          "part": "putting_away_Halloween_decorations-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 41366,
+          "load_pending": true
+        },
+        {
+          "part": "clean_your_rusty_garden_tools-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 90948,
+          "load_pending": true
+        },
+        {
+          "part": "clean_your_rusty_garden_tools-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 90948,
+          "load_pending": true
+        },
+        {
+          "part": "clean_your_rusty_garden_tools-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 45474,
+          "load_pending": true
+        },
+        {
+          "part": "boxing_books_up_for_storage-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 145368,
+          "load_pending": true
+        },
+        {
+          "part": "boxing_books_up_for_storage-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 145368,
+          "load_pending": true
+        },
+        {
+          "part": "boxing_books_up_for_storage-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 72684,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 2,
+      "remaining_cases": 76,
+      "parts": [
+        {
+          "part": "dispose_of_glass-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 55172,
+          "load_pending": true
+        },
+        {
+          "part": "dispose_of_glass-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 27586,
+          "load_pending": true
+        },
+        {
+          "part": "re_shelving_library_books-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 57172,
+          "load_pending": true
+        },
+        {
+          "part": "re_shelving_library_books-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 57172,
+          "load_pending": true
+        },
+        {
+          "part": "re_shelving_library_books-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 28586,
+          "load_pending": true
+        },
+        {
+          "part": "chopping_wood-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 64512,
+          "load_pending": true
+        },
+        {
+          "part": "chopping_wood-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 64512,
+          "load_pending": true
+        },
+        {
+          "part": "chopping_wood-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 32256,
+          "load_pending": true
+        },
+        {
+          "part": "can_meat-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 71084,
+          "load_pending": true
+        },
+        {
+          "part": "can_meat-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 71084,
+          "load_pending": true
+        },
+        {
+          "part": "can_meat-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 35542,
+          "load_pending": true
+        },
+        {
+          "part": "rearrange_your_room-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 77132,
+          "load_pending": true
+        },
+        {
+          "part": "rearrange_your_room-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 77132,
+          "load_pending": true
+        },
+        {
+          "part": "rearrange_your_room-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 38566,
+          "load_pending": true
+        },
+        {
+          "part": "cook_cabbage-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 84872,
+          "load_pending": true
+        },
+        {
+          "part": "cook_cabbage-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 84872,
+          "load_pending": true
+        },
+        {
+          "part": "cook_cabbage-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 42436,
+          "load_pending": true
+        },
+        {
+          "part": "cook_brussels_sprouts-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 93972,
+          "load_pending": true
+        },
+        {
+          "part": "cook_brussels_sprouts-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 93972,
+          "load_pending": true
+        },
+        {
+          "part": "cook_brussels_sprouts-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 46986,
+          "load_pending": true
+        },
+        {
+          "part": "canning_food-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 137856,
+          "load_pending": true
+        },
+        {
+          "part": "canning_food-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 137856,
+          "load_pending": true
+        },
+        {
+          "part": "canning_food-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 68928,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 3,
+      "remaining_cases": 72,
+      "parts": [
+        {
+          "part": "rearranging_kitchen_furniture-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 26830,
+          "load_pending": true
+        },
+        {
+          "part": "collecting_aluminum_cans-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 61220,
+          "load_pending": true
+        },
+        {
+          "part": "collecting_aluminum_cans-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 61220,
+          "load_pending": true
+        },
+        {
+          "part": "collecting_aluminum_cans-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 30610,
+          "load_pending": true
+        },
+        {
+          "part": "bringing_paper_to_recycling-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 67288,
+          "load_pending": true
+        },
+        {
+          "part": "bringing_paper_to_recycling-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 67288,
+          "load_pending": true
+        },
+        {
+          "part": "bringing_paper_to_recycling-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 33644,
+          "load_pending": true
+        },
+        {
+          "part": "putting_dirty_dishes_in_sink-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 72892,
+          "load_pending": true
+        },
+        {
+          "part": "putting_dirty_dishes_in_sink-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 72892,
+          "load_pending": true
+        },
+        {
+          "part": "putting_dirty_dishes_in_sink-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 36446,
+          "load_pending": true
+        },
+        {
+          "part": "clearing_food_from_table_into_fridge-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 78412,
+          "load_pending": true
+        },
+        {
+          "part": "clearing_food_from_table_into_fridge-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 78412,
+          "load_pending": true
+        },
+        {
+          "part": "clearing_food_from_table_into_fridge-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 39206,
+          "load_pending": true
+        },
+        {
+          "part": "laying_tile_floors-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 86108,
+          "load_pending": true
+        },
+        {
+          "part": "laying_tile_floors-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 86108,
+          "load_pending": true
+        },
+        {
+          "part": "laying_tile_floors-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 43054,
+          "load_pending": true
+        },
+        {
+          "part": "getting_organized_for_work-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 94028,
+          "load_pending": true
+        },
+        {
+          "part": "getting_organized_for_work-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 94028,
+          "load_pending": true
+        },
+        {
+          "part": "getting_organized_for_work-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 47014,
+          "load_pending": true
+        },
+        {
+          "part": "clean_up_your_desk-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 128508,
+          "load_pending": true
+        },
+        {
+          "part": "clean_up_your_desk-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 128508,
+          "load_pending": true
+        },
+        {
+          "part": "clean_up_your_desk-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 64254,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 4,
+      "remaining_cases": 76,
+      "parts": [
+        {
+          "part": "bringing_water-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 56632,
+          "load_pending": true
+        },
+        {
+          "part": "bringing_water-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 28316,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_bottles_cans_and_paper-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 61584,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_bottles_cans_and_paper-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 61584,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_bottles_cans_and_paper-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 30792,
+          "load_pending": true
+        },
+        {
+          "part": "wash_dog_toys-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 67340,
+          "load_pending": true
+        },
+        {
+          "part": "wash_dog_toys-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 67340,
+          "load_pending": true
+        },
+        {
+          "part": "wash_dog_toys-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 33670,
+          "load_pending": true
+        },
+        {
+          "part": "freeze_pies-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 74732,
+          "load_pending": true
+        },
+        {
+          "part": "freeze_pies-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 74732,
+          "load_pending": true
+        },
+        {
+          "part": "freeze_pies-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 37366,
+          "load_pending": true
+        },
+        {
+          "part": "bringing_in_wood-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 81216,
+          "load_pending": true
+        },
+        {
+          "part": "bringing_in_wood-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 81216,
+          "load_pending": true
+        },
+        {
+          "part": "bringing_in_wood-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 40608,
+          "load_pending": true
+        },
+        {
+          "part": "organizing_school_stuff-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 87552,
+          "load_pending": true
+        },
+        {
+          "part": "organizing_school_stuff-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 87552,
+          "load_pending": true
+        },
+        {
+          "part": "organizing_school_stuff-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 43776,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_household_items-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 94848,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_household_items-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 94848,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_household_items-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 47424,
+          "load_pending": true
+        },
+        {
+          "part": "storing_food-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 119216,
+          "load_pending": true
+        },
+        {
+          "part": "storing_food-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 119216,
+          "load_pending": true
+        },
+        {
+          "part": "storing_food-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 59608,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 5,
+      "remaining_cases": 72,
+      "parts": [
+        {
+          "part": "setting_the_fire-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 27356,
+          "load_pending": true
+        },
+        {
+          "part": "outfit_a_basic_toolbox-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 63828,
+          "load_pending": true
+        },
+        {
+          "part": "outfit_a_basic_toolbox-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 63828,
+          "load_pending": true
+        },
+        {
+          "part": "outfit_a_basic_toolbox-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 31914,
+          "load_pending": true
+        },
+        {
+          "part": "put_together_a_basic_pruning_kit-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 67588,
+          "load_pending": true
+        },
+        {
+          "part": "put_together_a_basic_pruning_kit-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 67588,
+          "load_pending": true
+        },
+        {
+          "part": "put_together_a_basic_pruning_kit-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 33794,
+          "load_pending": true
+        },
+        {
+          "part": "cleaning_up_branches_and_twigs-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 75164,
+          "load_pending": true
+        },
+        {
+          "part": "cleaning_up_branches_and_twigs-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 75164,
+          "load_pending": true
+        },
+        {
+          "part": "cleaning_up_branches_and_twigs-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 37582,
+          "load_pending": true
+        },
+        {
+          "part": "cleaning_up_plates_and_food-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 82180,
+          "load_pending": true
+        },
+        {
+          "part": "cleaning_up_plates_and_food-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 82180,
+          "load_pending": true
+        },
+        {
+          "part": "cleaning_up_plates_and_food-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 41090,
+          "load_pending": true
+        },
+        {
+          "part": "moving_boxes_to_storage-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 87580,
+          "load_pending": true
+        },
+        {
+          "part": "moving_boxes_to_storage-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 87580,
+          "load_pending": true
+        },
+        {
+          "part": "moving_boxes_to_storage-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 43790,
+          "load_pending": true
+        },
+        {
+          "part": "stacking_wood-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 95640,
+          "load_pending": true
+        },
+        {
+          "part": "stacking_wood-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 95640,
+          "load_pending": true
+        },
+        {
+          "part": "stacking_wood-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 47820,
+          "load_pending": true
+        },
+        {
+          "part": "loading_the_car-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 115360,
+          "load_pending": true
+        },
+        {
+          "part": "loading_the_car-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 115360,
+          "load_pending": true
+        },
+        {
+          "part": "loading_the_car-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 57680,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 6,
+      "remaining_cases": 70,
+      "parts": [
+        {
+          "part": "setting_mousetraps-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 61180,
+          "load_pending": true
+        },
+        {
+          "part": "setting_mousetraps-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 61180,
+          "load_pending": true
+        },
+        {
+          "part": "setting_mousetraps-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 30590,
+          "load_pending": true
+        },
+        {
+          "part": "carrying_out_garden_furniture-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 66356,
+          "load_pending": true
+        },
+        {
+          "part": "carrying_out_garden_furniture-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 66356,
+          "load_pending": true
+        },
+        {
+          "part": "carrying_out_garden_furniture-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 33178,
+          "load_pending": true
+        },
+        {
+          "part": "clean_a_patio-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 72428,
+          "load_pending": true
+        },
+        {
+          "part": "clean_a_patio-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 72428,
+          "load_pending": true
+        },
+        {
+          "part": "clean_a_patio-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 36214,
+          "load_pending": true
+        },
+        {
+          "part": "setup_a_bar_for_a_cocktail_party-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 80516,
+          "load_pending": true
+        },
+        {
+          "part": "setup_a_bar_for_a_cocktail_party-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 80516,
+          "load_pending": true
+        },
+        {
+          "part": "setup_a_bar_for_a_cocktail_party-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 40258,
+          "load_pending": true
+        },
+        {
+          "part": "dispose_of_batteries-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 86572,
+          "load_pending": true
+        },
+        {
+          "part": "dispose_of_batteries-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 86572,
+          "load_pending": true
+        },
+        {
+          "part": "dispose_of_batteries-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 43286,
+          "load_pending": true
+        },
+        {
+          "part": "setting_the_table-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 106852,
+          "load_pending": true
+        },
+        {
+          "part": "setting_the_table-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 106852,
+          "load_pending": true
+        },
+        {
+          "part": "setting_the_table-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 53426,
+          "load_pending": true
+        },
+        {
+          "part": "make_pizza-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 115124,
+          "load_pending": true
+        },
+        {
+          "part": "make_pizza-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 115124,
+          "load_pending": true
+        },
+        {
+          "part": "make_pizza-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 57562,
+          "load_pending": true
+        }
+      ]
+    },
+    {
+      "gpu": 7,
+      "remaining_cases": 80,
+      "parts": [
+        {
+          "part": "cook_hot_dogs-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 54872,
+          "load_pending": true
+        },
+        {
+          "part": "cook_hot_dogs-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 54872,
+          "load_pending": true
+        },
+        {
+          "part": "cook_hot_dogs-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 27436,
+          "load_pending": true
+        },
+        {
+          "part": "make_gift_bags_for_baby_showers-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 57908,
+          "load_pending": true
+        },
+        {
+          "part": "make_gift_bags_for_baby_showers-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 57908,
+          "load_pending": true
+        },
+        {
+          "part": "make_gift_bags_for_baby_showers-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 28954,
+          "load_pending": true
+        },
+        {
+          "part": "putting_dishes_away_after_cleaning-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 65724,
+          "load_pending": true
+        },
+        {
+          "part": "putting_dishes_away_after_cleaning-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 65724,
+          "load_pending": true
+        },
+        {
+          "part": "putting_dishes_away_after_cleaning-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 32862,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_vegetables-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 71424,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_vegetables-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 71424,
+          "load_pending": true
+        },
+        {
+          "part": "sorting_vegetables-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 35712,
+          "load_pending": true
+        },
+        {
+          "part": "tidying_bathroom-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 78020,
+          "load_pending": true
+        },
+        {
+          "part": "tidying_bathroom-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 78020,
+          "load_pending": true
+        },
+        {
+          "part": "tidying_bathroom-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 39010,
+          "load_pending": true
+        },
+        {
+          "part": "carrying_in_groceries-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 85652,
+          "load_pending": true
+        },
+        {
+          "part": "carrying_in_groceries-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 85652,
+          "load_pending": true
+        },
+        {
+          "part": "carrying_in_groceries-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 42826,
+          "load_pending": true
+        },
+        {
+          "part": "picking_up_toys-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 113344,
+          "load_pending": true
+        },
+        {
+          "part": "picking_up_toys-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 113344,
+          "load_pending": true
+        },
+        {
+          "part": "picking_up_toys-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 56672,
+          "load_pending": true
+        },
+        {
+          "part": "collecting_childrens_toys-n4-i0",
+          "num_envs": 4,
+          "remaining_controls": 115120,
+          "load_pending": true
+        },
+        {
+          "part": "collecting_childrens_toys-n4-i4",
+          "num_envs": 4,
+          "remaining_controls": 115120,
+          "load_pending": true
+        },
+        {
+          "part": "collecting_childrens_toys-n2-i8",
+          "num_envs": 2,
+          "remaining_controls": 57560,
+          "load_pending": true
+        }
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "current_all_completed",
+      "champion_gpu_hours": [
+        {
+          "gpu": 0,
+          "hours": 16.802759921887265
+        },
+        {
+          "gpu": 1,
+          "hours": 22.501496032468236
+        },
+        {
+          "gpu": 2,
+          "hours": 18.42646553341411
+        },
+        {
+          "gpu": 3,
+          "hours": 17.987613929420043
+        },
+        {
+          "gpu": 4,
+          "hours": 20.05149217416191
+        },
+        {
+          "gpu": 5,
+          "hours": 19.35349331298889
+        },
+        {
+          "gpu": 6,
+          "hours": 19.332613239183438
+        },
+        {
+          "gpu": 7,
+          "hours": 23.438176693587998
+        }
+      ],
+      "mem_gpu_hours": [
+        {
+          "gpu": 0,
+          "hours": 27.97915487093182
+        },
+        {
+          "gpu": 1,
+          "hours": 30.877787693748928
+        },
+        {
+          "gpu": 2,
+          "hours": 32.60971295667804
+        },
+        {
+          "gpu": 3,
+          "hours": 31.55722002283312
+        },
+        {
+          "gpu": 4,
+          "hours": 32.649212107223605
+        },
+        {
+          "gpu": 5,
+          "hours": 31.514712311460332
+        },
+        {
+          "gpu": 6,
+          "hours": 30.880364368399633
+        },
+        {
+          "gpu": 7,
+          "hours": 33.75025735857421
+        }
+      ],
+      "champion_hours": 23.438176693587998,
+      "mem_hours": 33.75025735857421,
+      "combined_hours": 57.18843405216221,
+      "finish_cst": "2026-10-17T20:38:25.640804+08:00",
+      "margin_to_deadline_hours": -0.6571224455555555
+    },
+    {
+      "name": "current_recent10",
+      "champion_gpu_hours": [
+        {
+          "gpu": 0,
+          "hours": 17.610377058305545
+        },
+        {
+          "gpu": 1,
+          "hours": 23.555559808917184
+        },
+        {
+          "gpu": 2,
+          "hours": 19.279144153851814
+        },
+        {
+          "gpu": 3,
+          "hours": 18.820882688488627
+        },
+        {
+          "gpu": 4,
+          "hours": 20.99589242479101
+        },
+        {
+          "gpu": 5,
+          "hours": 20.273105869477288
+        },
+        {
+          "gpu": 6,
+          "hours": 20.255224318420854
+        },
+        {
+          "gpu": 7,
+          "hours": 24.535564858364328
+        }
+      ],
+      "mem_gpu_hours": [
+        {
+          "gpu": 0,
+          "hours": 27.97915487093182
+        },
+        {
+          "gpu": 1,
+          "hours": 30.877787693748928
+        },
+        {
+          "gpu": 2,
+          "hours": 32.60971295667804
+        },
+        {
+          "gpu": 3,
+          "hours": 31.55722002283312
+        },
+        {
+          "gpu": 4,
+          "hours": 32.649212107223605
+        },
+        {
+          "gpu": 5,
+          "hours": 31.514712311460332
+        },
+        {
+          "gpu": 6,
+          "hours": 30.880364368399633
+        },
+        {
+          "gpu": 7,
+          "hours": 33.75025735857421
+        }
+      ],
+      "champion_hours": 24.535564858364328,
+      "mem_hours": 33.75025735857421,
+      "combined_hours": 58.28582221693854,
+      "finish_cst": "2026-10-17T21:44:16.238197+08:00",
+      "margin_to_deadline_hours": -1.7545106102777777
+    },
+    {
+      "name": "current_recent10_slow_load",
+      "champion_gpu_hours": [
+        {
+          "gpu": 0,
+          "hours": 18.31828930151284
+        },
+        {
+          "gpu": 1,
+          "hours": 24.66818135245709
+        },
+        {
+          "gpu": 2,
+          "hours": 20.078148892871415
+        },
+        {
+          "gpu": 3,
+          "hours": 19.619887427508235
+        },
+        {
+          "gpu": 4,
+          "hours": 21.926328976706287
+        },
+        {
+          "gpu": 5,
+          "hours": 21.203542421392566
+        },
+        {
+          "gpu": 6,
+          "hours": 21.185660870336125
+        },
+        {
+          "gpu": 7,
+          "hours": 25.688525718987588
+        }
+      ],
+      "mem_gpu_hours": [
+        {
+          "gpu": 0,
+          "hours": 29.583947983478645
+        },
+        {
+          "gpu": 1,
+          "hours": 32.75004632505357
+        },
+        {
+          "gpu": 2,
+          "hours": 34.63929951224331
+        },
+        {
+          "gpu": 3,
+          "hours": 33.47666898390123
+        },
+        {
+          "gpu": 4,
+          "hours": 34.67879866278887
+        },
+        {
+          "gpu": 5,
+          "hours": 33.43416127252843
+        },
+        {
+          "gpu": 6,
+          "hours": 32.75262299970427
+        },
+        {
+          "gpu": 7,
+          "hours": 35.88998150863664
+        }
+      ],
+      "champion_hours": 25.688525718987588,
+      "mem_hours": 35.88998150863664,
+      "combined_hours": 61.57850722762423,
+      "finish_cst": "2026-10-18T01:01:49.904235+08:00",
+      "margin_to_deadline_hours": -5.0471956208333335
+    },
+    {
+      "name": "prior_recent10",
+      "champion_gpu_hours": [
+        {
+          "gpu": 0,
+          "hours": 17.56464264675145
+        },
+        {
+          "gpu": 1,
+          "hours": 23.544310078523417
+        },
+        {
+          "gpu": 2,
+          "hours": 19.320269286156464
+        },
+        {
+          "gpu": 3,
+          "hours": 18.85491895477843
+        },
+        {
+          "gpu": 4,
+          "hours": 20.98138021762698
+        },
+        {
+          "gpu": 5,
+          "hours": 20.22982740143638
+        },
+        {
+          "gpu": 6,
+          "hours": 20.200332730889162
+        },
+        {
+          "gpu": 7,
+          "hours": 24.525456056046806
+        }
+      ],
+      "mem_gpu_hours": [
+        {
+          "gpu": 0,
+          "hours": 27.97915487093182
+        },
+        {
+          "gpu": 1,
+          "hours": 30.877787693748928
+        },
+        {
+          "gpu": 2,
+          "hours": 32.60971295667804
+        },
+        {
+          "gpu": 3,
+          "hours": 31.55722002283312
+        },
+        {
+          "gpu": 4,
+          "hours": 32.649212107223605
+        },
+        {
+          "gpu": 5,
+          "hours": 31.514712311460332
+        },
+        {
+          "gpu": 6,
+          "hours": 30.880364368399633
+        },
+        {
+          "gpu": 7,
+          "hours": 33.75025735857421
+        }
+      ],
+      "champion_hours": 24.525456056046806,
+      "mem_hours": 33.75025735857421,
+      "combined_hours": 58.275713414621016,
+      "finish_cst": "2026-10-17T21:43:39.846509+08:00",
+      "margin_to_deadline_hours": -1.7444018080555554
+    }
+  ],
+  "prior_champion_statistics": {
+    "2": {
+      "batches": 26,
+      "controls": 357514,
+      "seconds": 23902.48222805187,
+      "weighted_rate": 14.957191332221672,
+      "p25_rate": 14.522879666514566,
+      "recent10_weighted_rate": 14.22298666092986,
+      "median_setup_seconds": 197.993314743042,
+      "p90_setup_seconds": 310.70596842765815,
+      "setup_samples": 28
+    },
+    "4": {
+      "batches": 53,
+      "controls": 1471586,
+      "seconds": 88786.53232392296,
+      "weighted_rate": 16.574428142222764,
+      "p25_rate": 16.323008811372677,
+      "recent10_weighted_rate": 14.99733573463756,
+      "median_setup_seconds": 385.13573026657104,
+      "p90_setup_seconds": 727.810314130783,
+      "setup_samples": 37
+    }
+  },
+  "mem_historical_statistics": {
+    "2": {
+      "attempts": 39,
+      "episodes": 78,
+      "weighted_rate": 11.422345490431546,
+      "median_rate": 12.017273861849919,
+      "min_rate": 8.95212583872835,
+      "max_rate": 13.737678882130677,
+      "completed_part_overheads": 39,
+      "median_part_overhead_s": 189.81206033285707
+    },
+    "4": {
+      "attempts": 78,
+      "episodes": 312,
+      "weighted_rate": 14.8575913097219,
+      "median_rate": 15.45515008900048,
+      "min_rate": 11.490514377722974,
+      "max_rate": 18.25553008802004,
+      "completed_part_overheads": 36,
+      "median_part_overhead_s": 340.4834637786262
+    }
+  },
+  "deadline": {
+    "utc": "2026-10-17T11:59:00+00:00",
+    "cst": "2026-10-17T19:59:00+08:00",
+    "source": "https://behavior.stanford.edu/challenge/updates.html",
+    "verified_date": "2026-10-15",
+    "latest_announcement": "2026-10-09"
+  },
+  "supervisor": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {},
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 634,
+    "coverage": 638,
+    "updated": 1792034801.9548178
+  },
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 300108,
+    "started": 1791989042.9684465,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+        "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v2/status.json",
+        "sha256": "643cca0bd67296878a5518bd6de3d786d331fd9bebe00b777b0d7b68a50f2ec5"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-queue-isolation-20261014-v2",
+    "queue_source_commit": "9122b13726bf1862dbe2d6616c0da916822e2487",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "pending_mem_upgrade": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+      "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+    },
+    "updated": 1791989042.9684682
+  },
+  "caveats": [
+    "Conditional workload scenarios, not confidence intervals or bounds; future complex scenes can be slower.",
+    "Completed batches represent tasks already reached; later scene/task mix can differ. Current recent10 is measured sensitivity, prior recent10 is fixed historical sensitivity.",
+    "All remaining episodes assume original nominal horizon+1; only current coarse actual control counters are deducted.",
+    "Each future isolated physical batch incurs its own load. MEM own prior median loads are used; p90 proxy borrows same-simulator champion loads, not measured new MEM.",
+    "Excludes extra FIFO queuing, model startup/handoff, future failures, post-batch process teardown, and final archival/external delivery.",
+    "No jobs, sources, weights, horizons, scheduling, or original output files changed."
+  ],
+  "author": "Codex / SUBMISSION-FULL-EVAL",
+  "external_delivery_deferred": true,
+  "runtime_or_process_modified": false,
+  "prior_evidence": "docs/infra/results/2026-10-15-isolated-eval-time-risk-0857.json",
+  "previous_audit": {
+    "complete": 634,
+    "execution_errors": 4,
+    "unaccounted": 362,
+    "evidence": "docs/infra/results/2026-10-15-champion-canned-meat-final2-originals.json",
+    "commit": "14f397e4"
+  }
+}
