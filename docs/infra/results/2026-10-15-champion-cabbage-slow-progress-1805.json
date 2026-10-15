@@ -1,0 +1,214 @@
+{
+  "schema": "champion_readonly_slow_progress_recheck_v1",
+  "observed_at": "2026-10-15 10:06:57 UTC",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "gpu": 2,
+  "part": "cook_cabbage-n4-i4",
+  "observation_before_probe": {
+    "observed_at": "2026-10-15T10:03:51.510750+00:00",
+    "worker": {
+      "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+      "gpu": 2,
+      "pid": 241610,
+      "alive": true,
+      "start_ticks": 538129546,
+      "status": "evaluating",
+      "part": "cook_cabbage-n4-i4",
+      "model_pid": 241664,
+      "model_alive": true,
+      "model_status": "ready",
+      "sim_pid": 1659852,
+      "sim_alive": true,
+      "physical_status": "running",
+      "controls": [
+        19000,
+        19000,
+        19000,
+        19000
+      ],
+      "physical_updated": 1792058319.6667578,
+      "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "error": null,
+      "final_verification_error": null
+    }
+  },
+  "direct_physical_status": {
+    "status": "running",
+    "pid": 1659852,
+    "task": "cook_cabbage",
+    "task_id": 41,
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+    "started": 1792051139.7891204,
+    "optimizer_updates": 0,
+    "control_steps": [
+      19200,
+      19200,
+      19200,
+      19200
+    ],
+    "updated": 1792058748.199496
+  },
+  "model_delivery_tail": [
+    {
+      "time": 1792058748.6153784,
+      "kind": "delivered",
+      "connection": "18df4dc4066543b5a0d79a12d78b1bcf",
+      "episode": "18df4dc4066543b5a0d79a12d78b1bcf/reset-1/task-41",
+      "task": 41,
+      "clock_kind": "policy_delivery",
+      "delivered_controls": 19220,
+      "physically_confirmed_controls": null,
+      "sent_controls": 20,
+      "action_sha256": "f50fda07822f423bc51841539c0dda93b6538571749fde7e0cf4b5c19130e0cc",
+      "prediction": 961,
+      "generated_display": {
+        "episode": "18df4dc4066543b5a0d79a12d78b1bcf/reset-1/task-41",
+        "task": 41,
+        "clock_kind": "policy_delivery",
+        "delivered_controls": 19200,
+        "physically_confirmed_controls": null,
+        "input_stage": 14,
+        "corrected_stage": 14,
+        "next_stage": 14,
+        "predicted_stage": 14,
+        "stage_probability": 0.999999998924719,
+        "stage_probabilities": [
+          3.786516926646105e-17,
+          4.2906857979403865e-17,
+          3.341589459349329e-17,
+          1.788623947535322e-17,
+          1.871642337626967e-14,
+          2.441446234679168e-13,
+          1.846503236062096e-13,
+          2.0237278903113298e-14,
+          9.018077806272707e-13,
+          1.6716875327198934e-12,
+          2.9177513648858e-13,
+          7.063504389767258e-14,
+          3.546410700960795e-11,
+          1.0364131272968658e-9,
+          0.999999998924719
+        ],
+        "stage_votes": [
+          14,
+          14,
+          14
+        ],
+        "compressed": true,
+        "inpainting_input_steps": 4,
+        "inpainting_next_start": 26,
+        "legacy_corrections": true,
+        "meaning": "duration-stage prediction, NOT MEM-Lite intent or physical outcome"
+      }
+    },
+    {
+      "time": 1792058748.7430863,
+      "kind": "delivered",
+      "connection": "2342a03062fc40cebbe653f606464f8f",
+      "episode": "2342a03062fc40cebbe653f606464f8f/reset-1/task-41",
+      "task": 41,
+      "clock_kind": "policy_delivery",
+      "delivered_controls": 19220,
+      "physically_confirmed_controls": null,
+      "sent_controls": 20,
+      "action_sha256": "52a7467a66c96d72b2e784f06ad9b4028a235dc120eb467ff9f8eadd7433a5b2",
+      "prediction": 961,
+      "generated_display": {
+        "episode": "2342a03062fc40cebbe653f606464f8f/reset-1/task-41",
+        "task": 41,
+        "clock_kind": "policy_delivery",
+        "delivered_controls": 19200,
+        "physically_confirmed_controls": null,
+        "input_stage": 6,
+        "corrected_stage": 6,
+        "next_stage": 6,
+        "predicted_stage": 1,
+        "stage_probability": 0.9918779059605438,
+        "stage_probabilities": [
+          0.008061503044181044,
+          0.9918779059605438,
+          0.00005183057883143536,
+          3.6808749644970166e-8,
+          1.0485836963483507e-7,
+          5.002513034239317e-7,
+          1.989862205790168e-7,
+          1.624078199558099e-7,
+          5.121144212140691e-7,
+          0.000005725072997553621,
+          0.000001250284249450692,
+          2.8222247320910988e-8,
+          4.7263370100637576e-8,
+          8.425606704182154e-8,
+          1.0989062786344126e-7
+        ],
+        "stage_votes": [
+          1,
+          1,
+          1
+        ],
+        "compressed": true,
+        "inpainting_input_steps": 4,
+        "inpainting_next_start": 26,
+        "legacy_corrections": true,
+        "meaning": "duration-stage prediction, NOT MEM-Lite intent or physical outcome"
+      }
+    }
+  ],
+  "process_sample": "PID    PPID STAT     ELAPSED     TIME %CPU %MEM NLWP WCHAN\n 241610  241557 Ss      19:45:39 00:00:07  0.0  0.0    1 poll_schedule_timeout.constprop.17\n 241664  241610 Ssl     19:45:39 02:01:52 10.2  1.7 1037 ep_poll\n1659852  241610 Rsl     02:06:53 07:45:34  366  1.8  807 -",
+  "storage_sample": [
+    "/dev/mapper/data-lv_0  7.0T  2.5T  4.6T   36% /run/ti"
+  ],
+  "latest_live_observation": {
+    "observed_at": "2026-10-15T10:06:51.743618+00:00",
+    "worker": {
+      "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+      "gpu": 2,
+      "pid": 241610,
+      "alive": true,
+      "start_ticks": 538129546,
+      "status": "evaluating",
+      "part": "cook_cabbage-n4-i4",
+      "model_pid": 241664,
+      "model_alive": true,
+      "model_status": "ready",
+      "sim_pid": 1659852,
+      "sim_alive": true,
+      "physical_status": "running",
+      "controls": [
+        19300,
+        19300,
+        19300,
+        19300
+      ],
+      "physical_updated": 1792058784.7259076,
+      "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "error": null,
+      "final_verification_error": null
+    },
+    "queue_alive": true,
+    "all_effective_workers_alive": true,
+    "completed_combined": 766,
+    "errors": 8
+  },
+  "interpretation": "Physical coarse counter19000 was stale during several observations, but direct original status advanced naturally to19200 and original model delivered19220. No evaluator was signalled or restarted. The precise temporary slowdown/reporting cause remains unproven; this does not prove there were no physical steps between observations.",
+  "actions": {
+    "read_only": true,
+    "evaluators_stopped": false,
+    "evaluators_restarted": false,
+    "policy_or_official_horizon_changed": false,
+    "additional_simulation_started": false
+  },
+  "scope_limits": [
+    "Model delivery is not physical execution or success.",
+    "ps CPU is cumulative process usage, not proof of physical progress.",
+    "Live mutable snapshots are not final immutable certificates.",
+    "This observed natural progress does not rule out future stall."
+  ]
+}
