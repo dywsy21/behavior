@@ -1,0 +1,263 @@
+{
+  "schema": "continuous_eval_resources_and_process_identity_v1",
+  "observed_at": "2026-10-15T01:22:13.122953+00:00",
+  "processes": [
+    {
+      "pid": 241557,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129517
+    },
+    {
+      "pid": 300108,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538272450
+    },
+    {
+      "pid": 303366,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538287979
+    },
+    {
+      "pid": 241608,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129546
+    },
+    {
+      "pid": 241609,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129546
+    },
+    {
+      "pid": 241610,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129546
+    },
+    {
+      "pid": 241611,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547
+    },
+    {
+      "pid": 241612,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547
+    },
+    {
+      "pid": 241613,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547
+    },
+    {
+      "pid": 241614,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547
+    },
+    {
+      "pid": 241615,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547
+    }
+  ],
+  "disk_free_bytes": 4957743087616,
+  "mem_available_line": [
+    "MemAvailable:   552390656 kB"
+  ],
+  "gpu_csv": "0, 12 %, 27275 MiB, 73415 MiB, 43\n1, 41 %, 26988 MiB, 73415 MiB, 45\n2, 25 %, 28340 MiB, 73415 MiB, 45\n3, 59 %, 19751 MiB, 73415 MiB, 45\n4, 0 %, 11255 MiB, 73415 MiB, 37\n5, 69 %, 24563 MiB, 73415 MiB, 42\n6, 58 %, 25159 MiB, 73415 MiB, 46\n7, 88 %, 29424 MiB, 73415 MiB, 43\n",
+  "gpu4_worker": {
+    "status": "evaluating",
+    "pid": 241612,
+    "gpu": 4,
+    "started": 1791987613.778339,
+    "completed_parts": [
+      "putting_shoes_on_rack-n2-i8",
+      "bringing_water-n4-i0",
+      "bringing_water-n4-i4",
+      "bringing_water-n2-i8",
+      "sorting_bottles_cans_and_paper-n4-i0",
+      "sorting_bottles_cans_and_paper-n4-i4",
+      "sorting_bottles_cans_and_paper-n2-i8",
+      "wash_dog_toys-n4-i0",
+      "wash_dog_toys-n4-i4",
+      "wash_dog_toys-n2-i8"
+    ],
+    "diagnosed_failed_parts": [],
+    "model_generations": [],
+    "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "model_pid": 246626,
+    "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000",
+    "updated": 1792026737.5649292,
+    "sim_pid": 1147585,
+    "part": "freeze_pies-n4-i0"
+  },
+  "gpu4_physical": {
+    "status": "loading",
+    "pid": 1147585,
+    "task": "freeze_pies",
+    "task_id": 47,
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+    "started": 1792026738.6881409,
+    "optimizer_updates": 0
+  },
+  "gpu4_model": {
+    "status": "ready",
+    "pid": 246626,
+    "started": 1791987765.0126603,
+    "optimizer_updates": 0,
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+    "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+    "physical_execution_evidence": false,
+    "allowed_task_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99
+    ],
+    "memory_profiling": true,
+    "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+    "loaded": 1791987809.2177057
+  },
+  "gpu4_part_files": [
+    "parts/freeze_pies-n4-i0/json",
+    "parts/freeze_pies-n4-i0/videos",
+    "parts/freeze_pies-n4-i0/attempts",
+    "parts/freeze_pies-n4-i0/status.json",
+    "parts/freeze_pies-n4-i0/resolved_config.json"
+  ],
+  "gpu4_procs": [
+    {
+      "pid": 241612,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547
+    },
+    {
+      "pid": 246626,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538143797
+    },
+    {
+      "pid": 1147585,
+      "exists": true,
+      "state": "R",
+      "start_ticks": 542041956
+    }
+  ],
+  "runtime_or_process_modified": false,
+  "validation_scope": "Read-only /proc existence/state/start-ticks, filesystem capacity, memory availability and GPU resource sample. Loading state is not physical progress or a failure verdict."
+}

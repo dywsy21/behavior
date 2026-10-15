@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 09:27 CST / Codex SUBMISSION-FULL-EVAL（交接文档校准/资源复核）：** `FINAL_EVAL_CONTINUATION.md`新增当前f7冠军/793 MEM/912队列及单卡隔离边界，`FULL_EVAL_20261012.md`把旧PID、旧全局STOP与旧ETA明确降为历史；说明覆盖1000案例不等于伪造1000有效JSON，最终包仍待。已逐段核当前worker/supervisor/queue源码，并确认相关文件与冻结commit无差异；仅文档变更、不部署/热改/重跑。09:22只读实核原241557/八worker/300108/303366非僵尸且start ticks未换，磁盘约4.96TB、RAM约527GiB、显存约11–29/71.7GiB；证据`docs/infra/results/2026-10-15-continuous-eval-resource-check-0922.json`，GPU4当时加载不当作故障。下一继续冠军→MEM与新原件/终态归档，外部交付暂缓。
+
 - **2026-10-15 09:20 CST / Codex SUBMISSION-FULL-EVAL（修剪工具包尾2原件）：** 冠军592完整/4继承异常/404待，原241557/八worker与MEM300108后继持续；修剪工具包309–310均16897实控/Q0/success=false，该task全10平均Q0、SR0。原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置及GPU5精确journal前缀通过，证据`docs/infra/results/2026-10-15-champion-pruning-final2-originals.json`；无人工全片复核或全模型最终成绩。该卡已转清枝叶，未停机/重跑/修改actor。工作分支pull/fetch无新增、b0c5b6d3已推；下一继续冠军→MEM及终态内部归档，外部交付仍暂缓。
 
 - **2026-10-15 09:14 CST / Codex SUBMISSION-FULL-EVAL（脏碗/狗玩具新增6原件）：** 冠军累计590完整/4继承异常/406待，原241557/八worker与MEM300108后继继续实活，无新增故障。脏碗入水槽301–304各18223实控/Q0，狗玩具309–310各16835实控/Q0，六例均success=false；原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置与两GPU journal稳定前缀已验，证据`docs/infra/results/2026-10-15-champion-dishes-dogtoys-new6-originals.json`。狗玩具全10平均Q1/30、SR0；脏碗仅4/10，不称全模型成绩。GPU4转冻派、GPU3续305–308，未停机/重跑/改actor；继续冠军→MEM/终态内部归档，截止风险沿08:58记录，不重复估算或恢复外部交付。

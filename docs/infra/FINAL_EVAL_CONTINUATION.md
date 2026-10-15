@@ -2,6 +2,36 @@
 
 2026-10-13，负责人Codex / SUBMISSION-FULL-EVAL。用户要求优先内部评测，模型交付暂缓。本页不授权外部上传、换权重或新训练。
 
+## 当前执行约定（2026-10-15，与下方历史说明区分）
+
+用户10月14日22:12要求持续评测，已部署**独立物理batch＋单卡故障隔离**；下方旧版本的“未知错误全局STOP”“c978/ae86编排”等仅保留为历史，不能用于当前操作。准确实时进度和PID以[plan](../plan.md)及[服务器目录表](../SERVER_LAYOUT.md)为准，不能只凭某个旧status文件判断仍在运行。
+
+所有路径前缀为`/run/ti/rl_memlite_stage1_20261006/`：
+
+| 职责 | 当前登记 | 冻结源码 |
+| --- | --- | --- |
+| 冠军评测 | `runs/champion_final100_20261014_resume_v2`，manifest `a80d9602…cc45` | 编排 `code/champion-batch-isolation-20261014-v1` / `f7b72854`；实际actor/仿真入口仍 `9f6e75bd` |
+| MEM后续评测 | `runs/memlite_final100_20261014_resume_v8`，manifest `7819b835…e3b`，登记576剩余实例/174物理batch | 编排 `code/mem-batch-isolation-20261014-v1` / `79371d77`；实际actor仍 `51c11d32` |
+| 冠军→MEM等待与内部归档 | MEM v8下的 `queue-after-champion-isolated-v1/`；当前只等待，没有MEM模型或回合 | `code/mem-queue-isolation-20261014-v2` / `9122b137` |
+
+### 异常处置边界
+
+- 两个manifest均启用 `isolate_physical_batches=true`、`continue_on_batch_errors=true`。原任务/实例顺序、4/4/2分组、slot、seed、官方控制时限和冻结actor不变；每物理batch新开模拟器，正常模型服务可以复用。不能借连续运行改答案、重评挑优或缩短回合。
+- 已实际尝试的异常batch，在确认原物理attempt、没有未提交的官方JSON、原配置/权重身份有效后，保留日志/部分视频/原件，单列 `execution-errors.json`；不伪造Q/SR、成功/失败或缺失JSON。该worker封存并核验原模型参数后，以同一冻结模型的新服务继续其他未尝试实例，不重试异常实例。
+- 启动前异常、身份/权重不一致、未提交官方JSON或其他无法安全归属的错误，仅隔离该worker；supervisor记录 `failed_gpus`，**不向健康worker发全局STOP**。这些错误不是全部自动自愈：根执行者须保留现场并单卡恢复；最终 `needs_isolated_worker_recovery` 不等于全量完成，也不能绕过后继验收。
+- 两槽FIFO加载继续有效。等槽没有旧的1800秒截止；拿到槽后的原模型/进展安全门、150GiB磁盘保护和官方时限仍保留。加载/换场时模型无请求或旧sim退出，不足以判定worker死亡；须核实际进程和后续物理控制。
+- 汇总读写故障会记录 `report_error`，健康worker继续；不能把旧summary或观察SSH超时当作作业终止。管理员显式STOP、身份安全问题仍不可无视或伪造心跳，但不以单批故障或内部估计的截止余量为由停全机。
+
+### 终态与后继
+
+仍严格**冠军全量先、MEM剩余后**。等待器不占GPU；冠军1000案例全部有明确去向、原进程退出、各代权重和原件验收、内部归档完成且GPU真正空闲后，才启动已登记MEM。只要有未归属案例或验收错误，不能把队列放行冒称安全；先修复受影响环节，不停止健康评测。
+
+最终内部收集目录为 `runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/{champion-results,mem-results}`。ZIP只装真实官方JSON和原wrapper/robot/transport；错误清单、视频索引/SHA、配置/来源和固定1000分母统计在旁，绝不补造官方JSON。存在执行异常时，`official_full_q_score`/`official_full_sr`保持null，另给真实完整样本统计与缺失按0的固定分母值，清楚标明口径。
+
+单24GB Docker、公网/50端口、外部视频托管和正式提交仍由用户暂缓；内部归档不是上述交付的通过证明。当前两轮全量和终态包未完成，不能把工具测试、正在生成的原件或等待器存活称为goal完成。
+
+## 历史实现与诊断（不覆盖上方当前约定）
+
 ## 冠军续评后的MEM依赖与原件收集
 
 独立`queue_memlite_after_champion_continuation.py`只替换已退出、零阶段、明确因原冠军故障停止的旧等待队列；必须绑定原用户优先级授权、原冠军root manifest、诊断封存、当前冠军续评和原MEM v7，不修改这些登记。通过外部checkout只读验证c978冠军协调源与ae86 MEM协调源；真正启动MEM仍执行ae86原入口/原51c actor。新队列独立名称、共用MEM owner文件锁，既有MEM status/STOP或GPU被占用一律拒绝接管。等待时不导入模型、不用GPU。
