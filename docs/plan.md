@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 15:11 CST / Codex SUBMISSION-FULL-EVAL（FIFO等待自然结束）：** 原GPU1票140于15:09释放slot0，GPU6同票142约0.189s后自然准入，总排队471.087s；票号/原PID/start ticks/queued_at全部与15:06快照相同。只读重核/proc/locks当前slot0持有者241614、slot1仍241615，原GPU6模型249502/2a加载指纹/零更新不变，新模拟器1604756实活并加载鸡尾酒吧309–310。证据`docs/infra/results/2026-10-15-champion-gpu6-loader-admitted.json`；这证明已准入，不把加载当实际控制或整任务完成。未释放他人锁/改票/调并发/重启进程，其他卡持续，716完整/8旧工程异常/276待不变。下一验实际新控制并继续原冠军→MEM576及终态归档，不为慢加载停机。
+
 - **2026-10-15 15:06 CST / Codex SUBMISSION-FULL-EVAL（GPU6换批等待不是停机）：** 上轮新增10原件和状态隔离核验属progress；本轮同23293/1408396已核八有效worker/模型及1404741后继存活，716完整/8旧工程异常不变。只读核GPU6的FIFO票142为waiting，票140/141分别由GPU1/241609与GPU7/241615持有；/proc/locks两slot实际FLOCK owner、/proc PID/start ticks与稳定复读的票据全部对应。原241614/249502实活、模型ready/原2a加载指纹/0更新，worker仍显示上个已完成part，不能误报成新回合在控制或模型崩溃。证据`docs/infra/results/2026-10-15-champion-gpu6-loader-wait.json`；仅当前等待诊断，不承诺后续必然准入。未获取/释放任何队列锁、未改票/启动参数/源码或发停止信号；原f7 FIFO继续让位按序加载。下一观察实际准入/新控制并继续冠军→MEM全量核账，终态归档仍待。
 
 - **2026-10-15 15:02 CST / Codex SUBMISSION-FULL-EVAL（鸡尾酒吧第二批4原件）：** 原GPU6第二批305–308自然结束，原241614/249502继续存活准备后续，其他七卡保持运行/加载；未因本轮核验停机。4原JSON/MP4 SHA、20129实控=视频帧数、672×448/30fps、原17/0 seeds/20128 horizon/9f配置与唯一完成attempt核合，全部Q0/success=false。52926706字节精确journal前缀SHA b9040d70…63848逐事件通过、54旧会话关闭；证据`docs/infra/results/2026-10-15-champion-cocktail305308-originals.json`。该task仅8/10，不给最终task/模型成绩或冒称人工全片验画面。父710＋已审侧路6＝716完整/8既有工程异常/276待，父122批＋侧路2批核过，仍16官方成功仅已完子集。15:01八有效worker/模型和1404741后继实活、无新故障；继续原冠军→MEM576及终态归档，不改冻结策略/官方时限，不启动外部交付。
