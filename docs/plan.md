@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 11:31 CST / Codex SUBMISSION-FULL-EVAL（庭院新增4原件）：** 冠军638完整/4继承异常/358待，原241557/八worker和MEM300108后继持续实活、无新增故障。清庭院305–308各18107实控/Q0/success=false，连首批仅8/10，不称全task或全模型成绩；累计官方完整成功16例。四份原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置及GPU6精确journal前缀通过，证据`docs/infra/results/2026-10-15-champion-patio-new4-originals.json`，当前v2累计100完整物理batch已核，无人工全片视觉复核。GPU6自然续309–310，其余卡实际控制增加；不因时间风险停机/缩时限/改actor或按表现重跑。下一保持冠军→MEM、逐批原件核账及终态内部归档，外部交付仍暂缓。
+
 - **2026-10-15 11:27 CST / Codex SUBMISSION-FULL-EVAL（连续评测的时间风险复核）：** 99个已完成隔离batch复算：2/4环境总体吞吐13.62/16.19实控/s，最近各10批12.39/15.66；冠军仍634完整/4旧异常/362待，原241557/八worker与MEM300108后继不变、无新增故障。按原逐GPU时限减实控、逐物理batch计加载，冠军均速/近期场景剩23.44/24.54h，MEM历史速率场景另33.75h，两轮约10/17 20:38/21:44 CST；近期吞吐＋慢加载场景10/18 01:01，均非上下界且未计额外排队/故障/归档。今日再核官方updates及submission，截止仍10/17 19:59 CST，已无可靠串行余量；证据`docs/infra/results/2026-10-15-isolated-eval-time-risk-1127.json`。保持用户要求连续冠军→MEM，不停机、不改权重/时限/原件或擅自交付；下一继续新原件核验与终态内部归档，外部交付仍暂缓。
 
 - **2026-10-15 11:19 CST / Codex SUBMISSION-FULL-EVAL（肉罐头尾2原件）：** 冠军634完整/4继承异常/362待，原241557/八worker与MEM300108后继实活、无新增故障。肉罐头309–310各17771实控/Q0/success=false，该task全10已齐、平均Q0/SR0；两份原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置及GPU2精确journal前缀通过，证据`docs/infra/results/2026-10-15-champion-canned-meat-final2-originals.json`。连同下条本轮8新原件已核，累计官方完整成功16例仍非全模型成绩。GPU2已转重新布置房间，其余卡继续；未停机/改actor/重跑。下一继续冠军→MEM与终态内部归档，外部交付暂缓。

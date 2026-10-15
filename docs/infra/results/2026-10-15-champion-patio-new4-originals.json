@@ -1,0 +1,666 @@
+{
+  "schema": "champion_isolated_new_committed_originals_v1",
+  "observed_at": "2026-10-15T03:31:19.774447+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "batches": [
+    {
+      "part": "clean_a_patio-n4-i4",
+      "gpu": 6,
+      "records": [
+        {
+          "task": "clean_a_patio",
+          "instance_id": 305,
+          "rollout_id": 0,
+          "steps": 18107,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n4-i4/json/clean_a_patio_305_0.json",
+            "sha256": "1b7a6d2b6e925af99ffec642a4119cfb8d402cda1bc44863bc0324bf3e4c892f"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n4-i4/videos/clean_a_patio_305_0.mp4",
+            "sha256": "49cb74fe418ad269d6f1b32685305f94ad09d0acfca299f8b8212f9bc25c53d8"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18107"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "clean_a_patio",
+          "instance_id": 306,
+          "rollout_id": 0,
+          "steps": 18107,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n4-i4/json/clean_a_patio_306_0.json",
+            "sha256": "93cd12b8497c1472dba3f1b01bef4c480cc607f9a19f276c0871f59e0f209098"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n4-i4/videos/clean_a_patio_306_0.mp4",
+            "sha256": "67427e62d0cde867a3467ea6e9443fe1a19d39c0df0390c540b4f66d15b1ca46"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18107"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "clean_a_patio",
+          "instance_id": 307,
+          "rollout_id": 0,
+          "steps": 18107,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n4-i4/json/clean_a_patio_307_0.json",
+            "sha256": "50e39ce2e73c1a665481a6c182b2687da381c2e638872b4044c87c150a342b19"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n4-i4/videos/clean_a_patio_307_0.mp4",
+            "sha256": "12f4cfedee0e88fb9cc368e06d38beac363c853196a6e946e3f8e81c4159258d"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18107"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "clean_a_patio",
+          "instance_id": 308,
+          "rollout_id": 0,
+          "steps": 18107,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n4-i4/json/clean_a_patio_308_0.json",
+            "sha256": "017ecb335dd406062e21b942414e2d58d5814a9ae67cacbbe500ece17b672d82"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n4-i4/videos/clean_a_patio_308_0.mp4",
+            "sha256": "2ee546f3b4ff7e1f094e213acafa5f88b1f6e347b1a446cdd8336ff28cd0c37e"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18107"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n4-i4/attempts/04.json",
+        "sha256": "3f8b705107dc10cffca0df209b4e002f23fdd17168926f076354d6606c43e570"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "clean_a_patio",
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "instance_ids": [
+          305,
+          306,
+          307,
+          308
+        ],
+        "rollout": 0,
+        "started": 1792030892.9237533,
+        "max_steps": 18106,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792035039.1195502,
+        "seconds": 4146.195068583824,
+        "actual_applied_controls": [
+          18107,
+          18107,
+          18107,
+          18107
+        ],
+        "unused_delivered_controls": {
+          "0": 13,
+          "1": 13,
+          "2": 13,
+          "3": 13
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 1221181,
+        "task": "clean_a_patio",
+        "task_id": 36,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "6a7d2dd9c5c05b744652159d22ff8fb6aaad377c95822b78c8bb2dcb5df4bd4b",
+        "started": 1792030496.640747,
+        "optimizer_updates": 0,
+        "control_steps": [
+          18100,
+          18100,
+          18100,
+          18100
+        ],
+        "updated": 1792035037.0026596,
+        "finished": 1792035039.1224804,
+        "official_timeout": 18106,
+        "completed": 4
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 40375583,
+        "prefix_sha256": "9f77e689df9aa7083fcc4f1c819eabf2ae06aa01f24dabde226dee9b02a0b1c8",
+        "lines": 33276,
+        "connections": 44,
+        "episodes": 44,
+        "closed_episodes": 44,
+        "active_connections": 0,
+        "deliveries": 33144,
+        "delivered_controls": 662880,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          5,
+          32,
+          36,
+          74,
+          80
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_6/model-000/events.jsonl",
+        "captured_bytes": 40375583,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241614,
+        "gpu": 6,
+        "started": 1791987613.784483,
+        "completed_parts": [
+          "wash_a_baseball_cap-n4-i4",
+          "wash_a_baseball_cap-n2-i8",
+          "clean_up_broken_glass-n4-i0",
+          "clean_up_broken_glass-n4-i4",
+          "clean_up_broken_glass-n2-i8",
+          "setting_mousetraps-n4-i0",
+          "setting_mousetraps-n4-i4",
+          "setting_mousetraps-n2-i8",
+          "carrying_out_garden_furniture-n4-i0",
+          "carrying_out_garden_furniture-n4-i4",
+          "carrying_out_garden_furniture-n2-i8",
+          "clean_a_patio-n4-i0",
+          "clean_a_patio-n4-i4"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 249502,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_6/model-000",
+        "updated": 1792035046.100562,
+        "sim_pid": 1321998,
+        "part": "clean_a_patio-n2-i8"
+      },
+      "actual_controls": 72428,
+      "controls_per_second": 17.46854617352544
+    }
+  ],
+  "protocols": {
+    "6": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 40375583,
+      "prefix_sha256": "9f77e689df9aa7083fcc4f1c819eabf2ae06aa01f24dabde226dee9b02a0b1c8",
+      "lines": 33276,
+      "connections": 44,
+      "episodes": 44,
+      "closed_episodes": 44,
+      "active_connections": 0,
+      "deliveries": 33144,
+      "delivered_controls": 662880,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        5,
+        32,
+        36,
+        74,
+        80
+      ],
+      "require_closed": false,
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_6/model-000/events.jsonl",
+      "captured_bytes": 40375583,
+      "ignored_incomplete_tail_bytes": 0
+    }
+  },
+  "protocol_session_summaries_omitted": true,
+  "successful_episodes": 16,
+  "previously_verified_parts": [
+    "boxing_food_after_dinner-n2-i8",
+    "boxing_food_after_dinner-n4-i4",
+    "bringing_paper_to_recycling-n2-i8",
+    "bringing_paper_to_recycling-n4-i0",
+    "bringing_paper_to_recycling-n4-i4",
+    "bringing_water-n2-i8",
+    "bringing_water-n4-i0",
+    "bringing_water-n4-i4",
+    "can_meat-n2-i8",
+    "can_meat-n4-i0",
+    "can_meat-n4-i4",
+    "carrying_out_garden_furniture-n2-i8",
+    "carrying_out_garden_furniture-n4-i0",
+    "carrying_out_garden_furniture-n4-i4",
+    "chopping_wood-n2-i8",
+    "chopping_wood-n4-i0",
+    "chopping_wood-n4-i4",
+    "clean_a_patio-n4-i0",
+    "clean_boxing_gloves-n2-i8",
+    "clean_boxing_gloves-n4-i0",
+    "clean_boxing_gloves-n4-i4",
+    "clean_up_broken_glass-n2-i8",
+    "clean_up_broken_glass-n4-i0",
+    "clean_up_broken_glass-n4-i4",
+    "cleaning_up_branches_and_twigs-n4-i0",
+    "collecting_aluminum_cans-n2-i8",
+    "collecting_aluminum_cans-n4-i0",
+    "collecting_aluminum_cans-n4-i4",
+    "cook_a_frozen_pie-n2-i8",
+    "cook_a_frozen_pie-n4-i0",
+    "cook_a_frozen_pie-n4-i4",
+    "cook_hot_dogs-n2-i8",
+    "cook_hot_dogs-n4-i0",
+    "cook_hot_dogs-n4-i4",
+    "dispose_of_glass-n2-i8",
+    "dispose_of_glass-n4-i0",
+    "dispose_of_glass-n4-i4",
+    "freeze_pies-n4-i0",
+    "make_gift_bags_for_baby_showers-n2-i8",
+    "make_gift_bags_for_baby_showers-n4-i0",
+    "make_gift_bags_for_baby_showers-n4-i4",
+    "outfit_a_basic_toolbox-n2-i8",
+    "outfit_a_basic_toolbox-n4-i0",
+    "outfit_a_basic_toolbox-n4-i4",
+    "packing_meal_for_delivery-n2-i8",
+    "packing_meal_for_delivery-n4-i0",
+    "packing_meal_for_delivery-n4-i4",
+    "polishing_shoes-n2-i8",
+    "polishing_shoes-n4-i0",
+    "polishing_shoes-n4-i4",
+    "preparing_lunch_box-n2-i8",
+    "preparing_lunch_box-n4-i4",
+    "put_together_a_basic_pruning_kit-n2-i8",
+    "put_together_a_basic_pruning_kit-n4-i0",
+    "put_together_a_basic_pruning_kit-n4-i4",
+    "putting_away_toys-n2-i8",
+    "putting_away_toys-n4-i0",
+    "putting_away_toys-n4-i4",
+    "putting_dirty_dishes_in_sink-n2-i8",
+    "putting_dirty_dishes_in_sink-n4-i0",
+    "putting_dirty_dishes_in_sink-n4-i4",
+    "putting_dishes_away_after_cleaning-n4-i0",
+    "putting_shoes_on_rack-n2-i8",
+    "re_shelving_library_books-n2-i8",
+    "re_shelving_library_books-n4-i0",
+    "re_shelving_library_books-n4-i4",
+    "rearranging_kitchen_furniture-n2-i8",
+    "rearranging_kitchen_furniture-n4-i0",
+    "rearranging_kitchen_furniture-n4-i4",
+    "setting_mousetraps-n2-i8",
+    "setting_mousetraps-n4-i0",
+    "setting_mousetraps-n4-i4",
+    "setting_the_fire-n2-i8",
+    "setting_the_fire-n4-i0",
+    "setting_the_fire-n4-i4",
+    "sorting_books_on_shelf-n2-i8",
+    "sorting_books_on_shelf-n4-i0",
+    "sorting_books_on_shelf-n4-i4",
+    "sorting_bottles_cans_and_paper-n2-i8",
+    "sorting_bottles_cans_and_paper-n4-i0",
+    "sorting_bottles_cans_and_paper-n4-i4",
+    "spraying_fruit_trees-n2-i8",
+    "spraying_fruit_trees-n4-i4",
+    "store_produce-n2-i8",
+    "store_produce-n4-i0",
+    "store_produce-n4-i4",
+    "thawing_frozen_food-n2-i8",
+    "thawing_frozen_food-n4-i4",
+    "tidying_bedroom-n4-i0",
+    "tidying_bedroom-n4-i4",
+    "tidying_living_room-n4-i0",
+    "turning_out_all_lights_before_sleep-n2-i8",
+    "turning_out_all_lights_before_sleep-n4-i0",
+    "turning_out_all_lights_before_sleep-n4-i4",
+    "wash_a_baseball_cap-n2-i8",
+    "wash_a_baseball_cap-n4-i4",
+    "wash_dog_toys-n2-i8",
+    "wash_dog_toys-n4-i0",
+    "wash_dog_toys-n4-i4"
+  ],
+  "remaining_unverified_parts": 0,
+  "summary": {
+    "status": "running",
+    "expected": 1000,
+    "completed": 638,
+    "missing": 362,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.07802657113001943,
+    "completed_only_sr": 0.025078369905956112,
+    "tasks": {
+      "clean_a_patio": {
+        "completed": 8,
+        "expected": 10,
+        "q_score_sum": 0,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0
+      }
+    },
+    "coverage": 642,
+    "execution_errors": 4,
+    "unaccounted": 358,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.0497809523809524,
+    "conservative_sr_errors_and_missing_as_zero": 0.016,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0
+  },
+  "supervisor": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {},
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 638,
+    "coverage": 642,
+    "updated": 1792035072.6887097
+  },
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 300108,
+    "started": 1791989042.9684465,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+        "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v2/status.json",
+        "sha256": "643cca0bd67296878a5518bd6de3d786d331fd9bebe00b777b0d7b68a50f2ec5"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-queue-isolation-20261014-v2",
+    "queue_source_commit": "9122b13726bf1862dbe2d6616c0da916822e2487",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "pending_mem_upgrade": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+      "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+    },
+    "updated": 1791989042.9684682
+  },
+  "manual_visual_review": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "validation_scope": "Original committed JSON, MP4 metadata/hash, physical controls, pinned identity/seed/horizon, and per-GPU journal recurrence; no image-content or RNG identity claim.",
+  "author": "Codex / SUBMISSION-FULL-EVAL",
+  "prior_audit": {
+    "path": "docs/infra/results/2026-10-15-champion-canned-meat-final2-originals.json",
+    "commit": "14f397e4",
+    "completed": 634,
+    "verified_parts": 99
+  },
+  "audited_cumulative_completed": 638,
+  "audited_current_run_parts": 100,
+  "task_summary_scope": "Touched tasks only; aggregate counts and successful_episodes use all committed originals.",
+  "protocol_compaction_note": "Duplicate per-session summaries omitted after original full-prefix audit; exact prefix boundary, hash, aggregate counts and recorded verification scope retained.",
+  "live_snapshot": {
+    "observed_at": "2026-10-15T03:30:50.339214+00:00",
+    "monitor_pid": 303366,
+    "champion": {
+      "status": {
+        "status": "running",
+        "pid": 241557,
+        "started": 1791987613.4638016,
+        "completed_gpus": [],
+        "failed_gpus": {},
+        "worker_pids": {
+          "0": 241608,
+          "1": 241609,
+          "2": 241610,
+          "3": 241611,
+          "4": 241612,
+          "5": 241613,
+          "6": 241614,
+          "7": 241615
+        },
+        "completed": 638,
+        "coverage": 642,
+        "updated": 1792035042.6033568
+      },
+      "supervisor_alive": true,
+      "summary": {
+        "status": "running",
+        "completed": 638,
+        "coverage": 642,
+        "execution_errors": 4,
+        "unaccounted": 358,
+        "official_full_q_score": null,
+        "official_full_sr": null
+      },
+      "workers": [
+        {
+          "gpu": 0,
+          "alive": true,
+          "status": "evaluating",
+          "part": "tidying_living_room-n4-i4",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            12300,
+            12300,
+            12300,
+            12300
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 1,
+          "alive": true,
+          "status": "evaluating",
+          "part": "tidying_bedroom-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            6500,
+            6500
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 2,
+          "alive": true,
+          "status": "evaluating",
+          "part": "rearrange_your_room-n4-i0",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            3100,
+            3100,
+            3100,
+            3100
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 3,
+          "alive": true,
+          "status": "evaluating",
+          "part": "clearing_food_from_table_into_fridge-n4-i0",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            5000,
+            5000,
+            5000,
+            5000
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 4,
+          "alive": true,
+          "status": "evaluating",
+          "part": "freeze_pies-n4-i4",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            4200,
+            4200,
+            4200,
+            4200
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 5,
+          "alive": true,
+          "status": "evaluating",
+          "part": "cleaning_up_branches_and_twigs-n4-i4",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            13500,
+            13500,
+            13500,
+            13500
+          ],
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 6,
+          "alive": true,
+          "status": "evaluating",
+          "part": "clean_a_patio-n2-i8",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": null,
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "gpu": 7,
+          "alive": true,
+          "status": "evaluating",
+          "part": "putting_dishes_away_after_cleaning-n4-i4",
+          "model_alive": true,
+          "sim_alive": true,
+          "controls": [
+            7900,
+            7900,
+            7900,
+            7900
+          ],
+          "error": null,
+          "final_verification_error": null
+        }
+      ]
+    },
+    "mem": {
+      "status": null,
+      "supervisor_alive": false,
+      "summary": null,
+      "workers": []
+    },
+    "queue": {
+      "status": "waiting_for_champion_continuation",
+      "pid": 300108,
+      "alive": true,
+      "phases": [],
+      "error": null
+    }
+  },
+  "runtime_or_process_modified": false,
+  "external_delivery_deferred": true,
+  "time_risk_evidence": "docs/infra/results/2026-10-15-isolated-eval-time-risk-1127.json"
+}
