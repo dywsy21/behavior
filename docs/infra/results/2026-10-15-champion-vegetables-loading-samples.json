@@ -1,0 +1,581 @@
+{
+  "schema": "champion_scene_load_readonly_samples_v1",
+  "samples": [
+    {
+      "observed_at": "2026-10-15T05:19:19.944195+00:00",
+      "pid": 1457931,
+      "process_start_ticks": 543466975,
+      "argv": [
+        "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+        "--task",
+        "sorting_vegetables",
+        "--task-id",
+        "20",
+        "--policy-config",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_7.json",
+        "--output",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/sorting_vegetables-n4-i0",
+        "--num-envs",
+        "4",
+        "--indices",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "physical": {
+        "status": "loading",
+        "pid": 1457931,
+        "task": "sorting_vegetables",
+        "task_id": 20,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "129bc9d9537459688305a59241f1e28ee1d6a42e6d59f380bde43db548d7c34e",
+        "started": 1792040988.0897977,
+        "optimizer_updates": 0
+      },
+      "scene_ready": false,
+      "attempts": [],
+      "main_stack": [
+        {
+          "name": "editing_usd",
+          "file": "omnigibson/simulator.py",
+          "line": 1774
+        },
+        {
+          "name": "__exit__",
+          "file": "contextlib.py",
+          "line": 144
+        },
+        {
+          "name": "ensure_usd_api",
+          "file": "omnigibson/utils/usd_utils.py",
+          "line": 304
+        },
+        {
+          "name": "_binding_api",
+          "file": "omnigibson/prims/xform_prim.py",
+          "line": 164
+        },
+        {
+          "name": "has_material",
+          "file": "omnigibson/prims/xform_prim.py",
+          "line": 171
+        },
+        {
+          "name": "_post_load",
+          "file": "omnigibson/prims/xform_prim.py",
+          "line": 81
+        },
+        {
+          "name": "_post_load",
+          "file": "omnigibson/prims/geom_prim.py",
+          "line": 62
+        },
+        {
+          "name": "load",
+          "file": "omnigibson/prims/prim_base.py",
+          "line": 130
+        },
+        {
+          "name": "_create_emitter_apis",
+          "file": "omnigibson/objects/usd_object.py",
+          "line": 700
+        },
+        {
+          "name": "_initialize",
+          "file": "omnigibson/objects/usd_object.py",
+          "line": 459
+        },
+        {
+          "name": "_initialize",
+          "file": "omnigibson/objects/dataset_object.py",
+          "line": 347
+        },
+        {
+          "name": "initialize",
+          "file": "omnigibson/prims/prim_base.py",
+          "line": 84
+        },
+        {
+          "name": "_non_physics_step",
+          "file": "omnigibson/simulator.py",
+          "line": 1383
+        },
+        {
+          "name": "wrapper",
+          "file": "omnigibson/simulator.py",
+          "line": 87
+        },
+        {
+          "name": "play",
+          "file": "omnigibson/simulator.py",
+          "line": 1476
+        },
+        {
+          "name": "import_scene",
+          "file": "omnigibson/simulator.py",
+          "line": 940
+        },
+        {
+          "name": "_load_scene",
+          "file": "omnigibson/envs/env_base.py",
+          "line": 253
+        },
+        {
+          "name": "load",
+          "file": "omnigibson/envs/env_base.py",
+          "line": 464
+        },
+        {
+          "name": "__init__",
+          "file": "omnigibson/envs/env_base.py",
+          "line": 138
+        },
+        {
+          "name": "wrapper",
+          "file": "omnigibson/utils/python_utils.py",
+          "line": 92
+        },
+        {
+          "name": "load_env",
+          "file": "omnigibson/eval/evaluator.py",
+          "line": 296
+        },
+        {
+          "name": "__init__",
+          "file": "omnigibson/eval/evaluator.py",
+          "line": 208
+        },
+        {
+          "name": "main",
+          "file": "run_champion_task.py",
+          "line": 61
+        },
+        {
+          "name": "<module>",
+          "file": "run_champion_task.py",
+          "line": 86
+        }
+      ],
+      "nonblocking": true,
+      "locals_requested": false,
+      "raw_snapshot": {
+        "path": "/home/wsy/behavior/artifacts/final-eval-20261015/read-only-probes/vegetables-initial-load-131919.json",
+        "sha256": "18586b59b66d156a3f2f663b1550c93c9c26971b91de30282e8f329a995143aa"
+      },
+      "raw_stack_sha256": "e32f8899a1399b8071385aa8f784b49c9bc3391bd3c3ec60ed1769bb0117c575"
+    },
+    {
+      "observed_at": "2026-10-15T05:21:33.528366+00:00",
+      "pid": 1457931,
+      "process_start_ticks": 543466975,
+      "argv": [
+        "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+        "--task",
+        "sorting_vegetables",
+        "--task-id",
+        "20",
+        "--policy-config",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_7.json",
+        "--output",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/sorting_vegetables-n4-i0",
+        "--num-envs",
+        "4",
+        "--indices",
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "physical": {
+        "status": "loading",
+        "pid": 1457931,
+        "task": "sorting_vegetables",
+        "task_id": 20,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "129bc9d9537459688305a59241f1e28ee1d6a42e6d59f380bde43db548d7c34e",
+        "started": 1792040988.0897977,
+        "optimizer_updates": 0
+      },
+      "scene_ready": false,
+      "attempts": [],
+      "main_stack": [
+        {
+          "name": "editing_usd",
+          "file": "omnigibson/simulator.py",
+          "line": 1774
+        },
+        {
+          "name": "__exit__",
+          "file": "contextlib.py",
+          "line": 144
+        },
+        {
+          "name": "ensure_usd_api",
+          "file": "omnigibson/utils/usd_utils.py",
+          "line": 304
+        },
+        {
+          "name": "_collision_filter_api",
+          "file": "omnigibson/prims/xform_prim.py",
+          "line": 160
+        },
+        {
+          "name": "add_filtered_collision_pair",
+          "file": "omnigibson/prims/xform_prim.py",
+          "line": 472
+        },
+        {
+          "name": "_post_load",
+          "file": "omnigibson/prims/entity_prim.py",
+          "line": 162
+        },
+        {
+          "name": "_post_load",
+          "file": "omnigibson/objects/usd_object.py",
+          "line": 409
+        },
+        {
+          "name": "_post_load",
+          "file": "omnigibson/robots/robot.py",
+          "line": 494
+        },
+        {
+          "name": "load",
+          "file": "omnigibson/prims/prim_base.py",
+          "line": 130
+        },
+        {
+          "name": "load",
+          "file": "omnigibson/objects/usd_object.py",
+          "line": 392
+        },
+        {
+          "name": "load",
+          "file": "omnigibson/robots/robot.py",
+          "line": 476
+        },
+        {
+          "name": "add_object",
+          "file": "omnigibson/scenes/scene_base.py",
+          "line": 697
+        },
+        {
+          "name": "_load_robots",
+          "file": "omnigibson/envs/env_base.py",
+          "line": 307
+        },
+        {
+          "name": "load",
+          "file": "omnigibson/envs/env_base.py",
+          "line": 466
+        },
+        {
+          "name": "__init__",
+          "file": "omnigibson/envs/env_base.py",
+          "line": 138
+        },
+        {
+          "name": "wrapper",
+          "file": "omnigibson/utils/python_utils.py",
+          "line": 92
+        },
+        {
+          "name": "load_env",
+          "file": "omnigibson/eval/evaluator.py",
+          "line": 296
+        },
+        {
+          "name": "__init__",
+          "file": "omnigibson/eval/evaluator.py",
+          "line": 208
+        },
+        {
+          "name": "main",
+          "file": "run_champion_task.py",
+          "line": 61
+        },
+        {
+          "name": "<module>",
+          "file": "run_champion_task.py",
+          "line": 86
+        }
+      ],
+      "nonblocking": true,
+      "locals_requested": false,
+      "raw_snapshot": {
+        "path": "/home/wsy/behavior/artifacts/final-eval-20261015/read-only-probes/vegetables-initial-load-132133.json",
+        "sha256": "2c0e80f16d6df231ef8ddbe98f33a982bc56e75364b5c9838e1b7d83b8d1c207"
+      },
+      "raw_stack_sha256": "5bcfe4a1888d7e14dffa3c813b656e56c2474d5e73cd2bc4538abe78a76a2275"
+    }
+  ],
+  "interpretation": "Two sparse samples from the same unchanged simulator PID show official USD object/material initialization and then robot/collision initialization. Scene ready and physical controls are not yet observed; these are not a full profile or proof of eventual completion.",
+  "last_monitor": {
+    "observed_at": "2026-10-15T05:19:58.838161+00:00",
+    "monitor_pid": 1408396,
+    "champion": {
+      "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+      "status": "running",
+      "pid": 241557,
+      "supervisor_alive": true,
+      "completed_parent": 672,
+      "errors_parent": 8,
+      "original_quarantined_gpus": [
+        "4"
+      ],
+      "recovery_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+      "recovery_status": "running",
+      "recovery_completed": 2,
+      "recovery_errors": 0,
+      "completed_combined": 674,
+      "execution_errors_combined": 8,
+      "unaccounted_combined": 318,
+      "effective_workers": [
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 0,
+          "pid": 241608,
+          "alive": true,
+          "start_ticks": 538129546,
+          "status": "evaluating",
+          "part": "putting_up_Christmas_decorations_inside-n4-i0",
+          "model_pid": 244174,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1407742,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            7000,
+            7000,
+            7000,
+            7000
+          ],
+          "physical_updated": 1792041579.911681,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 1,
+          "pid": 241609,
+          "alive": true,
+          "start_ticks": 538129546,
+          "status": "evaluating",
+          "part": "unloading_the_car-n4-i4",
+          "model_pid": 241683,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1451011,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            2100,
+            2100,
+            2100,
+            2100
+          ],
+          "physical_updated": 1792041581.3311088,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 2,
+          "pid": 241610,
+          "alive": true,
+          "start_ticks": 538129546,
+          "status": "evaluating",
+          "part": "rearrange_your_room-n4-i4",
+          "model_pid": 241664,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1393258,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            18000,
+            18000,
+            18000,
+            18000
+          ],
+          "physical_updated": 1792041594.8574188,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 3,
+          "pid": 241611,
+          "alive": true,
+          "start_ticks": 538129547,
+          "status": "evaluating",
+          "part": "clearing_food_from_table_into_fridge-n4-i4",
+          "model_pid": 246666,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1402714,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            11600,
+            11600,
+            11600,
+            11600
+          ],
+          "physical_updated": 1792041597.58273,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+          "gpu": 4,
+          "pid": 1364542,
+          "alive": true,
+          "start_ticks": 543065164,
+          "status": "evaluating",
+          "part": "bringing_in_wood-n4-i0",
+          "model_pid": 1364814,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1447484,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            2700,
+            2700,
+            2700,
+            2700
+          ],
+          "physical_updated": 1792041595.7782657,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 5,
+          "pid": 241613,
+          "alive": true,
+          "start_ticks": 538129547,
+          "status": "evaluating",
+          "part": "cleaning_up_plates_and_food-n4-i0",
+          "model_pid": 244175,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1416328,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            9300,
+            9300,
+            9300,
+            9300
+          ],
+          "physical_updated": 1792041578.02846,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 6,
+          "pid": 241614,
+          "alive": true,
+          "start_ticks": 538129547,
+          "status": "evaluating",
+          "part": "setup_a_bar_for_a_cocktail_party-n4-i0",
+          "model_pid": 249502,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1385221,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            15300,
+            15300,
+            15300,
+            15300
+          ],
+          "physical_updated": 1792041592.1131425,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 7,
+          "pid": 241615,
+          "alive": true,
+          "start_ticks": 538129547,
+          "status": "evaluating",
+          "part": "sorting_vegetables-n4-i0",
+          "model_pid": 249501,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1457931,
+          "sim_alive": true,
+          "physical_status": "loading",
+          "controls": null,
+          "physical_updated": null,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        }
+      ],
+      "counts_are_live_not_new_original_audit": true
+    },
+    "queue": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/queue-after-champion-recovered-v1",
+      "status": "waiting_for_champion_continuation",
+      "pid": 1404741,
+      "alive": true,
+      "start_ticks": 543213718,
+      "phases": [],
+      "recovery_dependencies": [
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+          "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1",
+          "source_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+          "gpu": 4
+        }
+      ],
+      "error": null
+    },
+    "mem": {
+      "status": null,
+      "pid": null,
+      "supervisor_alive": false,
+      "summary": null,
+      "workers": []
+    }
+  },
+  "processes_paused": false,
+  "processes_restarted": false,
+  "runtime_source_changed": false,
+  "original_outputs_modified": false,
+  "limits": [
+    "No inference about total time in each function",
+    "No success, terminal weights, raw observation/action equivalence, or complete episode claimed",
+    "Live progress snapshot does not replace committed original audits"
+  ]
+}
