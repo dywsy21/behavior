@@ -15,13 +15,24 @@ import sys
 import time
 
 REPO=Path(__file__).resolve().parents[2]
+ENTRY_REPO=REPO
 sys.path[:0]=[str(REPO/'src'),str(REPO/'scripts/eval/memlite_sft100')]
 from common import atomic_json
-from behavior_champion.inference import file_sha,checked_sources
 
 
 async def run(args):
+    global REPO
+    REPO=ENTRY_REPO
     cfg=json.loads(args.config.read_text())
+    recovery_job=getattr(args,'recovery_job',None)
+    admission=None
+    if recovery_job is not None:
+        import champion_worker_recovery as recovery
+        _,registration=recovery.registration(recovery_job,int(cfg['model_gpu']))
+        REPO=Path(registration['runtime_source'])
+        sys.path.insert(0,str(REPO/'src'))
+        recovery.check_model_request(recovery_job,registration,args.config,args.output)
+    from behavior_champion.inference import file_sha,checked_sources
     if cfg['schema']!='champion2026_official_websocket_v1' or args.output.exists():
         raise ValueError('Registered official-protocol config and fresh run required')
     if cfg['host']!='127.0.0.1':
@@ -29,8 +40,12 @@ async def run(args):
     if subprocess.check_output(['git','status','--porcelain'],cwd=REPO,text=True).strip():
         raise ValueError('Clean frozen source required')
     gpu=str(cfg['model_gpu'])
-    if (os.environ.get('CUDA_VISIBLE_DEVICES')!=gpu or subprocess.check_output(
-            ['nvidia-smi','-i',gpu,'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip()):
+    if os.environ.get('CUDA_VISIBLE_DEVICES')!=gpu:
+        raise ValueError('Registered model GPU must be idle')
+    if recovery_job is not None:
+        from champion_peer_admission import check
+        admission=check(registration['parent'],registration['parent_manifest']['sha256'],int(gpu))
+    elif subprocess.check_output(['nvidia-smi','-i',gpu,'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip():
         raise ValueError('Registered model GPU must be idle')
     root=Path(cfg['a800_root']);reference=root/cfg['reference'];openpi=root/cfg['openpi_reference']
     checked_sources(reference,openpi,REPO)
@@ -49,6 +64,13 @@ async def run(args):
         source_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(),
         config_sha256=file_sha(args.config),asset_receipt_sha256=cfg['verified_sha256'],
         physical_execution_evidence=False,allowed_task_ids=allowed,memory_profiling=args.profile_memory)
+    if recovery_job is not None:
+        # Provenance distinguishes this admission-only entry from the unchanged
+        # actor modules imported from the original frozen policy checkout.
+        admission=check(registration['parent'],registration['parent_manifest']['sha256'],int(gpu))
+        status.update(launcher_source_commit=registration['source_commit'],
+                      recovery_manifest_sha256=file_sha(recovery_job/'manifest.json'),
+                      registered_peer_admission=admission)
     atomic_json(args.output/'status.json',status)
     memory_profile = None
     if args.profile_memory:
@@ -123,4 +145,5 @@ if __name__=='__main__':
     parser.add_argument('--config',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--profile-memory',action='store_true',help='Read-only per-PID NVML sampling plus JAX allocator statistics; not a hardware-limit test')
+    parser.add_argument('--recovery-job',type=Path,help='Explicit isolated-worker registration; admits only verified live peer-simulator auxiliary contexts')
     asyncio.run(run(parser.parse_args()))

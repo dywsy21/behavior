@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 11:59 CST / Codex SUBMISSION-FULL-EVAL（单卡恢复本地实现/验收）：** 新`champion_worker_recovery.py`只接已证实退出worker的未尝试后缀，重验原权重/失败ledger/断连尾部，独立run不覆盖父目录；`champion_peer_admission.py`按原worker父子PID、精确argv/EVAL_GPU/源路径及小辅助显存逐一准入，拒绝未知或目标GPU上的其他owner。恢复共用原父run的FIFO加载锁；新服务入口显式保留9f策略模块并记录新launcher身份，核心计算AST与原9f完全相同的回归通过。149项本地测试通过（含未知owner、错PID/argv、重跑/漏case、错误尾部及旧编排回归），不是独立成员review；目标部署与真实恢复尚待。其余七卡继续，最新监控646完整/8异常，新增8原件稍后补核；根下一Git冻结部署/目标验收并恢复GPU4的42未启例，再接好最终合账/后继，不停七卡。
+
+- **2026-10-15 11:48 CST / Codex SUBMISSION-FULL-EVAL（GPU4单卡隔离故障，七卡不停）：** 11:43冻派305–308在scene1左夹爪link出现NaN姿态，4例已原样记工程异常/不重跑，累计638完整/8工程异常/354待；随后model-001在创建输出前被“GPU完全空闲”门拒绝，worker4已退出，其余七worker及MEM300108后继仍在。实核GPU4的7个174MiB上下文全属本次其他GPU的原模拟器（launch_sim会取消CUDA_VISIBLE_DEVICES），不是队友占用；旧246626模型终态参数仍原SHA/0更新，失败新模型未加载。NaN物理根因未称修复。证据`docs/infra/results/2026-10-15-champion-gpu4-isolated-failure-1148.json`含原日志/失败ledger/部分视频/权重/进程及13批42例未启后缀。根下一独立实现严格peer归属准入与单卡旁路续评，保持原actor/seed/horizon；不热改f7/9f、不停七卡，恢复及后继合账尚未完成。
+
 - **2026-10-15 11:38 CST / Codex SUBMISSION-FULL-EVAL（新task活动会话/资源复核）：** GPU2重布房间task88、GPU3餐桌食物入冰箱task25的原journal新稳定前缀分别43662052/44936764字节验过；各4独立活动连接、reset epoch1，阶段/投票/动作衔接与本会话递推一致，未发现记录层串task。范围仅记录身份/递推，不冒称原图、动作/RNG逐位一致或成功；实际粗控分别每例5600/6900。11:34核原241557/八worker/300108/303366非僵尸、start ticks未换，盘剩4.96TB/RAM约530GiB，资源无近限；证据`docs/infra/results/2026-10-15-champion-active-task-isolation-1138.json`。仍638完整/4旧异常/358待、MEM未启，未改源码/环境/原件、未停任何评测。下一继续当前长回合及新原件核验，冠军→MEM/外部交付暂缓不变。
 
 - **2026-10-15 11:31 CST / Codex SUBMISSION-FULL-EVAL（庭院新增4原件）：** 冠军638完整/4继承异常/358待，原241557/八worker和MEM300108后继持续实活、无新增故障。清庭院305–308各18107实控/Q0/success=false，连首批仅8/10，不称全task或全模型成绩；累计官方完整成功16例。四份原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置及GPU6精确journal前缀通过，证据`docs/infra/results/2026-10-15-champion-patio-new4-originals.json`，当前v2累计100完整物理batch已核，无人工全片视觉复核。GPU6自然续309–310，其余卡实际控制增加；不因时间风险停机/缩时限/改actor或按表现重跑。下一保持冠军→MEM、逐批原件核账及终态内部归档，外部交付仍暂缓。

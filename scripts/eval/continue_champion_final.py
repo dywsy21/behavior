@@ -366,11 +366,15 @@ def model_environment(m, gpu):
     return env
 
 
-def worker(job, gpu):
-    job, m = registration(job)
+def worker(job, gpu, *, recovery=False):
+    if recovery:
+        import champion_worker_recovery as recovery_tool
+        job, m = recovery_tool.registration(job, gpu)
+    else:
+        job, m = registration(job)
     if type(gpu) is not int or not 0 <= gpu < 8:
         raise ValueError('Registered GPU required')
-    _, original, _ = root_registration(job)
+    _, original, _ = root_registration(m['parent'] if recovery else job)
     runtime = Path(m['runtime_source']) / 'scripts/eval'; cfg = m['configs'][gpu]
     path = job / 'workers' / f'gpu_{gpu}'; path.mkdir(exist_ok=False)
     lock = (SIM_ROOT / f'gpu_{gpu}.lock').open('a'); fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -379,6 +383,7 @@ def worker(job, gpu):
     def publish():
         state['updated'] = time.time(); atomic_json(path / 'status.json', state)
     model = sim = loader = model_path = None
+    loader_job = Path(m['parent']) if recovery else job
     env = model_environment(m, gpu)
     def retire_model():
         nonlocal model, model_path
@@ -400,10 +405,12 @@ def worker(job, gpu):
             if shutil.disk_usage(job).free < 150 << 30:
                 raise RuntimeError('Disk safety reserve')
             if model is None:
-                loader = loader_lock(job); model_path = path / f"model-{len(state['model_generations']):03d}"
+                loader = loader_lock(loader_job); model_path = path / f"model-{len(state['model_generations']):03d}"
+                model_entry = REPO / 'scripts/eval/serve_champion_official.py' if recovery else runtime / 'serve_champion_official.py'
+                model_extra = ['--recovery-job', str(job)] if recovery else []
                 with (path / (model_path.name + '.log')).open('x') as log:
-                    model = subprocess.Popen([m['model_python'], str(runtime / 'serve_champion_official.py'),
-                        '--config', cfg['path'], '--output', str(model_path), '--profile-memory'], env=env,
+                    model = subprocess.Popen([m['model_python'], str(model_entry),
+                        '--config', cfg['path'], '--output', str(model_path), '--profile-memory', *model_extra], env=env,
                         stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
                 state.update(model_pid=model.pid, model_path=str(model_path)); publish(); deadline = time.monotonic()+1800
                 while True:
@@ -414,7 +421,7 @@ def worker(job, gpu):
                         raise RuntimeError('Frozen model loading failed/timed out/stopped')
                     time.sleep(3)
                 loader.close(); loader = None
-            part = pending.pop(0); output = job / 'parts' / part['id']; loader = loader_lock(job)
+            part = pending.pop(0); output = job / 'parts' / part['id']; loader = loader_lock(loader_job)
             command = ['bash', str(runtime / 'memlite_sft100/launch_sim.sh'), str(runtime / 'run_champion_task.py'),
                 '--task', part['task'], '--task-id', str(part['task_id']), '--policy-config', cfg['path'],
                 '--output', str(output), '--num-envs', str(part['num_envs']), '--indices', *map(str, part['indices'])]
