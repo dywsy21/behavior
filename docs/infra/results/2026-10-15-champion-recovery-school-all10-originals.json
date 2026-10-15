@@ -1,0 +1,307 @@
+{
+  "schema": "champion_recovery_new_committed_originals_v1",
+  "observed_at": "2026-10-15T13:06:34.781287+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/manifest.json",
+    "sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46"
+  },
+  "certificate": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parent-worker-certificate.json",
+    "sha256": "a33c0f3fa746b3e3f72750154deae9919f8219812fe5fbe91ca89bf714627bfd"
+  },
+  "parent_manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+  "coordinator_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+  "batches": [
+    {
+      "part": "organizing_school_stuff-n2-i8",
+      "gpu": 4,
+      "records": [
+        {
+          "task": "organizing_school_stuff",
+          "instance_id": 309,
+          "rollout_id": 0,
+          "steps": 21888,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parts/organizing_school_stuff-n2-i8/json/organizing_school_stuff_309_0.json",
+            "sha256": "536371a5e59dc8d9aa77785e8a48c27c31fee7ccfa16a3d53d7e8c5f0341fa62"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parts/organizing_school_stuff-n2-i8/videos/organizing_school_stuff_309_0.mp4",
+            "sha256": "82b8a2ea20ffa43eebd9dfc2f85ccc4d7868238fe732952f3fcfdacff43a5069"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "21888"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "organizing_school_stuff",
+          "instance_id": 310,
+          "rollout_id": 0,
+          "steps": 21888,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parts/organizing_school_stuff-n2-i8/json/organizing_school_stuff_310_0.json",
+            "sha256": "8a50c728a6bb2a2eaab00899ed2936fbceea74a1eb28392fb0f92c4fe5a7b958"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parts/organizing_school_stuff-n2-i8/videos/organizing_school_stuff_310_0.mp4",
+            "sha256": "6d06903680463f1a3ba3ccc3cdfd26e0ad77bae279030c2f4a73fd46e3187c86"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "21888"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "original_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parts/organizing_school_stuff-n2-i8/attempts/08.json",
+        "sha256": "0960ce96c28e2c3b0204848f4d80f8c23e5e0040b83c68b1508d6bee89055799"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "organizing_school_stuff",
+        "indices": [
+          8,
+          9
+        ],
+        "instance_ids": [
+          309,
+          310
+        ],
+        "rollout": 0,
+        "started": 1792066166.5474713,
+        "max_steps": 21887,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792069469.4622755,
+        "seconds": 3302.914146703668,
+        "actual_applied_controls": [
+          21888,
+          21888
+        ],
+        "unused_delivered_controls": {
+          "0": 12,
+          "1": 12
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 1958976,
+        "task": "organizing_school_stuff",
+        "task_id": 73,
+        "indices": [
+          8,
+          9
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+        "started": 1792065872.0117857,
+        "optimizer_updates": 0,
+        "control_steps": [
+          21800,
+          21800
+        ],
+        "updated": 1792069455.9601173,
+        "finished": 1792069469.4646258,
+        "official_timeout": 21887,
+        "completed": 2
+      }
+    }
+  ],
+  "protocol_prefix": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 29729887,
+    "prefix_sha256": "ffac8d13b9c931599b5c10ecc8d8dd6c3eea8f4402335a4f9d5dbde463f864d9",
+    "lines": 23046,
+    "connections": 22,
+    "episodes": 22,
+    "closed_episodes": 22,
+    "active_connections": 0,
+    "deliveries": 22980,
+    "delivered_controls": 459600,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      15,
+      47,
+      73
+    ],
+    "require_closed": false,
+    "original_outputs_modified": false,
+    "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/workers/gpu_4/model-000/events.jsonl",
+    "captured_bytes": 29729887,
+    "ignored_incomplete_tail_bytes": 0
+  },
+  "worker": {
+    "status": "evaluating",
+    "pid": 1364542,
+    "gpu": 4,
+    "started": 1792036977.438476,
+    "completed_parts": [
+      "freeze_pies-n2-i8",
+      "bringing_in_wood-n4-i0",
+      "bringing_in_wood-n4-i4",
+      "bringing_in_wood-n2-i8",
+      "organizing_school_stuff-n4-i0",
+      "organizing_school_stuff-n4-i4",
+      "organizing_school_stuff-n2-i8"
+    ],
+    "diagnosed_failed_parts": [],
+    "model_generations": [],
+    "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "model_pid": 1364814,
+    "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/workers/gpu_4/model-000",
+    "updated": 1792069480.4117155,
+    "sim_pid": 2029098,
+    "part": "sorting_household_items-n4-i0"
+  },
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 1404741,
+    "started": 1792038459.6832724,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-recovery-queue-upgrade-v1.json",
+        "sha256": "ab5f7614e50297860c84ac92af5126043a70513916beec8eabcbbf1d3ab39bdc"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/queue-after-champion-isolated-v1/status.json",
+        "sha256": "b235e9afbad218a7b8e6b50df8e656af8817fe2e0a04a6719f2c823b772bec41"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/manifest.json",
+        "sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parent-worker-certificate.json",
+        "sha256": "a33c0f3fa746b3e3f72750154deae9919f8219812fe5fbe91ca89bf714627bfd"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-recovery-collection-20261015-v1",
+    "queue_source_commit": "78c364b2354928067687388a985eb3782561897a",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "pending_mem_upgrade": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-recovery-queue-upgrade-v1.json",
+      "sha256": "ab5f7614e50297860c84ac92af5126043a70513916beec8eabcbbf1d3ab39bdc"
+    },
+    "recovery_dependencies": [
+      {
+        "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+        "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1",
+        "source_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+        "gpu": 4
+      }
+    ],
+    "updated": 1792038459.6832993
+  },
+  "parent_counts": {
+    "completed": 806,
+    "execution_errors": 8,
+    "unaccounted": 186
+  },
+  "recovery_completed": 22,
+  "recovery_errors": 0,
+  "combined_live_completed": 828,
+  "combined_live_errors": 8,
+  "previously_verified_parts": [
+    "bringing_in_wood-n2-i8",
+    "bringing_in_wood-n4-i0",
+    "bringing_in_wood-n4-i4",
+    "freeze_pies-n2-i8",
+    "organizing_school_stuff-n4-i0",
+    "organizing_school_stuff-n4-i4"
+  ],
+  "original_outputs_modified": false,
+  "manual_visual_review": false,
+  "full_model_score": false,
+  "parameters_are_loading_fingerprints_not_final_certificates": true,
+  "scope": "New recovery original JSON/MP4 hashes and metadata, physical receipts, frozen source/registration/seed/horizon and exact per-connection protocol prefix. Parent live counts are not a new whole-lineage audit; no raw image/action/RNG equivalence or final model certificate claimed.",
+  "combined_accounting": {
+    "audited_parent_completed": 806,
+    "audited_recovery_completed": 22,
+    "audited_completed_combined": 828,
+    "execution_errors_combined": 8,
+    "unaccounted_combined": 164,
+    "completed_batch_successes": 20,
+    "pending_early_successes": null,
+    "parent_reference": "docs/infra/results/2026-10-15-champion-brussels-first4-originals.json",
+    "parent_lineage_reaudited_by_this_probe": false
+  },
+  "protocol_session_summaries_omitted": true,
+  "previous_task_originals": [
+    "docs/infra/results/2026-10-15-champion-recovery-school-first4-originals.json",
+    "docs/infra/results/2026-10-15-champion-recovery-school305308-originals.json"
+  ],
+  "task_rollup": {
+    "task": "organizing_school_stuff",
+    "unique_instances": [
+      301,
+      302,
+      303,
+      304,
+      305,
+      306,
+      307,
+      308,
+      309,
+      310
+    ],
+    "success_count": 0,
+    "success_rate": 0,
+    "q_score_sum": 0,
+    "q_score_mean": 0,
+    "full_model_score": false
+  }
+}
