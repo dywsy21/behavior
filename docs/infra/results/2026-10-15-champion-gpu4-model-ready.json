@@ -1,0 +1,212 @@
+{
+  "observed_at": "2026-10-15T04:07:23.075955+00:00",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/manifest.json",
+    "sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46"
+  },
+  "certificate": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parent-worker-certificate.json",
+    "sha256": "a33c0f3fa746b3e3f72750154deae9919f8219812fe5fbe91ca89bf714627bfd"
+  },
+  "status": {
+    "status": "running",
+    "pid": 1364542,
+    "started": 1792036973.6351416,
+    "gpu": 4,
+    "parent": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "manifest": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/manifest.json",
+      "sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46"
+    },
+    "automatic_retries": false
+  },
+  "worker": {
+    "status": "evaluating",
+    "pid": 1364542,
+    "gpu": 4,
+    "started": 1792036977.438476,
+    "completed_parts": [],
+    "diagnosed_failed_parts": [],
+    "model_generations": [],
+    "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "model_pid": 1364814,
+    "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/workers/gpu_4/model-000",
+    "updated": 1792037067.5443187,
+    "sim_pid": 1367556,
+    "part": "freeze_pies-n2-i8"
+  },
+  "model": {
+    "status": "ready",
+    "pid": 1364814,
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "launcher_source_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+    "optimizer_updates": 0,
+    "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+    "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143"
+  },
+  "processes": [
+    {
+      "pid": 1364542,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 543065164,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1/scripts/eval/champion_worker_recovery.py",
+        "run",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1"
+      ]
+    },
+    {
+      "pid": 1364814,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 543065943,
+      "argv": [
+        "/home/tione/notebook/baselines/StarVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1/scripts/eval/serve_champion_official.py",
+        "--config",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_4.json",
+        "--output",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/workers/gpu_4/model-000",
+        "--profile-memory",
+        "--recovery-job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1"
+      ]
+    },
+    {
+      "pid": 1367556,
+      "exists": true,
+      "state": "R",
+      "start_ticks": 543074954,
+      "argv": [
+        "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+        "--task",
+        "freeze_pies",
+        "--task-id",
+        "47",
+        "--policy-config",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_4.json",
+        "--output",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parts/freeze_pies-n2-i8",
+        "--num-envs",
+        "2",
+        "--indices",
+        "8",
+        "9"
+      ]
+    }
+  ],
+  "parent_worker_processes": [
+    {
+      "pid": 241608,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129546,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "0"
+      ]
+    },
+    {
+      "pid": 241609,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129546,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "1"
+      ]
+    },
+    {
+      "pid": 241610,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129546,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "2"
+      ]
+    },
+    {
+      "pid": 241611,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "3"
+      ]
+    },
+    {
+      "pid": 241613,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "5"
+      ]
+    },
+    {
+      "pid": 241614,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "6"
+      ]
+    },
+    {
+      "pid": 241615,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "7"
+      ]
+    }
+  ],
+  "actual_physical_controls_confirmed": false,
+  "peer_ownership_admission_details": "docs/infra/results/2026-10-15-champion-gpu4-recovery-launch.json",
+  "all_other_workers_uninterrupted": true
+}

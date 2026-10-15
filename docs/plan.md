@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 12:09 CST / Codex SUBMISSION-FULL-EVAL（七卡新增10原件已补核）：** 清枝叶305–308各18791实控/Q0，客厅305–308各18849/Q0；卧室309–310各16557、Q为2/3和1/3，十例均success=false。原JSON/MP4 SHA、672×448/30fps/帧数=实控、原seed/horizon/配置与三GPU精确journal前缀全部通过；证据`docs/infra/results/2026-10-15-champion-branches-bedroom-living-new10-originals.json`。累计648完整/8工程异常/344待、16官方完整成功；卧室全10平均Q0.233333/SR0，其余两task仅8/10，非全模型结论。GPU4旁路模型ready但场景仍loading/尚无新原件；七卡持续，不因核验停机。下一验GPU4首控制、实现父＋旁路终态合账/新MEM等待链。
+
+- **2026-10-15 12:07 CST / Codex SUBMISSION-FULL-EVAL（GPU4模型已ready，场景加载中）：** 原恢复1364542/模型1364814实活，加载参数指纹仍`2a5ce80b…f53975`、0更新，原9f actor/原gpu4配置与新116 launcher身份均明确；冻派309–310新模拟器1367556已启动，尚未核到真实控制，不能称已完成恢复闭环。证据`docs/infra/results/2026-10-15-champion-gpu4-model-ready.json`；原七worker未换/继续，父648完整/8异常，10新原件仍待补核。下一核首控制并完善父＋旁路合账/新MEM后继（旧300108只等父run），不停止其余评测。
+
+- **2026-10-15 12:04 CST / Codex SUBMISSION-FULL-EVAL（GPU4独立续评已启动/加载中）：** `champion_gpu4_20261015_recovery_v1`实际PID1364542、模型1364814，13批42未启案例按原顺序登记；manifest45830ff3、故障证书a33c0f3f、源11689f50，实际actor/物理仍9f/原配置。模型两次严格peer准入已过并进入loading，不提前称真实控制恢复；原七worker start ticks未变，父648完整/8工程异常/344待，新10原件待补核。目标148通过/1缺可选官方源跳过后，用实际冻结network_utils路径单独补1通过；本地149通过。证据`docs/infra/results/2026-10-15-champion-gpu4-recovery-launch.json`；旧GPU4故障目录/原件不覆盖，未热改或停止七卡。下一核加载权重和首控制，接好父run＋单卡续评的终态合账/新MEM后继；现300108仍只懂旧父run，不能宣称新合账已自动接好。
+
 - **2026-10-15 11:59 CST / Codex SUBMISSION-FULL-EVAL（单卡恢复本地实现/验收）：** 新`champion_worker_recovery.py`只接已证实退出worker的未尝试后缀，重验原权重/失败ledger/断连尾部，独立run不覆盖父目录；`champion_peer_admission.py`按原worker父子PID、精确argv/EVAL_GPU/源路径及小辅助显存逐一准入，拒绝未知或目标GPU上的其他owner。恢复共用原父run的FIFO加载锁；新服务入口显式保留9f策略模块并记录新launcher身份，核心计算AST与原9f完全相同的回归通过。149项本地测试通过（含未知owner、错PID/argv、重跑/漏case、错误尾部及旧编排回归），不是独立成员review；目标部署与真实恢复尚待。其余七卡继续，最新监控646完整/8异常，新增8原件稍后补核；根下一Git冻结部署/目标验收并恢复GPU4的42未启例，再接好最终合账/后继，不停七卡。
 
 - **2026-10-15 11:48 CST / Codex SUBMISSION-FULL-EVAL（GPU4单卡隔离故障，七卡不停）：** 11:43冻派305–308在scene1左夹爪link出现NaN姿态，4例已原样记工程异常/不重跑，累计638完整/8工程异常/354待；随后model-001在创建输出前被“GPU完全空闲”门拒绝，worker4已退出，其余七worker及MEM300108后继仍在。实核GPU4的7个174MiB上下文全属本次其他GPU的原模拟器（launch_sim会取消CUDA_VISIBLE_DEVICES），不是队友占用；旧246626模型终态参数仍原SHA/0更新，失败新模型未加载。NaN物理根因未称修复。证据`docs/infra/results/2026-10-15-champion-gpu4-isolated-failure-1148.json`含原日志/失败ledger/部分视频/权重/进程及13批42例未启后缀。根下一独立实现严格peer归属准入与单卡旁路续评，保持原actor/seed/horizon；不热改f7/9f、不停七卡，恢复及后继合账尚未完成。

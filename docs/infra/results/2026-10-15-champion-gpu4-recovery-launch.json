@@ -1,0 +1,715 @@
+{
+  "observed_at": "2026-10-15T04:03:58.814306+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/manifest.json",
+    "sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46"
+  },
+  "certificate": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parent-worker-certificate.json",
+    "sha256": "a33c0f3fa746b3e3f72750154deae9919f8219812fe5fbe91ca89bf714627bfd"
+  },
+  "status": {
+    "status": "running",
+    "pid": 1364542,
+    "started": 1792036973.6351416,
+    "gpu": 4,
+    "parent": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "manifest": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/manifest.json",
+      "sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46"
+    },
+    "automatic_retries": false
+  },
+  "worker": {
+    "status": "loading",
+    "pid": 1364542,
+    "gpu": 4,
+    "started": 1792036977.438476,
+    "completed_parts": [],
+    "diagnosed_failed_parts": [],
+    "model_generations": [],
+    "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "model_pid": 1364814,
+    "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/workers/gpu_4/model-000",
+    "updated": 1792036977.4457023
+  },
+  "model": {
+    "status": "loading",
+    "pid": 1364814,
+    "started": 1792036995.7887514,
+    "optimizer_updates": 0,
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+    "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+    "physical_execution_evidence": false,
+    "allowed_task_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99
+    ],
+    "memory_profiling": true,
+    "launcher_source_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+    "recovery_manifest_sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46",
+    "registered_peer_admission": {
+      "schema": "champion_registered_peer_gpu_admission_v1",
+      "observed_at": 1792036996.3412564,
+      "gpu": 4,
+      "parent_manifest": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      "nvml_compute": "1252988, 174 MiB\n1286024, 174 MiB\n1306773, 174 MiB\n1321998, 174 MiB\n1346318, 174 MiB\n1348439, 174 MiB\n1354187, 174 MiB\n",
+      "owners": [
+        {
+          "pid": 1252988,
+          "memory_mib": 174,
+          "peer": {
+            "pid": 1252988,
+            "ppid": 241615,
+            "start_ticks": 542556744,
+            "argv": [
+              "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+              "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+              "--task",
+              "putting_dishes_away_after_cleaning",
+              "--task-id",
+              "11",
+              "--policy-config",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_7.json",
+              "--output",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/putting_dishes_away_after_cleaning-n4-i4",
+              "--num-envs",
+              "4",
+              "--indices",
+              "4",
+              "5",
+              "6",
+              "7"
+            ],
+            "environment": {
+              "EVAL_GPU": "7",
+              "EVAL_SOURCE": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval",
+              "CUDA_VISIBLE_DEVICES": null
+            },
+            "gpu": 7,
+            "worker_pid": 241615,
+            "worker_start_ticks": 538129547,
+            "part": "putting_dishes_away_after_cleaning-n4-i4"
+          }
+        },
+        {
+          "pid": 1286024,
+          "memory_mib": 174,
+          "peer": {
+            "pid": 1286024,
+            "ppid": 241611,
+            "start_ticks": 542712600,
+            "argv": [
+              "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+              "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+              "--task",
+              "clearing_food_from_table_into_fridge",
+              "--task-id",
+              "25",
+              "--policy-config",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_3.json",
+              "--output",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clearing_food_from_table_into_fridge-n4-i0",
+              "--num-envs",
+              "4",
+              "--indices",
+              "0",
+              "1",
+              "2",
+              "3"
+            ],
+            "environment": {
+              "EVAL_GPU": "3",
+              "EVAL_SOURCE": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval",
+              "CUDA_VISIBLE_DEVICES": null
+            },
+            "gpu": 3,
+            "worker_pid": 241611,
+            "worker_start_ticks": 538129547,
+            "part": "clearing_food_from_table_into_fridge-n4-i0"
+          }
+        },
+        {
+          "pid": 1306773,
+          "memory_mib": 174,
+          "peer": {
+            "pid": 1306773,
+            "ppid": 241610,
+            "start_ticks": 542794902,
+            "argv": [
+              "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+              "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+              "--task",
+              "rearrange_your_room",
+              "--task-id",
+              "88",
+              "--policy-config",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_2.json",
+              "--output",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/rearrange_your_room-n4-i0",
+              "--num-envs",
+              "4",
+              "--indices",
+              "0",
+              "1",
+              "2",
+              "3"
+            ],
+            "environment": {
+              "EVAL_GPU": "2",
+              "EVAL_SOURCE": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval",
+              "CUDA_VISIBLE_DEVICES": null
+            },
+            "gpu": 2,
+            "worker_pid": 241610,
+            "worker_start_ticks": 538129546,
+            "part": "rearrange_your_room-n4-i0"
+          }
+        },
+        {
+          "pid": 1321998,
+          "memory_mib": 174,
+          "peer": {
+            "pid": 1321998,
+            "ppid": 241614,
+            "start_ticks": 542872809,
+            "argv": [
+              "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+              "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+              "--task",
+              "clean_a_patio",
+              "--task-id",
+              "36",
+              "--policy-config",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_6.json",
+              "--output",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/clean_a_patio-n2-i8",
+              "--num-envs",
+              "2",
+              "--indices",
+              "8",
+              "9"
+            ],
+            "environment": {
+              "EVAL_GPU": "6",
+              "EVAL_SOURCE": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval",
+              "CUDA_VISIBLE_DEVICES": null
+            },
+            "gpu": 6,
+            "worker_pid": 241614,
+            "worker_start_ticks": 538129547,
+            "part": "clean_a_patio-n2-i8"
+          }
+        },
+        {
+          "pid": 1346318,
+          "memory_mib": 174,
+          "peer": {
+            "pid": 1346318,
+            "ppid": 241613,
+            "start_ticks": 542990886,
+            "argv": [
+              "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+              "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+              "--task",
+              "cleaning_up_branches_and_twigs",
+              "--task-id",
+              "68",
+              "--policy-config",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_5.json",
+              "--output",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/cleaning_up_branches_and_twigs-n2-i8",
+              "--num-envs",
+              "2",
+              "--indices",
+              "8",
+              "9"
+            ],
+            "environment": {
+              "EVAL_GPU": "5",
+              "EVAL_SOURCE": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval",
+              "CUDA_VISIBLE_DEVICES": null
+            },
+            "gpu": 5,
+            "worker_pid": 241613,
+            "worker_start_ticks": 538129547,
+            "part": "cleaning_up_branches_and_twigs-n2-i8"
+          }
+        },
+        {
+          "pid": 1348439,
+          "memory_mib": 174,
+          "peer": {
+            "pid": 1348439,
+            "ppid": 241608,
+            "start_ticks": 542995791,
+            "argv": [
+              "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+              "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+              "--task",
+              "tidying_living_room",
+              "--task-id",
+              "53",
+              "--policy-config",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_0.json",
+              "--output",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/tidying_living_room-n2-i8",
+              "--num-envs",
+              "2",
+              "--indices",
+              "8",
+              "9"
+            ],
+            "environment": {
+              "EVAL_GPU": "0",
+              "EVAL_SOURCE": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval",
+              "CUDA_VISIBLE_DEVICES": null
+            },
+            "gpu": 0,
+            "worker_pid": 241608,
+            "worker_start_ticks": 538129546,
+            "part": "tidying_living_room-n2-i8"
+          }
+        },
+        {
+          "pid": 1354187,
+          "memory_mib": 174,
+          "peer": {
+            "pid": 1354187,
+            "ppid": 241609,
+            "start_ticks": 543019508,
+            "argv": [
+              "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+              "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+              "--task",
+              "unloading_the_car",
+              "--task-id",
+              "65",
+              "--policy-config",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_1.json",
+              "--output",
+              "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/unloading_the_car-n4-i0",
+              "--num-envs",
+              "4",
+              "--indices",
+              "0",
+              "1",
+              "2",
+              "3"
+            ],
+            "environment": {
+              "EVAL_GPU": "1",
+              "EVAL_SOURCE": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval",
+              "CUDA_VISIBLE_DEVICES": null
+            },
+            "gpu": 1,
+            "worker_pid": 241609,
+            "worker_start_ticks": 538129546,
+            "part": "unloading_the_car-n4-i0"
+          }
+        }
+      ],
+      "free_memory_mib": 71561,
+      "process_pid": 1364814,
+      "unknown_owners_admitted": false,
+      "peers_stopped": false
+    }
+  },
+  "processes": [
+    {
+      "pid": 1364542,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 543065164,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1/scripts/eval/champion_worker_recovery.py",
+        "run",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1"
+      ]
+    },
+    {
+      "pid": 1364814,
+      "exists": true,
+      "state": "D",
+      "start_ticks": 543065943,
+      "argv": [
+        "/home/tione/notebook/baselines/StarVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1/scripts/eval/serve_champion_official.py",
+        "--config",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_4.json",
+        "--output",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/workers/gpu_4/model-000",
+        "--profile-memory",
+        "--recovery-job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1"
+      ]
+    }
+  ],
+  "parent_status": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {
+      "4": {
+        "status": "needs_diagnosis",
+        "pid": 241612,
+        "gpu": 4,
+        "started": 1791987613.778339,
+        "completed_parts": [
+          "putting_shoes_on_rack-n2-i8",
+          "bringing_water-n4-i0",
+          "bringing_water-n4-i4",
+          "bringing_water-n2-i8",
+          "sorting_bottles_cans_and_paper-n4-i0",
+          "sorting_bottles_cans_and_paper-n4-i4",
+          "sorting_bottles_cans_and_paper-n2-i8",
+          "wash_dog_toys-n4-i0",
+          "wash_dog_toys-n4-i4",
+          "wash_dog_toys-n2-i8",
+          "freeze_pies-n4-i0"
+        ],
+        "diagnosed_failed_parts": [
+          "freeze_pies-n4-i4"
+        ],
+        "model_generations": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000/result.json",
+            "sha256": "5b31fa8941c88208eb48b08a9ef636767559e5ba3b0d6a3fa00231505f91f209"
+          }
+        ],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 1339445,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-001",
+        "updated": 1792035845.8495996,
+        "sim_pid": 1276109,
+        "part": "freeze_pies-n4-i4",
+        "error": "RuntimeError('Frozen model loading failed/timed out/stopped')",
+        "final_verification_error": "FileNotFoundError(2, 'No such file or directory')",
+        "finished": 1792035845.8495977
+      }
+    },
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 648,
+    "coverage": 656,
+    "updated": 1792037027.9836907
+  },
+  "parent_summary": {
+    "status": "running",
+    "expected": 1000,
+    "completed": 648,
+    "missing": 352,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.07836566725455617,
+    "completed_only_sr": 0.024691358024691357,
+    "coverage": 656,
+    "execution_errors": 8,
+    "unaccounted": 344,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.0507809523809524,
+    "conservative_sr_errors_and_missing_as_zero": 0.016,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0,
+    "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "orchestrator_commit": "f7b728549309b00940861f2a00ba4e9a36419855",
+    "inherited_completed": 304,
+    "administrative_restarts": 30,
+    "policy_changed": false,
+    "optimizer_updates": 0,
+    "original_outputs_unmodified": true
+  },
+  "parent_worker_processes": [
+    {
+      "pid": 241608,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129546,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "0"
+      ]
+    },
+    {
+      "pid": 241609,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129546,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "1"
+      ]
+    },
+    {
+      "pid": 241610,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129546,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "2"
+      ]
+    },
+    {
+      "pid": 241611,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "3"
+      ]
+    },
+    {
+      "pid": 241613,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "5"
+      ]
+    },
+    {
+      "pid": 241614,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "6"
+      ]
+    },
+    {
+      "pid": 241615,
+      "exists": true,
+      "state": "S",
+      "start_ticks": 538129547,
+      "argv": [
+        "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+        "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/continue_champion_final.py",
+        "worker",
+        "--job",
+        "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+        "--gpu",
+        "7"
+      ]
+    }
+  ],
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 300108,
+    "started": 1791989042.9684465,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+        "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v7/queue-after-champion-resume-v2/status.json",
+        "sha256": "643cca0bd67296878a5518bd6de3d786d331fd9bebe00b777b0d7b68a50f2ec5"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-queue-isolation-20261014-v2",
+    "queue_source_commit": "9122b13726bf1862dbe2d6616c0da916822e2487",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "pending_mem_upgrade": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-isolation-upgrade-v1.json",
+      "sha256": "7ba485e7026eaa20d138301b399837bbf1277ca80fc84d7420d5244e9c8ac39b"
+    },
+    "updated": 1791989042.9684682
+  },
+  "author": "Codex / SUBMISSION-FULL-EVAL",
+  "source_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+  "bundle_sha256": "fa37ca08f74a22fe8b89dd566a290da01bc6688ce41e2074e971e6a2380b22e9",
+  "local_tests": {
+    "passed": 149
+  },
+  "target_tests": {
+    "passed": 148,
+    "skipped_optional_official_source": 1,
+    "skipped_test_rechecked_with_actual_pinned_source": {
+      "passed": 1
+    }
+  },
+  "status_at_capture": "model_loading_no_new_physical_controls_yet",
+  "healthy_workers_stopped": false,
+  "old_sources_or_originals_modified": false,
+  "full_queue_recovery_integration": "pending",
+  "external_delivery_deferred": true
+}

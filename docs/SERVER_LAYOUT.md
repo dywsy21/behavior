@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-15 12:04 CST：GPU4单卡旁路续评（加载中，其余七卡不停）
+
+- 新run `/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1`，tmux `champion-gpu4-recovery-v1`，PID1364542/模型1364814；日志`run.log`、`workers/gpu_4/model-000.log`。13个原分组/42未尝试案例从冻派309–310开始；不重跑冻派305–308的NaN失败批次，不覆盖父run任何原件。
+- manifest SHA `45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46`，`parent-worker-certificate.json` SHA `a33c0f3fa746b3e3f72750154deae9919f8219812fe5fbe91ca89bf714627bfd`。独立代码 `code/champion-worker-recovery-20261015-v1` 固定 `11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c`；模型/仿真原9f组件及原gpu4 config未变，仅新服务入口按已登记peer上下文准入并记录launcher身份。
+- 原父`champion_final100_20261014_resume_v2`/241557仍管七张健康卡，原worker4/241612已退出并保留failed记录；不要为了让旧状态显示八卡活着而改写它。查看GPU4要同时看新run。观察器303366/session99149目前仅报告旧父run，根另核新run。
+- 旧MEM后继300108仍等待原父；**新父＋旁路的合账/等待器尚待接入**，不宣称已自动完成。Git bundle在`runs/final_eval_preparation_20261014/champion-worker-recovery-20261015-v1.bundle`，SHA `fa37ca08f74a22fe8b89dd566a290da01bc6688ce41e2074e971e6a2380b22e9`；本地忽略副本`artifacts/final-eval-20261015/worker-recovery-v1/source.bundle`。
+
 ## 2026-10-14 22:44 CST：MEM隔离续评等待器（当前）
 
 - RTX待运行MEM改为`/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8`，manifest SHA `7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b`，同旧v7的576剩余/174独立物理batch。尚未启动MEM模型；旧v7从未被评测启动，完整保留，不清STOP或重用旧等待目录。
