@@ -1,0 +1,424 @@
+{
+  "schema": "champion_active_new_task_prefix_check_v1",
+  "observed_at": "2026-10-15T06:18:46.055059+00:00",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "checker": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/audit_champion_public_trace.py",
+    "sha256": "72271cce06fc446fdde236b89e619d6a445640b3a16d35920ecbecb41d35c63e"
+  },
+  "coordinator_commit": "f7b728549309b00940861f2a00ba4e9a36419855",
+  "rows": [
+    {
+      "gpu": 2,
+      "part": "cook_cabbage-n4-i0",
+      "task_id": 41,
+      "expected_instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "worker": {
+        "status": "evaluating",
+        "pid": 241610,
+        "gpu": 2,
+        "started": 1791987613.7338262,
+        "completed_parts": [
+          "spraying_fruit_trees-n4-i4",
+          "spraying_fruit_trees-n2-i8",
+          "dispose_of_glass-n4-i0",
+          "dispose_of_glass-n4-i4",
+          "dispose_of_glass-n2-i8",
+          "re_shelving_library_books-n4-i0",
+          "re_shelving_library_books-n4-i4",
+          "re_shelving_library_books-n2-i8",
+          "chopping_wood-n4-i0",
+          "chopping_wood-n4-i4",
+          "chopping_wood-n2-i8",
+          "can_meat-n4-i0",
+          "can_meat-n4-i4",
+          "can_meat-n2-i8",
+          "rearrange_your_room-n4-i0",
+          "rearrange_your_room-n4-i4",
+          "rearrange_your_room-n2-i8"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 241664,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_2/model-000",
+        "updated": 1792044172.2254875,
+        "sim_pid": 1521029,
+        "part": "cook_cabbage-n4-i0"
+      },
+      "physical_status": {
+        "status": "running",
+        "pid": 1521029,
+        "task": "cook_cabbage",
+        "task_id": 41,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+        "started": 1792044172.428268,
+        "optimizer_updates": 0,
+        "control_steps": [
+          500,
+          500,
+          500,
+          500
+        ],
+        "updated": 1792045100.6874864
+      },
+      "model_loading_parameters": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "active_sessions": [
+        {
+          "episode": "2b25b727c6fa456aae1339efbc6d3be5/reset-1/task-41",
+          "connection": "2b25b727c6fa456aae1339efbc6d3be5",
+          "epoch": 1,
+          "task": 41,
+          "deliveries": 30,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 15,
+          "legacy": true,
+          "closed": false
+        },
+        {
+          "episode": "270c3db501a74d36930dd5bc97bc1fed/reset-1/task-41",
+          "connection": "270c3db501a74d36930dd5bc97bc1fed",
+          "epoch": 1,
+          "task": 41,
+          "deliveries": 30,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 15,
+          "legacy": true,
+          "closed": false
+        },
+        {
+          "episode": "7417559f1481404d942dfefd9627c12c/reset-1/task-41",
+          "connection": "7417559f1481404d942dfefd9627c12c",
+          "epoch": 1,
+          "task": 41,
+          "deliveries": 29,
+          "stage": 1,
+          "votes": [
+            1
+          ],
+          "stages": 15,
+          "legacy": true,
+          "closed": false
+        },
+        {
+          "episode": "b7faadc725874572b3a4e18c387ae768/reset-1/task-41",
+          "connection": "b7faadc725874572b3a4e18c387ae768",
+          "epoch": 1,
+          "task": 41,
+          "deliveries": 29,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 15,
+          "legacy": true,
+          "closed": false
+        }
+      ],
+      "previous_closed_task_ids": [
+        4,
+        39,
+        44,
+        55,
+        76,
+        88
+      ],
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 54659641,
+        "prefix_sha256": "01caf1836cc18f79f60376dbd1b00e95ae606f7c023b5c7fe996bcc3a03bb916",
+        "lines": 44710,
+        "connections": 60,
+        "episodes": 60,
+        "closed_episodes": 56,
+        "active_connections": 4,
+        "deliveries": 44534,
+        "delivered_controls": 890680,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          4,
+          39,
+          41,
+          44,
+          55,
+          76,
+          88
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_2/model-000/events.jsonl",
+        "captured_bytes": 54659641,
+        "ignored_incomplete_tail_bytes": 0
+      }
+    },
+    {
+      "gpu": 5,
+      "part": "cleaning_up_plates_and_food-n4-i4",
+      "task_id": 3,
+      "expected_instances": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "worker": {
+        "status": "evaluating",
+        "pid": 241613,
+        "gpu": 5,
+        "started": 1791987613.7776332,
+        "completed_parts": [
+          "preparing_lunch_box-n4-i4",
+          "preparing_lunch_box-n2-i8",
+          "setting_the_fire-n4-i0",
+          "setting_the_fire-n4-i4",
+          "setting_the_fire-n2-i8",
+          "outfit_a_basic_toolbox-n4-i0",
+          "outfit_a_basic_toolbox-n4-i4",
+          "outfit_a_basic_toolbox-n2-i8",
+          "put_together_a_basic_pruning_kit-n4-i0",
+          "put_together_a_basic_pruning_kit-n4-i4",
+          "put_together_a_basic_pruning_kit-n2-i8",
+          "cleaning_up_branches_and_twigs-n4-i0",
+          "cleaning_up_branches_and_twigs-n4-i4",
+          "cleaning_up_branches_and_twigs-n2-i8",
+          "cleaning_up_plates_and_food-n4-i0"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 244175,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_5/model-000",
+        "updated": 1792044209.811,
+        "sim_pid": 1522710,
+        "part": "cleaning_up_plates_and_food-n4-i4"
+      },
+      "physical_status": {
+        "status": "running",
+        "pid": 1522710,
+        "task": "cleaning_up_plates_and_food",
+        "task_id": 3,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "2ef38ac2c0dceae284086501c55c731da93b6244db9887c7c11bc1a8b15a0da4",
+        "started": 1792044209.928225,
+        "optimizer_updates": 0,
+        "control_steps": [
+          2100,
+          2100,
+          2100,
+          2100
+        ],
+        "updated": 1792045117.1464252
+      },
+      "model_loading_parameters": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "active_sessions": [
+        {
+          "episode": "a898cfee5b544b42a8f399fd4a377241/reset-1/task-3",
+          "connection": "a898cfee5b544b42a8f399fd4a377241",
+          "epoch": 1,
+          "task": 3,
+          "deliveries": 107,
+          "stage": 5,
+          "votes": [
+            2,
+            2,
+            2
+          ],
+          "stages": 15,
+          "legacy": true,
+          "closed": false
+        },
+        {
+          "episode": "40af0644c1de49789c21f0de3e181268/reset-1/task-3",
+          "connection": "40af0644c1de49789c21f0de3e181268",
+          "epoch": 1,
+          "task": 3,
+          "deliveries": 107,
+          "stage": 2,
+          "votes": [
+            2,
+            2,
+            2
+          ],
+          "stages": 15,
+          "legacy": true,
+          "closed": false
+        },
+        {
+          "episode": "4a9c6c7ecb08424f8c6ba064eb725921/reset-1/task-3",
+          "connection": "4a9c6c7ecb08424f8c6ba064eb725921",
+          "epoch": 1,
+          "task": 3,
+          "deliveries": 107,
+          "stage": 3,
+          "votes": [
+            2,
+            3,
+            3
+          ],
+          "stages": 15,
+          "legacy": true,
+          "closed": false
+        },
+        {
+          "episode": "1b7cf12c9eef4a98bb8e80b5fe8de7d4/reset-1/task-3",
+          "connection": "1b7cf12c9eef4a98bb8e80b5fe8de7d4",
+          "epoch": 1,
+          "task": 3,
+          "deliveries": 107,
+          "stage": 2,
+          "votes": [
+            2,
+            2,
+            2
+          ],
+          "stages": 15,
+          "legacy": true,
+          "closed": false
+        }
+      ],
+      "previous_closed_task_ids": [
+        3,
+        12,
+        19,
+        30,
+        68,
+        75
+      ],
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 50181341,
+        "prefix_sha256": "55df9f44c7a23b04d43d75c30cbd216ff56c78aaff7f8cbe094c62f315682e78",
+        "lines": 40942,
+        "connections": 54,
+        "episodes": 54,
+        "closed_episodes": 50,
+        "active_connections": 4,
+        "deliveries": 40784,
+        "delivered_controls": 815680,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          3,
+          12,
+          19,
+          30,
+          68,
+          75
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_5/model-000/events.jsonl",
+        "captured_bytes": 50181341,
+        "ignored_incomplete_tail_bytes": 0
+      }
+    }
+  ],
+  "supervisor": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {
+      "4": {
+        "status": "needs_diagnosis",
+        "pid": 241612,
+        "gpu": 4,
+        "started": 1791987613.778339,
+        "completed_parts": [
+          "putting_shoes_on_rack-n2-i8",
+          "bringing_water-n4-i0",
+          "bringing_water-n4-i4",
+          "bringing_water-n2-i8",
+          "sorting_bottles_cans_and_paper-n4-i0",
+          "sorting_bottles_cans_and_paper-n4-i4",
+          "sorting_bottles_cans_and_paper-n2-i8",
+          "wash_dog_toys-n4-i0",
+          "wash_dog_toys-n4-i4",
+          "wash_dog_toys-n2-i8",
+          "freeze_pies-n4-i0"
+        ],
+        "diagnosed_failed_parts": [
+          "freeze_pies-n4-i4"
+        ],
+        "model_generations": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000/result.json",
+            "sha256": "5b31fa8941c88208eb48b08a9ef636767559e5ba3b0d6a3fa00231505f91f209"
+          }
+        ],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 1339445,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-001",
+        "updated": 1792035845.8495996,
+        "sim_pid": 1276109,
+        "part": "freeze_pies-n4-i4",
+        "error": "RuntimeError('Frozen model loading failed/timed out/stopped')",
+        "final_verification_error": "FileNotFoundError(2, 'No such file or directory')",
+        "finished": 1792035845.8495977
+      }
+    },
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 694,
+    "coverage": 702,
+    "updated": 1792045120.4087853
+  },
+  "parameters_are_loading_fingerprints_not_final_certificates": true,
+  "original_outputs_modified": false,
+  "processes_or_runtime_changed": false,
+  "scope": "Exact stable journal prefixes: per-session task, reset epoch, stage/votes/inpainting recurrence and delivery clocks. Not raw observations/actions/RNG identity, future events, complete trajectories, or task success."
+}
