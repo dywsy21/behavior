@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 14:43 CST / Codex SUBMISSION-FULL-EVAL（食物入冰箱全10原件齐）：** 既有23293/1408396持续只读等到新终局；原GPU3自然完成309–310并切laying_tile_floors/模拟器1570472，无停机/重跑。两原JSON/MP4 SHA、19603实控=帧数、672×448/30fps、原17/0 seeds/19602 horizon/9f配置与唯一完成attempt一致；Q依次0与0.4，均success=false。55862095字节journal前缀SHA dc7b5d7d…ea7c8a通过、56旧会话关闭。全部10实例原件核账后该任务平均Q0.04、SR0；证据`docs/infra/results/2026-10-15-champion-fridge-all10-originals.json`，非全模型最终成绩或人工全片画面审查。父700＋已审侧路6＝706完整/8既有工程异常/286待，父119批＋侧路2批核过，16官方成功仍仅已完成子集。14:42八有效worker和1404741后继实活，GPU0正常新场景加载；下一继续原冠军→MEM576，保留冻结模型/种子/官方时限与全部异常原件，不因分数或归档暂停。
+
 - **2026-10-15 14:36 CST / Codex SUBMISSION-FULL-EVAL（GPU4恢复侧路换批独立状态）：** 上轮已实际核冠军新增8原件，属progress；本轮继续同23293/1408396，八worker及1404741后继直接实活。14:35核侧路木柴305–308各800实控，6旧会话全部关闭、4个全新独立连接各epoch1；7884862字节精确journal前缀SHA 3225a4da…f0dd5逐事件task/stage/vote/inpainting/交付时钟通过，前一7666477字节SHA 02e03215…72eda复读不变。1364542/1364814原PID/start ticks保持，模型原2a加载指纹/零更新/9f actor与116登记不变，证据`docs/infra/results/2026-10-15-champion-recovery-wood-next-batch-sessions.json`。此为冠军可见会话状态证据，不冒称MEM语义、原图/action/RNG字节或终态权重验收。14:36总704完整/8既有工程异常/288待，GPU4已1000实控、其余推进；未重启或停止任何评测。当前正式约定/内部归档路径已复读，无需改动活跃源；下一继续冠军→MEM终态与原件核账，公网交付仍依后续用户要求暂缓。
 
 - **2026-10-15 14:32 CST / Codex SUBMISSION-FULL-EVAL（圣诞装饰首4原件）：** 原GPU0/241608自然完成301–304并新建305–308模拟器1556693，八有效worker/1404741后继持续、无新增异常。4原JSON/MP4 SHA、20579实控=视频帧数、672×448/30fps、原17/0 seeds/20578 horizon/9f源配置与单次完成回执核合，Q依次4/9、5/9、0、0，均success=false；53111218字节精确journal前缀SHA 53107eb0…68957通过、54旧会话关闭。证据`docs/infra/results/2026-10-15-champion-christmas-first4-originals.json`，仅该task首4、非完整task/全模型成绩或人工画面验收。父698＋已审侧路6＝704完整/8既有工程异常/288待，父118物理批＋侧路2批已核，16官方成功仍仅已完子集；不因失败/等待/审计停机或改变模型/官方时限。下一继续原冠军→MEM576和终态归档，外部交付仍按用户要求暂缓。
