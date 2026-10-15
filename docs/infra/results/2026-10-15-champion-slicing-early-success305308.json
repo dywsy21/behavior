@@ -1,0 +1,258 @@
+{
+  "schema": "champion_early_successes_running_batch_v1",
+  "observed_at": "2026-10-15T13:39:55.651920+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "part": "slicing_vegetables-n4-i4",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "records": [
+    {
+      "task": "slicing_vegetables",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 14350,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/slicing_vegetables-n4-i4/json/slicing_vegetables_305_0.json",
+        "sha256": "de5935cba972b3482d45954362b3c6345eeb86f5aa45e1f375bd8bc96482de47"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/slicing_vegetables-n4-i4/videos/slicing_vegetables_305_0.mp4",
+        "sha256": "cd7169fcdde1dd14238078c385b3942350a8f125198b56327063139a74a3a642"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "14350"
+      },
+      "success": true,
+      "q_score_final": 1
+    },
+    {
+      "task": "slicing_vegetables",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 14927,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/slicing_vegetables-n4-i4/json/slicing_vegetables_308_0.json",
+        "sha256": "d81a7e726fd4b48c42b6182b07f05d0633a82df1d67d5cb00c0ebd30eb35170b"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/slicing_vegetables-n4-i4/videos/slicing_vegetables_308_0.mp4",
+        "sha256": "3a0640c37d3270a2d8f77d27906f3d04ecb41fac2a777cd6ff5ef4734b7b92f2"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "14927"
+      },
+      "success": true,
+      "q_score_final": 1
+    }
+  ],
+  "physical_status": {
+    "status": "running",
+    "pid": 1936217,
+    "task": "slicing_vegetables",
+    "task_id": 43,
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+    "started": 1792064934.5744998,
+    "optimizer_updates": 0,
+    "control_steps": [
+      14350,
+      15600,
+      15600,
+      14927
+    ],
+    "updated": 1792071594.3871982
+  },
+  "attempt": {
+    "status": "running",
+    "task": "slicing_vegetables",
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "instance_ids": [
+      305,
+      306,
+      307,
+      308
+    ],
+    "rollout": 0,
+    "started": 1792065700.4231334,
+    "max_steps": 22267,
+    "policy_seed": 17,
+    "simulator_seed": 0
+  },
+  "attempt_binding_at_observation": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/slicing_vegetables-n4-i4/attempts/04.json",
+    "sha256": "fed3ddf8c744d4ee9e38b0706f545efa8f1a8c751095e614aae9329be0f8eeb9"
+  },
+  "worker": {
+    "status": "evaluating",
+    "pid": 241608,
+    "gpu": 0,
+    "started": 1791987613.766783,
+    "completed_parts": [
+      "cook_a_frozen_pie-n4-i0",
+      "cook_a_frozen_pie-n4-i4",
+      "cook_a_frozen_pie-n2-i8",
+      "store_produce-n4-i0",
+      "store_produce-n4-i4",
+      "store_produce-n2-i8",
+      "polishing_shoes-n4-i0",
+      "polishing_shoes-n4-i4",
+      "polishing_shoes-n2-i8",
+      "putting_away_toys-n4-i0",
+      "putting_away_toys-n4-i4",
+      "putting_away_toys-n2-i8",
+      "tidying_living_room-n4-i0",
+      "tidying_living_room-n4-i4",
+      "tidying_living_room-n2-i8",
+      "putting_up_Christmas_decorations_inside-n4-i0",
+      "putting_up_Christmas_decorations_inside-n4-i4",
+      "putting_up_Christmas_decorations_inside-n2-i8",
+      "slicing_vegetables-n4-i0"
+    ],
+    "diagnosed_failed_parts": [],
+    "model_generations": [],
+    "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "model_pid": 244174,
+    "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_0/model-000",
+    "updated": 1792064934.2970326,
+    "sim_pid": 1936217,
+    "part": "slicing_vegetables-n4-i4"
+  },
+  "protocol_prefix": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 70862091,
+    "prefix_sha256": "874d3f48f89d7711b58f8ec353296a0f678a6bd3c88b9da90769696b0b5e8d4f",
+    "lines": 57603,
+    "connections": 68,
+    "episodes": 68,
+    "closed_episodes": 64,
+    "active_connections": 4,
+    "deliveries": 57403,
+    "delivered_controls": 1148060,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      9,
+      43,
+      53,
+      54,
+      72,
+      79,
+      91
+    ],
+    "require_closed": false,
+    "original_outputs_modified": false,
+    "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_0/model-000/events.jsonl",
+    "captured_bytes": 70862091,
+    "ignored_incomplete_tail_bytes": 0
+  },
+  "protocol_session_summaries_omitted": true,
+  "batch_is_complete": false,
+  "full_task_or_model_score": false,
+  "completed_batch_counts_not_incremented": true,
+  "original_outputs_modified": false,
+  "manual_visual_review": false,
+  "scope": "Two official successful original JSON/MP4 records were independently verified in sequential read-only probes, with per-record timestamps retained. Matching physical counters and the same unchanged original source/config/attempt. Enclosing batch remains running and future full-batch audit must revalidate all originals. Open model connections are not the count of unfinished physical episodes. No image-content/manual-video review or raw observation/action/RNG equivalence claimed.",
+  "per_record_verified_at": {
+    "305": "2026-10-15T13:38:24.777944+00:00",
+    "308": "2026-10-15T13:39:55.651920+00:00"
+  },
+  "earlier_305_physical_status": {
+    "status": "running",
+    "pid": 1936217,
+    "task": "slicing_vegetables",
+    "task_id": 43,
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+    "started": 1792064934.5744998,
+    "optimizer_updates": 0,
+    "control_steps": [
+      14350,
+      15200,
+      15200,
+      14927
+    ],
+    "updated": 1792071478.6700225
+  },
+  "earlier_305_protocol_prefix": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 70820482,
+    "prefix_sha256": "96d6473128906bde088add3128b0b356f2f2b0d598a0616d23e46171507f1cd9",
+    "lines": 57571,
+    "connections": 68,
+    "episodes": 68,
+    "closed_episodes": 64,
+    "active_connections": 4,
+    "deliveries": 57371,
+    "delivered_controls": 1147420,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      9,
+      43,
+      53,
+      54,
+      72,
+      79,
+      91
+    ],
+    "require_closed": false,
+    "original_outputs_modified": false,
+    "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_0/model-000/events.jsonl",
+    "captured_bytes": 70820482,
+    "ignored_incomplete_tail_bytes": 0
+  },
+  "observation_transport_note": {
+    "initial_305_ssh_connection_timed_out_before_remote_execution": true,
+    "read_only_retry_succeeded": true,
+    "existing_observer_session": 23293,
+    "evaluator_restarts": 0
+  },
+  "combined_accounting": {
+    "audited_completed_batches_instances": 832,
+    "execution_errors_combined": 8,
+    "completed_batch_successes": 20,
+    "additional_early_successes": 2,
+    "observed_official_successes": 22,
+    "parent_audited_parts": 152,
+    "recovery_audited_parts": 7,
+    "completed_batch_cursor_advanced": false,
+    "source_reference": "docs/infra/results/2026-10-15-champion-work305308-originals.json"
+  }
+}
