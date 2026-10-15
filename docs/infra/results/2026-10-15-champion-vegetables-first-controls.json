@@ -1,0 +1,248 @@
+{
+  "schema": "champion_active_new_task_prefix_check_v1",
+  "observed_at": "2026-10-15T05:24:29.787189+00:00",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "checker": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1/scripts/eval/audit_champion_public_trace.py",
+    "sha256": "72271cce06fc446fdde236b89e619d6a445640b3a16d35920ecbecb41d35c63e"
+  },
+  "coordinator_commit": "f7b728549309b00940861f2a00ba4e9a36419855",
+  "rows": [
+    {
+      "gpu": 7,
+      "part": "sorting_vegetables-n4-i0",
+      "task_id": 20,
+      "expected_instances": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "worker": {
+        "status": "evaluating",
+        "pid": 241615,
+        "gpu": 7,
+        "started": 1791987613.7802277,
+        "completed_parts": [
+          "boxing_food_after_dinner-n4-i4",
+          "boxing_food_after_dinner-n2-i8",
+          "clean_boxing_gloves-n4-i0",
+          "clean_boxing_gloves-n4-i4",
+          "clean_boxing_gloves-n2-i8",
+          "cook_hot_dogs-n4-i0",
+          "cook_hot_dogs-n4-i4",
+          "cook_hot_dogs-n2-i8",
+          "make_gift_bags_for_baby_showers-n4-i0",
+          "make_gift_bags_for_baby_showers-n4-i4",
+          "make_gift_bags_for_baby_showers-n2-i8",
+          "putting_dishes_away_after_cleaning-n4-i0",
+          "putting_dishes_away_after_cleaning-n4-i4",
+          "putting_dishes_away_after_cleaning-n2-i8"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 249501,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_7/model-000",
+        "updated": 1792040987.7572463,
+        "sim_pid": 1457931,
+        "part": "sorting_vegetables-n4-i0"
+      },
+      "physical_status": {
+        "status": "running",
+        "pid": 1457931,
+        "task": "sorting_vegetables",
+        "task_id": 20,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "129bc9d9537459688305a59241f1e28ee1d6a42e6d59f380bde43db548d7c34e",
+        "started": 1792040988.0897977,
+        "optimizer_updates": 0,
+        "control_steps": [
+          200,
+          200,
+          200,
+          200
+        ],
+        "updated": 1792041863.841429
+      },
+      "model_loading_parameters": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+      "active_sessions": [
+        {
+          "episode": "b7735855b6ff47ebb48e95f5af4e9a0f/reset-1/task-20",
+          "connection": "b7735855b6ff47ebb48e95f5af4e9a0f",
+          "epoch": 1,
+          "task": 20,
+          "deliveries": 11,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 14,
+          "legacy": true,
+          "closed": false
+        },
+        {
+          "episode": "9d8674f2727944688b7983ac02f694c6/reset-1/task-20",
+          "connection": "9d8674f2727944688b7983ac02f694c6",
+          "epoch": 1,
+          "task": 20,
+          "deliveries": 11,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 14,
+          "legacy": true,
+          "closed": false
+        },
+        {
+          "episode": "52d88084c4cb4222a3eefc5ace5c7159/reset-1/task-20",
+          "connection": "52d88084c4cb4222a3eefc5ace5c7159",
+          "epoch": 1,
+          "task": 20,
+          "deliveries": 11,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 14,
+          "legacy": true,
+          "closed": false
+        },
+        {
+          "episode": "e03d664607144ca9a833090891b6d37e/reset-1/task-20",
+          "connection": "e03d664607144ca9a833090891b6d37e",
+          "epoch": 1,
+          "task": 20,
+          "deliveries": 11,
+          "stage": 0,
+          "votes": [
+            0,
+            0,
+            0
+          ],
+          "stages": 14,
+          "legacy": true,
+          "closed": false
+        }
+      ],
+      "previous_closed_task_ids": [
+        11,
+        31,
+        45,
+        67,
+        86
+      ],
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 35984145,
+        "prefix_sha256": "aa5ac93147d00be678d34ae6dae874028762f6934475a7766479d33651c4eb49",
+        "lines": 30151,
+        "connections": 50,
+        "episodes": 50,
+        "closed_episodes": 46,
+        "active_connections": 4,
+        "deliveries": 30005,
+        "delivered_controls": 600100,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          11,
+          20,
+          31,
+          45,
+          67,
+          86
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_7/model-000/events.jsonl",
+        "captured_bytes": 35984145,
+        "ignored_incomplete_tail_bytes": 0
+      }
+    }
+  ],
+  "supervisor": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {
+      "4": {
+        "status": "needs_diagnosis",
+        "pid": 241612,
+        "gpu": 4,
+        "started": 1791987613.778339,
+        "completed_parts": [
+          "putting_shoes_on_rack-n2-i8",
+          "bringing_water-n4-i0",
+          "bringing_water-n4-i4",
+          "bringing_water-n2-i8",
+          "sorting_bottles_cans_and_paper-n4-i0",
+          "sorting_bottles_cans_and_paper-n4-i4",
+          "sorting_bottles_cans_and_paper-n2-i8",
+          "wash_dog_toys-n4-i0",
+          "wash_dog_toys-n4-i4",
+          "wash_dog_toys-n2-i8",
+          "freeze_pies-n4-i0"
+        ],
+        "diagnosed_failed_parts": [
+          "freeze_pies-n4-i4"
+        ],
+        "model_generations": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000/result.json",
+            "sha256": "5b31fa8941c88208eb48b08a9ef636767559e5ba3b0d6a3fa00231505f91f209"
+          }
+        ],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 1339445,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-001",
+        "updated": 1792035845.8495996,
+        "sim_pid": 1276109,
+        "part": "freeze_pies-n4-i4",
+        "error": "RuntimeError('Frozen model loading failed/timed out/stopped')",
+        "final_verification_error": "FileNotFoundError(2, 'No such file or directory')",
+        "finished": 1792035845.8495977
+      }
+    },
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 676,
+    "coverage": 684,
+    "updated": 1792041841.3751652
+  },
+  "parameters_are_loading_fingerprints_not_final_certificates": true,
+  "original_outputs_modified": false,
+  "processes_or_runtime_changed": false,
+  "scope": "Exact stable journal prefixes: per-session task, reset epoch, stage/votes/inpainting recurrence and delivery clocks. Not raw observations/actions/RNG identity, future events, complete trajectories, or task success."
+}
