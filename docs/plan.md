@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 12:37 CST / Codex SUBMISSION-FULL-EVAL（清枝叶尾2原件验过）：** 309–310各18791实控/Q0/success=false，原JSON/MP4 SHA、帧数、物理回执、原seed/horizon及GPU5 journal精确前缀通过；清枝叶全10 Q0/SR0，已自动转入清理盘子食物。累计666完整原件/109物理批已核、8工程异常/326待，无新错误；证据`docs/infra/results/2026-10-15-champion-branches-final2-originals.json`。只读资源检查余盘4.956TB，GPU3下一批已实际控制、GPU0仍新场景加载，不把加载或单次低利用率当停机；GPU4各9200实控，八有效worker/新后继继续。Git首次TLS握手失败后安全重试pull成功、本地与origin同8141a8d2，未热拉取远端运行源。下一持续监控及核新原件，最终全量/归档仍待。
+
 - **2026-10-15 12:31 CST / Codex SUBMISSION-FULL-EVAL（再6原件补核）：** 食物入冰箱301–304各19603实控、客厅309–310各18849，均Q0/success=false；原JSON/MP4 SHA/元数据、物理回执、原种子/时限及GPU0/3精确journal前缀验过，证据`docs/infra/results/2026-10-15-champion-fridge-living-new6-originals.json`。累计664完整原件/108物理批已核，8工程异常、328待；客厅全10 Q0/SR0，冰箱仅4/10，不以低分停评。新后继1404741和八有效worker持续，GPU4侧路尚无完整回合；继续后续原件与两轮终态。
 
 - **2026-10-15 12:30 CST / Codex SUBMISSION-FULL-EVAL（只读监控已统一）：** 新观察PID1408396/session23293同时读父run、GPU4侧路、新1404741后继和MEM，显式用恢复worker替代旧GPU4的历史failed项；旧303366已自然退出，不需发送停止信号。实核八有效worker/模型均活、原2a5ce80b加载指纹一致；664完整/8异常/328待为实时计数（已核658，新增6待验），GPU4各6900实控。证据`docs/infra/results/2026-10-15-combined-evaluation-monitor.json`。观察器只读，不改actor/物理/预算或原件；之后继续全量与新增原件审计，终态归档/最终Q/SR仍待。
