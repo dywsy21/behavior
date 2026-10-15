@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 12:31 CST / Codex SUBMISSION-FULL-EVAL（再6原件补核）：** 食物入冰箱301–304各19603实控、客厅309–310各18849，均Q0/success=false；原JSON/MP4 SHA/元数据、物理回执、原种子/时限及GPU0/3精确journal前缀验过，证据`docs/infra/results/2026-10-15-champion-fridge-living-new6-originals.json`。累计664完整原件/108物理批已核，8工程异常、328待；客厅全10 Q0/SR0，冰箱仅4/10，不以低分停评。新后继1404741和八有效worker持续，GPU4侧路尚无完整回合；继续后续原件与两轮终态。
+
 - **2026-10-15 12:30 CST / Codex SUBMISSION-FULL-EVAL（只读监控已统一）：** 新观察PID1408396/session23293同时读父run、GPU4侧路、新1404741后继和MEM，显式用恢复worker替代旧GPU4的历史failed项；旧303366已自然退出，不需发送停止信号。实核八有效worker/模型均活、原2a5ce80b加载指纹一致；664完整/8异常/328待为实时计数（已核658，新增6待验），GPU4各6900实控。证据`docs/infra/results/2026-10-15-combined-evaluation-monitor.json`。观察器只读，不改actor/物理/预算或原件；之后继续全量与新增原件审计，终态归档/最终Q/SR仍待。
 
 - **2026-10-15 12:28 CST / Codex SUBMISSION-FULL-EVAL（新后继实际已挂起，八路不停）：** `MEMv8/queue-after-champion-recovered-v1` PID1404741、tmux`mem-after-champion-recovered-v8`真实waiting/零阶段，绑定原父＋42例GPU4侧路及原MEM576；旧300108有序退出/STOP与原件保留，未运行MEM。新源78c364b2，两端186测试过；真实登记/源/证书/优先级逐项验签且八worker的PID/start ticks全部未变。证据`docs/infra/results/2026-10-15-champion-recovered-queue-launch.json`；此刻父662完整/8异常，最新4原件待补核（已核658），GPU4各6000实控仍未产终局。后继只在两路终态、1000明确归属/原件权重验收及GPU释放后启动原793/51c MEM，无外部上传；下一统一只读监控并继续验新增原件。
