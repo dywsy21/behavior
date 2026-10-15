@@ -1,0 +1,425 @@
+{
+  "schema": "champion_readonly_transient_control_progress_check_v1",
+  "observed_at": "2026-10-15T09:07:44+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "part": "cook_cabbage-n4-i4",
+  "gpu": 2,
+  "observation_samples": [
+    {
+      "at": "2026-10-15T09:02:46.717119+00:00",
+      "controls": [
+        9200,
+        9200,
+        9200,
+        9200
+      ]
+    },
+    {
+      "at": "2026-10-15T09:05:16.935471+00:00",
+      "controls": [
+        9200,
+        9200,
+        9200,
+        9200
+      ]
+    },
+    {
+      "at": "2026-10-15T09:05:46.979275+00:00",
+      "controls": [
+        9300,
+        9300,
+        9300,
+        9300
+      ]
+    }
+  ],
+  "direct_physical_status": {
+    "status": "running",
+    "pid": 1659852,
+    "task": "cook_cabbage",
+    "task_id": 41,
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+    "started": 1792051139.7891204,
+    "optimizer_updates": 0,
+    "control_steps": [
+      9700,
+      9700,
+      9700,
+      9700
+    ],
+    "updated": 1792055258.248466
+  },
+  "process_sample": "    PID    PPID STAT     ELAPSED     TIME %CPU %MEM NLWP WCHAN\n 241610  241557 Ss      18:47:32 00:00:07  0.0  0.0    1 poll_schedule_timeout.constprop.17\n 241664  241610 Ssl     18:47:32 01:57:34 10.4  1.7 1037 ep_poll\n1659852  241610 Rsl     01:08:46 04:23:52  383  1.7  803 -\n",
+  "model_delivery_tail": [
+    {
+      "time": 1792055264.697355,
+      "kind": "delivered",
+      "connection": "18df4dc4066543b5a0d79a12d78b1bcf",
+      "episode": "18df4dc4066543b5a0d79a12d78b1bcf/reset-1/task-41",
+      "task": 41,
+      "clock_kind": "policy_delivery",
+      "delivered_controls": 9740,
+      "physically_confirmed_controls": null,
+      "sent_controls": 20,
+      "action_sha256": "e8bee167b17bc1daae47a7a9af69ac32f58bcdbf41cd7028adaa2bea1047c420",
+      "prediction": 487,
+      "generated_display": {
+        "episode": "18df4dc4066543b5a0d79a12d78b1bcf/reset-1/task-41",
+        "task": 41,
+        "clock_kind": "policy_delivery",
+        "delivered_controls": 9720,
+        "physically_confirmed_controls": null,
+        "input_stage": 9,
+        "corrected_stage": 9,
+        "next_stage": 9,
+        "predicted_stage": 7,
+        "stage_probability": 0.9990039659059722,
+        "stage_probabilities": [
+          3.7073198883036725e-8,
+          4.9887441936269046e-8,
+          4.787552432862796e-9,
+          1.1732401808635862e-9,
+          2.4837494823788697e-9,
+          3.171038743294422e-8,
+          0.00016851319030974866,
+          0.9990039659059722,
+          0.0008039314686099395,
+          5.96580758110935e-7,
+          6.713089072233728e-8,
+          0.000021424047958745492,
+          0.0000013378669636448198,
+          3.073476137813054e-8,
+          5.958205269682238e-9
+        ],
+        "stage_votes": [
+          7,
+          7,
+          7
+        ],
+        "compressed": true,
+        "inpainting_input_steps": 4,
+        "inpainting_next_start": 26,
+        "legacy_corrections": true,
+        "meaning": "duration-stage prediction, NOT MEM-Lite intent or physical outcome"
+      }
+    },
+    {
+      "time": 1792055264.82578,
+      "kind": "delivered",
+      "connection": "2342a03062fc40cebbe653f606464f8f",
+      "episode": "2342a03062fc40cebbe653f606464f8f/reset-1/task-41",
+      "task": 41,
+      "clock_kind": "policy_delivery",
+      "delivered_controls": 9740,
+      "physically_confirmed_controls": null,
+      "sent_controls": 20,
+      "action_sha256": "0cd6c3afb95ff4012497bc335f60c2df53f2223b07e91254aca5caa67c09098e",
+      "prediction": 487,
+      "generated_display": {
+        "episode": "2342a03062fc40cebbe653f606464f8f/reset-1/task-41",
+        "task": 41,
+        "clock_kind": "policy_delivery",
+        "delivered_controls": 9720,
+        "physically_confirmed_controls": null,
+        "input_stage": 0,
+        "corrected_stage": 0,
+        "next_stage": 0,
+        "predicted_stage": 0,
+        "stage_probability": 0.9420633927168595,
+        "stage_probabilities": [
+          0.9420633927168595,
+          0.0007450816895693171,
+          0.0018984567479167268,
+          0.008676103897676273,
+          0.0009734318791507124,
+          0.023584095566876108,
+          0.017526211637475923,
+          0.003760812664372727,
+          0.000054065855356939735,
+          0.000004798617459583446,
+          0.000020844244087275398,
+          0.00030392025477400414,
+          0.0002519587408124553,
+          0.00005937972553655918,
+          0.00007744576207589185
+        ],
+        "stage_votes": [
+          0,
+          3,
+          0
+        ],
+        "compressed": true,
+        "inpainting_input_steps": 4,
+        "inpainting_next_start": 26,
+        "legacy_corrections": true,
+        "meaning": "duration-stage prediction, NOT MEM-Lite intent or physical outcome"
+      }
+    }
+  ],
+  "interpretation": "The coarsely reported control counter appeared unchanged at several samples, but advanced naturally to9300 before diagnosis and9700 in direct status. Worker/model/simulator original PIDs persisted, latest model deliveries reached9740. Not terminal; exact source of the transient slowdown or reporting delay is unproven.",
+  "scope_limits": [
+    "Coarse snapshots do not prove zero physical steps between samples.",
+    "ps CPU is a cumulative average, not proof of per-step progress; the changing physical control counter supplies that evidence.",
+    "Policy delivery9740 is distinct from physically reported9700.",
+    "No new completed original or final model score is established by this probe."
+  ],
+  "actions": {
+    "read_only": true,
+    "process_signals_sent": false,
+    "source_or_environment_changed": false,
+    "actor_or_horizon_changed": false,
+    "original_outputs_modified": false
+  },
+  "latest_combined_live": {
+    "observed_at": "2026-10-15T09:11:17.398203+00:00",
+    "monitor_pid": 1408396,
+    "champion": {
+      "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+      "status": "running",
+      "pid": 241557,
+      "supervisor_alive": true,
+      "completed_parent": 738,
+      "errors_parent": 8,
+      "original_quarantined_gpus": [
+        "4"
+      ],
+      "recovery_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+      "recovery_status": "running",
+      "recovery_completed": 12,
+      "recovery_errors": 0,
+      "completed_combined": 750,
+      "execution_errors_combined": 8,
+      "unaccounted_combined": 242,
+      "effective_workers": [
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 0,
+          "pid": 241608,
+          "alive": true,
+          "start_ticks": 538129546,
+          "status": "evaluating",
+          "part": "putting_up_Christmas_decorations_inside-n2-i8",
+          "model_pid": 244174,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1699202,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            12200,
+            12200
+          ],
+          "physical_updated": 1792055467.5777113,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 1,
+          "pid": 241609,
+          "alive": true,
+          "start_ticks": 538129546,
+          "status": "evaluating",
+          "part": "freeze_fruit-n4-i4",
+          "model_pid": 241683,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1718603,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            2600,
+            2600,
+            2600,
+            2600
+          ],
+          "physical_updated": 1792055452.8478692,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 2,
+          "pid": 241610,
+          "alive": true,
+          "start_ticks": 538129546,
+          "status": "evaluating",
+          "part": "cook_cabbage-n4-i4",
+          "model_pid": 241664,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1659852,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            10300,
+            10300,
+            10300,
+            10300
+          ],
+          "physical_updated": 1792055451.318639,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 3,
+          "pid": 241611,
+          "alive": true,
+          "start_ticks": 538129547,
+          "status": "evaluating",
+          "part": "laying_tile_floors-n4-i4",
+          "model_pid": 246666,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1677350,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            12800,
+            12800,
+            12800,
+            12800
+          ],
+          "physical_updated": 1792055476.4639337,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+          "gpu": 4,
+          "pid": 1364542,
+          "alive": true,
+          "start_ticks": 543065164,
+          "status": "evaluating",
+          "part": "organizing_school_stuff-n4-i0",
+          "model_pid": 1364814,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1709484,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            5500,
+            5500,
+            5500,
+            5500
+          ],
+          "physical_updated": 1792055462.4850132,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 5,
+          "pid": 241613,
+          "alive": true,
+          "start_ticks": 538129547,
+          "status": "evaluating",
+          "part": "moving_boxes_to_storage-n4-i0",
+          "model_pid": 244175,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1690602,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            10600,
+            10600,
+            10600,
+            10600
+          ],
+          "physical_updated": 1792055462.9726777,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 6,
+          "pid": 241614,
+          "alive": true,
+          "start_ticks": 538129547,
+          "status": "evaluating",
+          "part": "dispose_of_batteries-n4-i0",
+          "model_pid": 249502,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1661715,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            20000,
+            20000,
+            20000,
+            20000
+          ],
+          "physical_updated": 1792055460.1728313,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 7,
+          "pid": 241615,
+          "alive": true,
+          "start_ticks": 538129547,
+          "status": "evaluating",
+          "part": "sorting_vegetables-n2-i8",
+          "model_pid": 249501,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1722517,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            5900,
+            5900
+          ],
+          "physical_updated": 1792055472.6585882,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        }
+      ],
+      "counts_are_live_not_new_original_audit": true
+    },
+    "queue": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/queue-after-champion-recovered-v1",
+      "status": "waiting_for_champion_continuation",
+      "pid": 1404741,
+      "alive": true,
+      "start_ticks": 543213718,
+      "phases": [],
+      "recovery_dependencies": [
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+          "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1",
+          "source_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+          "gpu": 4
+        }
+      ],
+      "error": null
+    },
+    "mem": {
+      "status": null,
+      "pid": null,
+      "supervisor_alive": false,
+      "summary": null,
+      "workers": []
+    }
+  }
+}
