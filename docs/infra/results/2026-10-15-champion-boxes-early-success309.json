@@ -1,0 +1,161 @@
+{
+  "schema": "champion_early_successes_running_batch_v1",
+  "observed_at": "2026-10-15T11:49:33.683352+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "part": "moving_boxes_to_storage-n2-i8",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "records": [
+    {
+      "task": "moving_boxes_to_storage",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "steps": 11144,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/moving_boxes_to_storage-n2-i8/json/moving_boxes_to_storage_309_0.json",
+        "sha256": "95920369f0e87e9c7faa8518a6534929200de191371469f8afb747df4bfa6452"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/moving_boxes_to_storage-n2-i8/videos/moving_boxes_to_storage_309_0.mp4",
+        "sha256": "07e45b5c29c9af5c773abf49d7a26721b28c24416b8f1b673facd91fbf232bb0"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "11144"
+      },
+      "success": true,
+      "q_score_final": 1
+    }
+  ],
+  "physical_status": {
+    "status": "running",
+    "pid": 1894923,
+    "task": "moving_boxes_to_storage",
+    "task_id": 16,
+    "indices": [
+      8,
+      9
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "2ef38ac2c0dceae284086501c55c731da93b6244db9887c7c11bc1a8b15a0da4",
+    "started": 1792062963.6863787,
+    "optimizer_updates": 0,
+    "control_steps": [
+      11144,
+      13400
+    ],
+    "updated": 1792064960.9871554
+  },
+  "attempt": {
+    "status": "running",
+    "task": "moving_boxes_to_storage",
+    "indices": [
+      8,
+      9
+    ],
+    "instance_ids": [
+      309,
+      310
+    ],
+    "rollout": 0,
+    "started": 1792063190.4689136,
+    "max_steps": 21894,
+    "policy_seed": 17,
+    "simulator_seed": 0
+  },
+  "attempt_binding_at_observation": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/moving_boxes_to_storage-n2-i8/attempts/08.json",
+    "sha256": "132e092f00e9634e0ba471bd472299cc6306bcef56a3ef9c3708de22e781020b"
+  },
+  "worker": {
+    "status": "evaluating",
+    "pid": 241613,
+    "gpu": 5,
+    "started": 1791987613.7776332,
+    "completed_parts": [
+      "preparing_lunch_box-n4-i4",
+      "preparing_lunch_box-n2-i8",
+      "setting_the_fire-n4-i0",
+      "setting_the_fire-n4-i4",
+      "setting_the_fire-n2-i8",
+      "outfit_a_basic_toolbox-n4-i0",
+      "outfit_a_basic_toolbox-n4-i4",
+      "outfit_a_basic_toolbox-n2-i8",
+      "put_together_a_basic_pruning_kit-n4-i0",
+      "put_together_a_basic_pruning_kit-n4-i4",
+      "put_together_a_basic_pruning_kit-n2-i8",
+      "cleaning_up_branches_and_twigs-n4-i0",
+      "cleaning_up_branches_and_twigs-n4-i4",
+      "cleaning_up_branches_and_twigs-n2-i8",
+      "cleaning_up_plates_and_food-n4-i0",
+      "cleaning_up_plates_and_food-n4-i4",
+      "cleaning_up_plates_and_food-n2-i8",
+      "moving_boxes_to_storage-n4-i0",
+      "moving_boxes_to_storage-n4-i4"
+    ],
+    "diagnosed_failed_parts": [],
+    "model_generations": [],
+    "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "model_pid": 244175,
+    "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_5/model-000",
+    "updated": 1792062963.3984697,
+    "sim_pid": 1894923,
+    "part": "moving_boxes_to_storage-n2-i8"
+  },
+  "protocol_prefix": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 68835287,
+    "prefix_sha256": "478edeb4a62963791d86a027eff908eeb3d6f1448131d436e24ab3191869fa63",
+    "lines": 55347,
+    "connections": 66,
+    "episodes": 66,
+    "closed_episodes": 64,
+    "active_connections": 2,
+    "deliveries": 55151,
+    "delivered_controls": 1103020,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      3,
+      12,
+      16,
+      19,
+      30,
+      68,
+      75
+    ],
+    "require_closed": false,
+    "original_outputs_modified": false,
+    "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_5/model-000/events.jsonl",
+    "captured_bytes": 68835287,
+    "ignored_incomplete_tail_bytes": 0
+  },
+  "protocol_session_summaries_omitted": true,
+  "batch_is_complete": false,
+  "full_task_or_model_score": false,
+  "completed_batch_counts_not_incremented": true,
+  "original_outputs_modified": false,
+  "manual_visual_review": false,
+  "scope": "One official successful original JSON/MP4 record, matching each physically reported step count, unchanged source/config and running original attempt. Enclosing batch remains running and future full-batch audit must revalidate all originals. Open model connections are not a count of unfinished physical episodes. No raw observation/action/RNG equivalence claimed.",
+  "combined_accounting": {
+    "audited_completed_batches_instances": 798,
+    "execution_errors_combined": 8,
+    "completed_batch_successes": 19,
+    "additional_early_successes": 1,
+    "observed_official_successes": 20,
+    "parent_audited_parts": 144,
+    "recovery_audited_parts": 5,
+    "completed_batch_cursor_advanced": false,
+    "source_reference": "docs/infra/results/2026-10-15-champion-cabbage-all10-originals.json"
+  }
+}
