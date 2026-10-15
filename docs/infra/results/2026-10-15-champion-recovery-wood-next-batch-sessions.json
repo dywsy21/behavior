@@ -1,0 +1,289 @@
+{
+  "schema": "champion_recovery_new_batch_prefix_v1",
+  "observed_at": "2026-10-15T06:35:20.651108+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/manifest.json",
+    "sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46"
+  },
+  "certificate": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parent-worker-certificate.json",
+    "sha256": "a33c0f3fa746b3e3f72750154deae9919f8219812fe5fbe91ca89bf714627bfd"
+  },
+  "parent_manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "checker": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/champion-recovery-collection-20261015-v1/scripts/eval/audit_champion_public_trace.py",
+    "sha256": "72271cce06fc446fdde236b89e619d6a445640b3a16d35920ecbecb41d35c63e"
+  },
+  "checker_commit": "78c364b2354928067687388a985eb3782561897a",
+  "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+  "coordinator_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+  "worker": {
+    "status": "evaluating",
+    "pid": 1364542,
+    "gpu": 4,
+    "started": 1792036977.438476,
+    "completed_parts": [
+      "freeze_pies-n2-i8",
+      "bringing_in_wood-n4-i0"
+    ],
+    "diagnosed_failed_parts": [],
+    "model_generations": [],
+    "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "model_pid": 1364814,
+    "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/workers/gpu_4/model-000",
+    "updated": 1792045511.0476217,
+    "sim_pid": 1549283,
+    "part": "bringing_in_wood-n4-i4"
+  },
+  "physical_status": {
+    "status": "running",
+    "pid": 1549283,
+    "task": "bringing_in_wood",
+    "task_id": 15,
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+    "started": 1792045511.1766515,
+    "optimizer_updates": 0,
+    "control_steps": [
+      800,
+      800,
+      800,
+      800
+    ],
+    "updated": 1792046113.7035193
+  },
+  "model_loading_parameters": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+  "expected_instances": [
+    305,
+    306,
+    307,
+    308
+  ],
+  "processes": [
+    {
+      "pid": 1364542,
+      "state": "S",
+      "ppid": 1364524,
+      "start_ticks": 543065164
+    },
+    {
+      "pid": 1364814,
+      "state": "S",
+      "ppid": 1364542,
+      "start_ticks": 543065943
+    },
+    {
+      "pid": 1549283,
+      "state": "S",
+      "ppid": 1364542,
+      "start_ticks": 543919304
+    }
+  ],
+  "protocol_prefix": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 7884862,
+    "prefix_sha256": "3225a4da108ae2bbb6cf92ec3c210abf43dcabc94b9caba0a70ef7e3cb0f0dd5",
+    "lines": 6128,
+    "connections": 10,
+    "episodes": 10,
+    "closed_episodes": 6,
+    "active_connections": 4,
+    "deliveries": 6102,
+    "delivered_controls": 122040,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      15,
+      47
+    ],
+    "require_closed": false,
+    "session_summaries": [
+      {
+        "episode": "0bfd2f0fcc6f44ee898045e7bc6bb191/reset-1/task-47",
+        "connection": "0bfd2f0fcc6f44ee898045e7bc6bb191",
+        "epoch": 1,
+        "task": 47,
+        "deliveries": 935,
+        "stage": 2,
+        "votes": [
+          13,
+          7,
+          13
+        ],
+        "stages": 14,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "2c6d1dedc92b45fcab448e59de2ef478/reset-1/task-47",
+        "connection": "2c6d1dedc92b45fcab448e59de2ef478",
+        "epoch": 1,
+        "task": 47,
+        "deliveries": 935,
+        "stage": 1,
+        "votes": [
+          1,
+          1,
+          12
+        ],
+        "stages": 14,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "3dc9b690cf304733bb5a814757e139d2/reset-1/task-15",
+        "connection": "3dc9b690cf304733bb5a814757e139d2",
+        "epoch": 1,
+        "task": 15,
+        "deliveries": 1016,
+        "stage": 14,
+        "votes": [
+          14,
+          14,
+          14
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "55ecccea57ff4dff8b63aef474abc968/reset-1/task-15",
+        "connection": "55ecccea57ff4dff8b63aef474abc968",
+        "epoch": 1,
+        "task": 15,
+        "deliveries": 1016,
+        "stage": 4,
+        "votes": [
+          4,
+          4,
+          4
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "cfbc74490e7c4191b4f21db3921739cd/reset-1/task-15",
+        "connection": "cfbc74490e7c4191b4f21db3921739cd",
+        "epoch": 1,
+        "task": 15,
+        "deliveries": 1016,
+        "stage": 1,
+        "votes": [
+          1,
+          1,
+          1
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "09a3cc9ed4094a10a16af8f7f635d885/reset-1/task-15",
+        "connection": "09a3cc9ed4094a10a16af8f7f635d885",
+        "epoch": 1,
+        "task": 15,
+        "deliveries": 1016,
+        "stage": 1,
+        "votes": [
+          1,
+          11,
+          1
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "253f34867e904a93bf3c814534565a79/reset-1/task-15",
+        "connection": "253f34867e904a93bf3c814534565a79",
+        "epoch": 1,
+        "task": 15,
+        "deliveries": 42,
+        "stage": 1,
+        "votes": [
+          1,
+          1,
+          1
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "4287c6daf9f842da8ef91df29fa23fd4/reset-1/task-15",
+        "connection": "4287c6daf9f842da8ef91df29fa23fd4",
+        "epoch": 1,
+        "task": 15,
+        "deliveries": 42,
+        "stage": 0,
+        "votes": [
+          9,
+          9,
+          8
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "c221cc684c264ad6a2a1eb29ec55714f/reset-1/task-15",
+        "connection": "c221cc684c264ad6a2a1eb29ec55714f",
+        "epoch": 1,
+        "task": 15,
+        "deliveries": 42,
+        "stage": 0,
+        "votes": [
+          9,
+          9,
+          9
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": false
+      },
+      {
+        "episode": "b83b0ca7d5b7407589832eb8f7565496/reset-1/task-15",
+        "connection": "b83b0ca7d5b7407589832eb8f7565496",
+        "epoch": 1,
+        "task": 15,
+        "deliveries": 42,
+        "stage": 1,
+        "votes": [
+          9
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": false
+      }
+    ],
+    "original_outputs_modified": false,
+    "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/workers/gpu_4/model-000/events.jsonl",
+    "captured_bytes": 7884862,
+    "ignored_incomplete_tail_bytes": 0
+  },
+  "previous_closed_prefix": {
+    "bytes": 7666477,
+    "sha256": "02e03215c7c72a29166ec0817bfda0124be83653e056cdbe00b1756bdbf72eda"
+  },
+  "original_outputs_modified": false,
+  "processes_or_runtime_changed": false,
+  "parameters_are_loading_fingerprints_not_final_certificates": true,
+  "scope": "Champion per-session task/reset/stage/vote/inpainting and delivery-clock recurrence through exact stable prefix; six closed earlier-batch sessions and four independent next-batch sessions. Not MEM-Lite memory semantics, raw image/action/RNG identity, terminal weights, or full task success."
+}
