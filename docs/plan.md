@@ -12,6 +12,12 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 08:58 CST / Codex SUBMISSION-FULL-EVAL（最新吞吐下截止余量不足）：** 只读复核84个隔离完整batch（2环境28批、4环境56批）：加权13.73/16.31实控/s，最近各10批降至12.67/14.18；按原逐GPU剩余horizon扣已实控、每未来batch单计加载。冠军当前均速场景25.09h＋MEM历史速率/新隔离加载33.75h，串行约10/17 19:47 CST，仅较截止早约12min；最近10批场景28.25h＋33.75h约10/17 22:57，较慢加载场景约10/18 02:25。今日重查[官方updates](https://behavior.stanford.edu/challenge/updates.html)仍10/16 23:59 AoE＝10/17 19:59 CST。证据`docs/infra/results/2026-10-15-isolated-eval-time-risk-0857.json`；这些是条件场景、不是置信区间或上下界，尚不含额外FIFO排队、模型切换、后续异常和归档/暂缓交付。已明确告知风险，仍按用户要求持续冠军→MEM，不停机、不缩时限/换模型/重跑，外部交付未恢复。
+
+- **2026-10-15 08:55 CST / Codex SUBMISSION-FULL-EVAL（新增144原件全验）：** 冠军累计584完整/4继承异常/412待，原241557、八worker及MEM300108后继持续实活、无新增故障。分6次只读检查42个新物理batch共144例：原JSON/MP4 SHA、672×448/30fps/逐实例帧数=实控、原seed/horizon/配置及各GPU精确稳定前缀全部通过；证据`docs/infra/results/2026-10-15-champion-new144-0854-originals.json`，仅省略重复逐会话摘要、不省原件绑定/前缀SHA，不称人工全片视觉验收。新增官方完整成功6例：热狗301/305/307/309/310及捕鼠夹302；两task全10分别SR5/10/平均Q0.50与SR1/10/平均Q0.55，累计成功16例仍非全模型成绩。成功失败全留，无STOP/重跑/改actor；下一继续全量、复核新的耗时风险及最终内部归档，外部交付暂缓。
+
+- **2026-10-15 08:52 CST / Codex SUBMISSION-FULL-EVAL（持续运行，补验收进行中）：** 原241557、八worker及MEM300108后继仍实活，冠军累计584完整/4继承异常/412待，无新增工程故障；上次已核440之后新增144原件，正在分批只读核验JSON/MP4/物理回执与各GPU会话前缀，不提前称全部通过。首次新SSH连接超时已由同一watch99149的新控制记录及随后直接SSH复测确认是观察连接瞬断，不重启作业；工作分支fetch/pull无新变更。继续冠军→MEM与终态内部归档，外部交付暂缓，核验明细随后落盘。
+
 - **2026-10-15 03:02 CST / Codex SUBMISSION-FULL-EVAL（440原件，拳套新增完整成功）：** 冠军累计440完整/4继承异常/556待，原241557/八worker与MEM300108后继实活，无新增故障。拳套309官方success=true/Q1/8835实控，310为12354步/Q0/false；农产品309–310均14284步/Q0/false。四份原JSON/MP4 SHA、672×448/30fps及各自不同实控帧数、注册seed/horizon/配置与两GPU journal稳定前缀通过，证据`docs/infra/results/2026-10-15-champion-gloves-produce-final4-originals.json`。拳套全10为SR2/10、平均Q0.20；农产品全10均0，累计完整成功10例仍非全模型成绩。连同下条本轮12新原件已核，GPU7已转做热狗、GPU0正常收尾/等加载，无STOP/重跑/改actor；继续冠军→MEM和终态内部归档，外部交付暂缓。
 
 - **2026-10-15 02:54 CST / Codex SUBMISSION-FULL-EVAL（图书/生火/碎玻璃新增8原件）：** 冠军累计436完整/4继承异常/560待，原241557/八worker及MEM300108后继实活，无新增故障。图书归架301–304各14293实控/Q0；碎玻璃309–310各13038步/Q0；生火309–310各13678步/Q分别0、1/4，八例均success=false。原JSON/MP4 SHA、672×448/30fps/帧数=实控、注册seed/horizon/配置与三GPU journal稳定前缀通过，证据`docs/infra/results/2026-10-15-champion-library-fire-glass-new8-originals.json`。生火全10平均Q0.125/SR0、碎玻璃全10均0；图书仅4/10，不称完整task或全模型成绩。GPU5/6自然转工具箱/捕鼠夹、GPU2续305–308，无STOP/重跑/改actor，继续冠军→MEM及最终内部归档，外部交付暂缓。
