@@ -1,0 +1,814 @@
+{
+  "schema": "champion_isolated_new_committed_originals_v1",
+  "observed_at": "2026-10-15T08:46:05.066701+00:00",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "batches": [
+    {
+      "part": "freeze_fruit-n4-i0",
+      "gpu": 1,
+      "records": [
+        {
+          "task": "freeze_fruit",
+          "instance_id": 301,
+          "rollout_id": 0,
+          "steps": 18929,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/freeze_fruit-n4-i0/json/freeze_fruit_301_0.json",
+            "sha256": "07961580661b4ba04bb6fe84640bc49dea0497cafe02f6bc31350d164043f7e2"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/freeze_fruit-n4-i0/videos/freeze_fruit_301_0.mp4",
+            "sha256": "6f2cbd7d9c4b2e4da55db4bb41b58c996c120a38c825f89dab852fa488f2a707"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18929"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "freeze_fruit",
+          "instance_id": 302,
+          "rollout_id": 0,
+          "steps": 18929,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/freeze_fruit-n4-i0/json/freeze_fruit_302_0.json",
+            "sha256": "3b9ddb373e7bc7dcad611aa42053744438291398120e36f00896b318bb33aebc"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/freeze_fruit-n4-i0/videos/freeze_fruit_302_0.mp4",
+            "sha256": "a616311c9b265a7cc3a57d00c8fb98a050681b5921b142fa3270d5ac14828412"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18929"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "freeze_fruit",
+          "instance_id": 303,
+          "rollout_id": 0,
+          "steps": 18929,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/freeze_fruit-n4-i0/json/freeze_fruit_303_0.json",
+            "sha256": "aea3df150c6d60be19427f4233ead0f32d44ee949db922c2ac6f16864059638a"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/freeze_fruit-n4-i0/videos/freeze_fruit_303_0.mp4",
+            "sha256": "17081ab01ad97295ee441b3a6bb0714362c0098b4292514548f27e08a6d96eb7"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18929"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "freeze_fruit",
+          "instance_id": 304,
+          "rollout_id": 0,
+          "steps": 18929,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/freeze_fruit-n4-i0/json/freeze_fruit_304_0.json",
+            "sha256": "f3a0277b700baaed46c4ec7903ba64f3e621767b3806324d7750bcbd68019ad4"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/freeze_fruit-n4-i0/videos/freeze_fruit_304_0.mp4",
+            "sha256": "ff4be454c9a610ebf67dcce1278668b02c684513b96e640b21278d22f8bb41b9"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "18929"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "physical_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/parts/freeze_fruit-n4-i0/attempts/00.json",
+        "sha256": "1e4c06dd99fdb7315070cd25658a8eda750e1554da3a770622be06b0026c26ca"
+      },
+      "attempt": {
+        "status": "completed",
+        "task": "freeze_fruit",
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "instance_ids": [
+          301,
+          302,
+          303,
+          304
+        ],
+        "rollout": 0,
+        "started": 1792048152.2750869,
+        "max_steps": 18928,
+        "policy_seed": 17,
+        "simulator_seed": 0,
+        "finished": 1792053877.4092247,
+        "seconds": 5725.133265714161,
+        "actual_applied_controls": [
+          18929,
+          18929,
+          18929,
+          18929
+        ],
+        "unused_delivered_controls": {
+          "0": 11,
+          "1": 11,
+          "2": 11,
+          "3": 11
+        },
+        "server_clock_kind": "policy_delivery",
+        "physical_ack_sent": false
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 1587713,
+        "task": "freeze_fruit",
+        "task_id": 50,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "ef627f701aeaa3994aa701ad0837b875e83ddbd582a5c0ab8029ac52ec29d947",
+        "started": 1792047404.3328407,
+        "optimizer_updates": 0,
+        "control_steps": [
+          18900,
+          18900,
+          18900,
+          18900
+        ],
+        "updated": 1792053868.1078448,
+        "finished": 1792053877.4120376,
+        "official_timeout": 18928,
+        "completed": 4
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 48888780,
+        "prefix_sha256": "aafb85e7da9b2d2f14cfab8372c61d11eb7cd4055b80f48b3dc9c33b2b0d04a3",
+        "lines": 40700,
+        "connections": 54,
+        "episodes": 54,
+        "closed_episodes": 54,
+        "active_connections": 0,
+        "deliveries": 40538,
+        "delivered_controls": 810760,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          18,
+          50,
+          65,
+          66,
+          81,
+          99
+        ],
+        "require_closed": false,
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/model-000/events.jsonl",
+        "captured_bytes": 48888780,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "next_worker_state": {
+        "status": "evaluating",
+        "pid": 241609,
+        "gpu": 1,
+        "started": 1791987613.7508204,
+        "completed_parts": [
+          "sorting_books_on_shelf-n4-i0",
+          "sorting_books_on_shelf-n4-i4",
+          "sorting_books_on_shelf-n2-i8",
+          "packing_meal_for_delivery-n4-i0",
+          "packing_meal_for_delivery-n4-i4",
+          "packing_meal_for_delivery-n2-i8",
+          "turning_out_all_lights_before_sleep-n4-i0",
+          "turning_out_all_lights_before_sleep-n4-i4",
+          "turning_out_all_lights_before_sleep-n2-i8",
+          "tidying_bedroom-n4-i0",
+          "tidying_bedroom-n4-i4",
+          "tidying_bedroom-n2-i8",
+          "unloading_the_car-n4-i0",
+          "unloading_the_car-n4-i4",
+          "unloading_the_car-n2-i8",
+          "freeze_fruit-n4-i0"
+        ],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 241683,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/model-000",
+        "updated": 1792053885.5890505,
+        "sim_pid": 1718603,
+        "part": "freeze_fruit-n4-i4"
+      },
+      "actual_controls": 75716,
+      "controls_per_second": 13.22519432926337
+    }
+  ],
+  "protocols": {
+    "1": {
+      "schema": "champion_protocol_prefix_audit_v1",
+      "prefix_bytes": 48888780,
+      "prefix_sha256": "aafb85e7da9b2d2f14cfab8372c61d11eb7cd4055b80f48b3dc9c33b2b0d04a3",
+      "lines": 40700,
+      "connections": 54,
+      "episodes": 54,
+      "closed_episodes": 54,
+      "active_connections": 0,
+      "deliveries": 40538,
+      "delivered_controls": 810760,
+      "physically_confirmed_controls": null,
+      "task_ids": [
+        18,
+        50,
+        65,
+        66,
+        81,
+        99
+      ],
+      "require_closed": false,
+      "original_outputs_modified": false,
+      "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+      "does_not_prove": [
+        "raw observation/action/RNG values",
+        "physical execution",
+        "success",
+        "events beyond this exact prefix"
+      ],
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/model-000/events.jsonl",
+      "captured_bytes": 48888780,
+      "ignored_incomplete_tail_bytes": 0
+    }
+  },
+  "protocol_session_summaries_omitted": true,
+  "successful_episodes": 16,
+  "previously_verified_parts": [
+    "boxing_food_after_dinner-n2-i8",
+    "boxing_food_after_dinner-n4-i4",
+    "bringing_paper_to_recycling-n2-i8",
+    "bringing_paper_to_recycling-n4-i0",
+    "bringing_paper_to_recycling-n4-i4",
+    "bringing_water-n2-i8",
+    "bringing_water-n4-i0",
+    "bringing_water-n4-i4",
+    "can_meat-n2-i8",
+    "can_meat-n4-i0",
+    "can_meat-n4-i4",
+    "carrying_out_garden_furniture-n2-i8",
+    "carrying_out_garden_furniture-n4-i0",
+    "carrying_out_garden_furniture-n4-i4",
+    "chopping_wood-n2-i8",
+    "chopping_wood-n4-i0",
+    "chopping_wood-n4-i4",
+    "clean_a_patio-n2-i8",
+    "clean_a_patio-n4-i0",
+    "clean_a_patio-n4-i4",
+    "clean_boxing_gloves-n2-i8",
+    "clean_boxing_gloves-n4-i0",
+    "clean_boxing_gloves-n4-i4",
+    "clean_up_broken_glass-n2-i8",
+    "clean_up_broken_glass-n4-i0",
+    "clean_up_broken_glass-n4-i4",
+    "cleaning_up_branches_and_twigs-n2-i8",
+    "cleaning_up_branches_and_twigs-n4-i0",
+    "cleaning_up_branches_and_twigs-n4-i4",
+    "cleaning_up_plates_and_food-n2-i8",
+    "cleaning_up_plates_and_food-n4-i0",
+    "cleaning_up_plates_and_food-n4-i4",
+    "clearing_food_from_table_into_fridge-n2-i8",
+    "clearing_food_from_table_into_fridge-n4-i0",
+    "clearing_food_from_table_into_fridge-n4-i4",
+    "collecting_aluminum_cans-n2-i8",
+    "collecting_aluminum_cans-n4-i0",
+    "collecting_aluminum_cans-n4-i4",
+    "cook_a_frozen_pie-n2-i8",
+    "cook_a_frozen_pie-n4-i0",
+    "cook_a_frozen_pie-n4-i4",
+    "cook_cabbage-n4-i0",
+    "cook_hot_dogs-n2-i8",
+    "cook_hot_dogs-n4-i0",
+    "cook_hot_dogs-n4-i4",
+    "dispose_of_glass-n2-i8",
+    "dispose_of_glass-n4-i0",
+    "dispose_of_glass-n4-i4",
+    "freeze_pies-n4-i0",
+    "laying_tile_floors-n4-i0",
+    "make_gift_bags_for_baby_showers-n2-i8",
+    "make_gift_bags_for_baby_showers-n4-i0",
+    "make_gift_bags_for_baby_showers-n4-i4",
+    "outfit_a_basic_toolbox-n2-i8",
+    "outfit_a_basic_toolbox-n4-i0",
+    "outfit_a_basic_toolbox-n4-i4",
+    "packing_meal_for_delivery-n2-i8",
+    "packing_meal_for_delivery-n4-i0",
+    "packing_meal_for_delivery-n4-i4",
+    "polishing_shoes-n2-i8",
+    "polishing_shoes-n4-i0",
+    "polishing_shoes-n4-i4",
+    "preparing_lunch_box-n2-i8",
+    "preparing_lunch_box-n4-i4",
+    "put_together_a_basic_pruning_kit-n2-i8",
+    "put_together_a_basic_pruning_kit-n4-i0",
+    "put_together_a_basic_pruning_kit-n4-i4",
+    "putting_away_toys-n2-i8",
+    "putting_away_toys-n4-i0",
+    "putting_away_toys-n4-i4",
+    "putting_dirty_dishes_in_sink-n2-i8",
+    "putting_dirty_dishes_in_sink-n4-i0",
+    "putting_dirty_dishes_in_sink-n4-i4",
+    "putting_dishes_away_after_cleaning-n2-i8",
+    "putting_dishes_away_after_cleaning-n4-i0",
+    "putting_dishes_away_after_cleaning-n4-i4",
+    "putting_shoes_on_rack-n2-i8",
+    "putting_up_Christmas_decorations_inside-n4-i0",
+    "putting_up_Christmas_decorations_inside-n4-i4",
+    "re_shelving_library_books-n2-i8",
+    "re_shelving_library_books-n4-i0",
+    "re_shelving_library_books-n4-i4",
+    "rearrange_your_room-n2-i8",
+    "rearrange_your_room-n4-i0",
+    "rearrange_your_room-n4-i4",
+    "rearranging_kitchen_furniture-n2-i8",
+    "rearranging_kitchen_furniture-n4-i0",
+    "rearranging_kitchen_furniture-n4-i4",
+    "setting_mousetraps-n2-i8",
+    "setting_mousetraps-n4-i0",
+    "setting_mousetraps-n4-i4",
+    "setting_the_fire-n2-i8",
+    "setting_the_fire-n4-i0",
+    "setting_the_fire-n4-i4",
+    "setup_a_bar_for_a_cocktail_party-n2-i8",
+    "setup_a_bar_for_a_cocktail_party-n4-i0",
+    "setup_a_bar_for_a_cocktail_party-n4-i4",
+    "sorting_books_on_shelf-n2-i8",
+    "sorting_books_on_shelf-n4-i0",
+    "sorting_books_on_shelf-n4-i4",
+    "sorting_bottles_cans_and_paper-n2-i8",
+    "sorting_bottles_cans_and_paper-n4-i0",
+    "sorting_bottles_cans_and_paper-n4-i4",
+    "sorting_vegetables-n4-i0",
+    "spraying_fruit_trees-n2-i8",
+    "spraying_fruit_trees-n4-i4",
+    "store_produce-n2-i8",
+    "store_produce-n4-i0",
+    "store_produce-n4-i4",
+    "thawing_frozen_food-n2-i8",
+    "thawing_frozen_food-n4-i4",
+    "tidying_bedroom-n2-i8",
+    "tidying_bedroom-n4-i0",
+    "tidying_bedroom-n4-i4",
+    "tidying_living_room-n2-i8",
+    "tidying_living_room-n4-i0",
+    "tidying_living_room-n4-i4",
+    "turning_out_all_lights_before_sleep-n2-i8",
+    "turning_out_all_lights_before_sleep-n4-i0",
+    "turning_out_all_lights_before_sleep-n4-i4",
+    "unloading_the_car-n2-i8",
+    "unloading_the_car-n4-i0",
+    "unloading_the_car-n4-i4",
+    "wash_a_baseball_cap-n2-i8",
+    "wash_a_baseball_cap-n4-i4",
+    "wash_dog_toys-n2-i8",
+    "wash_dog_toys-n4-i0",
+    "wash_dog_toys-n4-i4"
+  ],
+  "remaining_unverified_parts": 0,
+  "summary": {
+    "status": "running",
+    "expected": 1000,
+    "completed": 734,
+    "missing": 266,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.07934195686239282,
+    "completed_only_sr": 0.021798365122615803,
+    "tasks": {
+      "freeze_fruit": {
+        "completed": 4,
+        "expected": 10,
+        "q_score_sum": 0,
+        "success_count": 0,
+        "q_score_missing_as_zero": 0,
+        "sr_missing_as_zero": 0,
+        "completed_only_q": 0
+      }
+    },
+    "coverage": 742,
+    "execution_errors": 8,
+    "unaccounted": 258,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.058236996336996326,
+    "conservative_sr_errors_and_missing_as_zero": 0.016,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0
+  },
+  "supervisor": {
+    "status": "running",
+    "pid": 241557,
+    "started": 1791987613.4638016,
+    "completed_gpus": [],
+    "failed_gpus": {
+      "4": {
+        "status": "needs_diagnosis",
+        "pid": 241612,
+        "gpu": 4,
+        "started": 1791987613.778339,
+        "completed_parts": [
+          "putting_shoes_on_rack-n2-i8",
+          "bringing_water-n4-i0",
+          "bringing_water-n4-i4",
+          "bringing_water-n2-i8",
+          "sorting_bottles_cans_and_paper-n4-i0",
+          "sorting_bottles_cans_and_paper-n4-i4",
+          "sorting_bottles_cans_and_paper-n2-i8",
+          "wash_dog_toys-n4-i0",
+          "wash_dog_toys-n4-i4",
+          "wash_dog_toys-n2-i8",
+          "freeze_pies-n4-i0"
+        ],
+        "diagnosed_failed_parts": [
+          "freeze_pies-n4-i4"
+        ],
+        "model_generations": [
+          {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000/result.json",
+            "sha256": "5b31fa8941c88208eb48b08a9ef636767559e5ba3b0d6a3fa00231505f91f209"
+          }
+        ],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 1339445,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-001",
+        "updated": 1792035845.8495996,
+        "sim_pid": 1276109,
+        "part": "freeze_pies-n4-i4",
+        "error": "RuntimeError('Frozen model loading failed/timed out/stopped')",
+        "final_verification_error": "FileNotFoundError(2, 'No such file or directory')",
+        "finished": 1792035845.8495977
+      }
+    },
+    "worker_pids": {
+      "0": 241608,
+      "1": 241609,
+      "2": 241610,
+      "3": 241611,
+      "4": 241612,
+      "5": 241613,
+      "6": 241614,
+      "7": 241615
+    },
+    "completed": 734,
+    "coverage": 742,
+    "updated": 1792053935.53003
+  },
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 1404741,
+    "started": 1792038459.6832724,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-recovery-queue-upgrade-v1.json",
+        "sha256": "ab5f7614e50297860c84ac92af5126043a70513916beec8eabcbbf1d3ab39bdc"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/queue-after-champion-isolated-v1/status.json",
+        "sha256": "b235e9afbad218a7b8e6b50df8e656af8817fe2e0a04a6719f2c823b772bec41"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/manifest.json",
+        "sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parent-worker-certificate.json",
+        "sha256": "a33c0f3fa746b3e3f72750154deae9919f8219812fe5fbe91ca89bf714627bfd"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-recovery-collection-20261015-v1",
+    "queue_source_commit": "78c364b2354928067687388a985eb3782561897a",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "pending_mem_upgrade": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/pending-mem-recovery-queue-upgrade-v1.json",
+      "sha256": "ab5f7614e50297860c84ac92af5126043a70513916beec8eabcbbf1d3ab39bdc"
+    },
+    "recovery_dependencies": [
+      {
+        "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+        "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1",
+        "source_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+        "gpu": 4
+      }
+    ],
+    "updated": 1792038459.6832993
+  },
+  "manual_visual_review": false,
+  "full_model_score": false,
+  "original_outputs_modified": false,
+  "validation_scope": "Original committed JSON, MP4 metadata/hash, physical controls, pinned identity/seed/horizon, and per-GPU journal recurrence; no image-content or RNG identity claim.",
+  "combined_scope": {
+    "parent_complete": 734,
+    "previously_audited_recovery_complete": 12,
+    "completed_combined": 746,
+    "execution_errors_combined": 8,
+    "unaccounted_combined": 246,
+    "recovery_evidence": "docs/infra/results/2026-10-15-champion-recovery-wood-all10-originals.json",
+    "note": "Parent-only new originals plus separately verified sidecar; not a fresh recovery audit or final full-model score."
+  },
+  "live_confirmation": {
+    "observed_at": "2026-10-15T08:45:15.372187+00:00",
+    "monitor_pid": 1408396,
+    "champion": {
+      "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+      "status": "running",
+      "pid": 241557,
+      "supervisor_alive": true,
+      "completed_parent": 734,
+      "errors_parent": 8,
+      "original_quarantined_gpus": [
+        "4"
+      ],
+      "recovery_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+      "recovery_status": "running",
+      "recovery_completed": 12,
+      "recovery_errors": 0,
+      "completed_combined": 746,
+      "execution_errors_combined": 8,
+      "unaccounted_combined": 246,
+      "effective_workers": [
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 0,
+          "pid": 241608,
+          "alive": true,
+          "start_ticks": 538129546,
+          "status": "evaluating",
+          "part": "putting_up_Christmas_decorations_inside-n2-i8",
+          "model_pid": 244174,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1699202,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            3300,
+            3300
+          ],
+          "physical_updated": 1792053902.920524,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 1,
+          "pid": 241609,
+          "alive": true,
+          "start_ticks": 538129546,
+          "status": "evaluating",
+          "part": "freeze_fruit-n4-i4",
+          "model_pid": 241683,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1718603,
+          "sim_alive": true,
+          "physical_status": "loading",
+          "controls": null,
+          "physical_updated": null,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 2,
+          "pid": 241610,
+          "alive": true,
+          "start_ticks": 538129546,
+          "status": "evaluating",
+          "part": "cook_cabbage-n4-i4",
+          "model_pid": 241664,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1659852,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            6600,
+            6600,
+            6600,
+            6600
+          ],
+          "physical_updated": 1792053906.8845718,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 3,
+          "pid": 241611,
+          "alive": true,
+          "start_ticks": 538129547,
+          "status": "evaluating",
+          "part": "laying_tile_floors-n4-i4",
+          "model_pid": 246666,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1677350,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            5900,
+            5900,
+            5900,
+            5900
+          ],
+          "physical_updated": 1792053898.5230095,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+          "gpu": 4,
+          "pid": 1364542,
+          "alive": true,
+          "start_ticks": 543065164,
+          "status": "evaluating",
+          "part": "organizing_school_stuff-n4-i0",
+          "model_pid": 1364814,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1709484,
+          "sim_alive": true,
+          "physical_status": "loading",
+          "controls": null,
+          "physical_updated": null,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 5,
+          "pid": 241613,
+          "alive": true,
+          "start_ticks": 538129547,
+          "status": "evaluating",
+          "part": "moving_boxes_to_storage-n4-i0",
+          "model_pid": 244175,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1690602,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            3700,
+            3700,
+            3700,
+            3700
+          ],
+          "physical_updated": 1792053908.0157814,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 6,
+          "pid": 241614,
+          "alive": true,
+          "start_ticks": 538129547,
+          "status": "evaluating",
+          "part": "dispose_of_batteries-n4-i0",
+          "model_pid": 249502,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1661715,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            11900,
+            11900,
+            11900,
+            11900
+          ],
+          "physical_updated": 1792053902.859689,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+          "gpu": 7,
+          "pid": 241615,
+          "alive": true,
+          "start_ticks": 538129547,
+          "status": "evaluating",
+          "part": "sorting_vegetables-n4-i4",
+          "model_pid": 249501,
+          "model_alive": true,
+          "model_status": "ready",
+          "sim_pid": 1591625,
+          "sim_alive": true,
+          "physical_status": "running",
+          "controls": [
+            17500,
+            17500,
+            17500,
+            17500
+          ],
+          "physical_updated": 1792053898.9970396,
+          "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+          "error": null,
+          "final_verification_error": null
+        }
+      ],
+      "counts_are_live_not_new_original_audit": true
+    },
+    "queue": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/queue-after-champion-recovered-v1",
+      "status": "waiting_for_champion_continuation",
+      "pid": 1404741,
+      "alive": true,
+      "start_ticks": 543213718,
+      "phases": [],
+      "recovery_dependencies": [
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+          "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1",
+          "source_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+          "gpu": 4
+        }
+      ],
+      "error": null
+    },
+    "mem": {
+      "status": null,
+      "pid": null,
+      "supervisor_alive": false,
+      "summary": null,
+      "workers": []
+    }
+  }
+}
