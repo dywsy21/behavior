@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-15 14:16 CST / Codex SUBMISSION-FULL-EVAL（卸车第二批4原件）：** 既有23293/1408396持续跟踪，GPU1自然结束305–308并加载309–310；4原JSON/MP4 SHA、16986实控=视频帧数、672×448/30fps、原17/0 seeds/16985 horizon/9f配置与完成物理回执核合，均Q0/success=false。GPU1的41991402字节精确journal前缀SHA ba8b6e20…8ec70通过，48旧会话均关闭。证据`docs/infra/results/2026-10-15-champion-car305308-originals.json`；卸车仅8/10，不称完整任务/全模型最终结论，也未人工全片验画面。父694＋侧路2＝696完整已核，8旧工程异常/296待，父117物理批＋侧路1批验过；仍16官方成功仅已完成子集。GPU5已自然开始清餐盘下一批，GPU2新煮卷心菜场景仍加载，八worker/1404741后继存活、无新增异常。未为低分/慢加载/核验停止或重启作业，原actor/权重/官方时限不变；下一继续原件核账及完整冠军→MEM终态/归档。
+
 - **2026-10-15 14:05 CST / Codex SUBMISSION-FULL-EVAL（清餐盘首4＋整理房间尾2原件）：** 原八有效worker/1404741后继持续；GPU2已自然切cook_cabbage、GPU5进入清餐盘305–308。新6份原JSON/MP4 SHA、672×448/30fps/帧数=实控、原17/0 seeds/官方horizon/9f源配置及两个GPU精确journal前缀通过，证据`docs/infra/results/2026-10-15-champion-plates-room-new6-originals.json`。清餐盘301–304各20545实控，Q依次0、1/7、2/7、0；整理房间309–310各19283实控/Q0，六例均未完整成功。整理房间全10平均Q0.033333/SR0；清餐盘仅4/10，不外推全task/全模型或冒称人工全片检查。父690＋侧路2＝692完整已核，8旧工程异常/300待，父116物理批＋侧路1批已核，仍16官方成功仅已完成子集。未因低分/核验中断或重跑任何评测，原权重/时限不动；下一继续两条全量、原件核账与最终归档，尚未完成goal。
 
 - **2026-10-15 13:53 CST / Codex SUBMISSION-FULL-EVAL（食物入冰箱再4原件）：** 持续只读跟踪既有23293/1408396，原八有效worker一直存活；GPU6下一批自然进入实控。clearing_food_from_table_into_fridge305–308各19603实控/帧、Q0/success=false；4原JSON/MP4 SHA、原17/0 seeds/19602 horizon/9f源配置和物理回执一致，GPU3的53312753字节稳定journal前缀SHA b656060e…733bb逐事件通过，旧54会话全部关闭。证据`docs/infra/results/2026-10-15-champion-fridge305308-originals.json`；该task仅8/10，不称全task/全模型结果或人工全片检查。父684＋侧路2＝686完整已核，8既有工程异常/306待，父114物理批＋侧路1批已核，仍16官方成功仅已完成子集。GPU3已自动加载309–310，其余继续实控、1404741后继存活，原actor/物理/时限不改。开始时本地fetch尚未退出便pull曾报multiple branches；等待原fetch退出、核单一upstream后显式ff-only重试成功，HEAD仍08027bab，未涉及任何运行源。下一继续冠军→MEM终态/原件归档，不以等待视为阻塞或提前完成。
