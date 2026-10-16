@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-16 12:20 CST / Codex SUBMISSION-FULL-EVAL（正式归档器的已终态worker预验通过，续评不停）：** 上一goal轮为同41474/原两路真实控制增加16400步的verified wait；本轮ff-only同步成功、origin/main仍33677bd0。为提前发现收尾接MEM障碍，在RTX只读调用现役fb2归档器的`registered_recoveries`和`worker_materials`，父8个终态worker及已完成GPU4侧路的退出/参数/原模型generation/来源绑定全部通过，显式0/2/4注册核合。证据`docs/infra/results/2026-10-16-champion-terminal-parent-package-preflight.json`，探针留本地忽略目录`artifacts/final-eval-20261016/terminal-parent-package-preflight/`。此为已终态部分预验，未绕过剩余GPU0/2、完整1000合账或整体归档门，也不是独立成员review；尚未创建正式输出目录。原两路继续实际推进、2823822仍waiting，累计972完整/16工程异常/12待不变。下一等原12例终态再验全包并确认MEM实际开跑，无停止/重跑/热改actor或外部交付。
+
 - **2026-10-16 11:35 CST / Codex SUBMISSION-FULL-EVAL（当前处置手册同步，原评测持续）：** 上一goal轮为实质进展（两恢复路实际启动/237双端回归/114原件核验/新后继），本轮ff-only同步且origin/main未变。更新`docs/infra/FINAL_EVAL_CONTINUATION.md`当前表和依赖处置，移除仍将78队列/GPU4单侧路称“当前”的歧义，明确fb2等待同父＋0/2/4、fe1严格peer准入、GPU2复合异常原分类和死零阶段队列扩展边界；历史不删。实时41474再次核两路同PID/start ticks、物理控制继续增加及2823822实活，未启动新评测或改现役源；外部交付仍按用户暂缓。下一等待并验收原剩余12例→MEM576，不机械重做已完成检查。
 
 - **2026-10-16 11:30 CST / Codex SUBMISSION-FULL-EVAL（GPU0/2两路首实控与会话隔离通过）：** 同2815230/2815480、2815670/2816006、2818755/2818729未重启，gift_baskets305–308各200实控、canning_food305–308各1300实控；原manifest/9f actor/2a5ce80b/0更新与17/0 seeds、39090/34463官方时限绑定核合。各4独立会话journal精确前缀57811/343621字节递推验收通过，task只26/48，不冒称原始图像/动作/RNG等价或完整成功。GPU0官方reset→metric→BDDL谓词遍历已自然结束；旧首次批同一阶段也耗565s，未改物理/规则/看门狗或重开回合。证据`docs/infra/results/2026-10-16-champion-multi-recovery-first-controls.json`。两路继续原12待、2823822后继等待后接同MEM576；972完整/16工程异常口径保持，下一收后续原件/终态合账。没有人为全局停机、额外训练或外部交付。

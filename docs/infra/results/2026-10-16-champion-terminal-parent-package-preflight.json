@@ -1,0 +1,154 @@
+{
+  "checked_at": 1792124396.7335525,
+  "completed_recovery_gpu4": {
+    "execution_errors": 0,
+    "verified_evidence_count": 4,
+    "worker": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/workers/gpu_4/status.json",
+      "sha256": "e946890d075f71bb3b1e8f66c6407e76e0dc17a6b30dc04b135fbdbf72264fb8"
+    }
+  },
+  "parent_manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+    "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+  },
+  "pending_recoveries": [
+    0,
+    2
+  ],
+  "read_only": true,
+  "registered_gpus": [
+    0,
+    2,
+    4
+  ],
+  "schema": "champion_terminal_parent_package_preflight_v1",
+  "scope": "production worker_materials for terminal parent and completed gpu4; not complete package or pending gpu0/gpu2",
+  "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-queue-20261016-v1",
+  "source_file": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-queue-20261016-v1/scripts/eval/package_champion_continuation.py",
+    "sha256": "9c919d31a92c97a2caf1ba0d28c82aa5968a8d2ea320c34aaae6e0f8b33ac485"
+  },
+  "workers": [
+    {
+      "execution_errors": 4,
+      "gpu": 0,
+      "model_generations": [
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_0/model-000/result.json",
+          "sha256": "68eade8d135e768fdc20e434a3e25e33ca27ec275f9ae53797eb3053deb11982"
+        }
+      ],
+      "verified_evidence_count": 5,
+      "worker": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_0/status.json",
+        "sha256": "9c6ae3a761895adba34c6385a6a744593fb5816d50c5411cac4f062f84fc3697"
+      }
+    },
+    {
+      "execution_errors": 0,
+      "gpu": 1,
+      "model_generations": [
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/model-000/result.json",
+          "sha256": "4ee650e8b564bb8f7a23cf26faa7fd3a469ac351950d55e89c4f3a8d6345183e"
+        }
+      ],
+      "verified_evidence_count": 4,
+      "worker": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_1/status.json",
+        "sha256": "c8f0064af7ea9d91ad3115a635a62c2dd0720805f18999bc76091566c0334be5"
+      }
+    },
+    {
+      "execution_errors": 4,
+      "gpu": 2,
+      "model_generations": [
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_2/model-000/result.json",
+          "sha256": "7ddd2aeb2f6478e39415bb061f98b5c4dba14452475b63ae73cfe13086685a64"
+        }
+      ],
+      "verified_evidence_count": 5,
+      "worker": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_2/status.json",
+        "sha256": "18e31d41bb0ef1ac1a4f0411fae054bc88d1d15aafb6660dff47e775522935d8"
+      }
+    },
+    {
+      "execution_errors": 0,
+      "gpu": 3,
+      "model_generations": [
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_3/model-000/result.json",
+          "sha256": "52364e94f4f8730a68e3c8123848d288f5a425cf95b9edac8763628a60c1f5d0"
+        }
+      ],
+      "verified_evidence_count": 4,
+      "worker": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_3/status.json",
+        "sha256": "6b4618b944823f9439fbf3585c0d3f468fe65202dc2eda2f2f2fbdce8317726c"
+      }
+    },
+    {
+      "execution_errors": 4,
+      "gpu": 4,
+      "model_generations": [
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/model-000/result.json",
+          "sha256": "5b31fa8941c88208eb48b08a9ef636767559e5ba3b0d6a3fa00231505f91f209"
+        }
+      ],
+      "verified_evidence_count": 5,
+      "worker": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_4/status.json",
+        "sha256": "629ba5e9b7ff4a8146dccf281b860f58cce4f7cfece27fc0229414f584a9cdd0"
+      }
+    },
+    {
+      "execution_errors": 0,
+      "gpu": 5,
+      "model_generations": [
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_5/model-000/result.json",
+          "sha256": "a3fbf965b06e5d12de2dc5a291be0e57bed35363466081d374ba6fd64c738664"
+        }
+      ],
+      "verified_evidence_count": 4,
+      "worker": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_5/status.json",
+        "sha256": "436c10fe231ca420ce1c4f4a4980e9c036b674b0ae16edce32d3fe65aa49b343"
+      }
+    },
+    {
+      "execution_errors": 0,
+      "gpu": 6,
+      "model_generations": [
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_6/model-000/result.json",
+          "sha256": "779f1bec81eff78c9395f5743c89a1ca12797c4efe60cf7ca3584594dbdb5200"
+        }
+      ],
+      "verified_evidence_count": 4,
+      "worker": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_6/status.json",
+        "sha256": "e4c326bc2b2a213de8eda721ed995c4ce2bfecbed8ef822682765f42e0731b44"
+      }
+    },
+    {
+      "execution_errors": 0,
+      "gpu": 7,
+      "model_generations": [
+        {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_7/model-000/result.json",
+          "sha256": "5288111d025134d0aa4dce39b429460551544f0809fbfba211792fe4301de1f5"
+        }
+      ],
+      "verified_evidence_count": 4,
+      "worker": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/workers/gpu_7/status.json",
+        "sha256": "87e5572aa516bcbd0cad752acd9de44b83ccfbbb7d110b86e16cbf6dfc7e7432"
+      }
+    }
+  ]
+}
