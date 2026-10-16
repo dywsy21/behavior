@@ -1,0 +1,453 @@
+{
+  "schema": "champion_multi_recovery_first_controls_v1",
+  "observed_at": 1792121405.0618114,
+  "jobs": {
+    "0": {
+      "worker_process": {
+        "pid": 2815230,
+        "ppid": 2159562,
+        "start_ticks": 551392233,
+        "argv": [
+          "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+          "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1/scripts/eval/champion_worker_recovery.py",
+          "run",
+          "--job",
+          "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1"
+        ],
+        "environment": {
+          "EVAL_GPU": null,
+          "EVAL_SOURCE": null,
+          "CUDA_VISIBLE_DEVICES": null
+        }
+      },
+      "model_process": {
+        "pid": 2815670,
+        "ppid": 2815230,
+        "start_ticks": 551394000,
+        "argv": [
+          "/home/tione/notebook/baselines/StarVLA/.venv/bin/python",
+          "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1/scripts/eval/serve_champion_official.py",
+          "--config",
+          "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_0.json",
+          "--output",
+          "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/workers/gpu_0/model-000",
+          "--profile-memory",
+          "--recovery-job",
+          "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1"
+        ],
+        "environment": {
+          "EVAL_GPU": null,
+          "EVAL_SOURCE": null,
+          "CUDA_VISIBLE_DEVICES": "0"
+        }
+      },
+      "sim_process": {
+        "pid": 2818755,
+        "ppid": 2815230,
+        "start_ticks": 551407516,
+        "argv": [
+          "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+          "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+          "--task",
+          "assembling_gift_baskets",
+          "--task-id",
+          "26",
+          "--policy-config",
+          "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_0.json",
+          "--output",
+          "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4",
+          "--num-envs",
+          "4",
+          "--indices",
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "environment": {
+          "EVAL_GPU": "0",
+          "EVAL_SOURCE": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval",
+          "CUDA_VISIBLE_DEVICES": null
+        }
+      },
+      "physical": {
+        "status": "running",
+        "pid": 2818755,
+        "task": "assembling_gift_baskets",
+        "task_id": 26,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+        "started": 1792120393.2802937,
+        "optimizer_updates": 0,
+        "control_steps": [
+          200,
+          200,
+          200,
+          200
+        ],
+        "updated": 1792121401.5582302
+      },
+      "attempts": [
+        {
+          "status": "running",
+          "task": "assembling_gift_baskets",
+          "indices": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "instance_ids": [
+            305,
+            306,
+            307,
+            308
+          ],
+          "rollout": 0,
+          "started": 1792120796.823464,
+          "max_steps": 39090,
+          "policy_seed": 17,
+          "simulator_seed": 0
+        }
+      ],
+      "manifest": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/manifest.json",
+        "sha256": "044ff86e8b7fd06b9dd17762a4b365ce85569dd3f0a5e37cbdc0e30a56c324b3"
+      },
+      "model": {
+        "status": "ready",
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+        "optimizer_updates": 0,
+        "recovery_manifest_sha256": "044ff86e8b7fd06b9dd17762a4b365ce85569dd3f0a5e37cbdc0e30a56c324b3",
+        "launcher_source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc"
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 57811,
+        "prefix_sha256": "138bfc3eab5ff9275990298e4f94d37432cadd881bf89407dc1c8f7afd3dc6d0",
+        "lines": 52,
+        "connections": 4,
+        "episodes": 4,
+        "closed_episodes": 0,
+        "active_connections": 4,
+        "deliveries": 44,
+        "delivered_controls": 880,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          26
+        ],
+        "require_closed": false,
+        "session_summaries": [
+          {
+            "episode": "45ed30d10b384255996c5cf159704ea6/reset-1/task-26",
+            "connection": "45ed30d10b384255996c5cf159704ea6",
+            "epoch": 1,
+            "task": 26,
+            "deliveries": 11,
+            "stage": 0,
+            "votes": [
+              0,
+              0,
+              0
+            ],
+            "stages": 15,
+            "legacy": true,
+            "closed": false
+          },
+          {
+            "episode": "aa3c4a2897ea4ed2953e3f38e4fd7117/reset-1/task-26",
+            "connection": "aa3c4a2897ea4ed2953e3f38e4fd7117",
+            "epoch": 1,
+            "task": 26,
+            "deliveries": 11,
+            "stage": 0,
+            "votes": [
+              0,
+              1,
+              5
+            ],
+            "stages": 15,
+            "legacy": true,
+            "closed": false
+          },
+          {
+            "episode": "5eb5533c58914213a0bb03ff3d083073/reset-1/task-26",
+            "connection": "5eb5533c58914213a0bb03ff3d083073",
+            "epoch": 1,
+            "task": 26,
+            "deliveries": 11,
+            "stage": 0,
+            "votes": [
+              0,
+              0,
+              0
+            ],
+            "stages": 15,
+            "legacy": true,
+            "closed": false
+          },
+          {
+            "episode": "a41861bdd57d47f0b9941589ab5a8324/reset-1/task-26",
+            "connection": "a41861bdd57d47f0b9941589ab5a8324",
+            "epoch": 1,
+            "task": 26,
+            "deliveries": 11,
+            "stage": 0,
+            "votes": [
+              0,
+              0,
+              1
+            ],
+            "stages": 15,
+            "legacy": true,
+            "closed": false
+          }
+        ],
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/workers/gpu_0/model-000/events.jsonl",
+        "captured_bytes": 57811,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "has_real_controls": true
+    },
+    "2": {
+      "worker_process": {
+        "pid": 2815480,
+        "ppid": 2159562,
+        "start_ticks": 551393241,
+        "argv": [
+          "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+          "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1/scripts/eval/champion_worker_recovery.py",
+          "run",
+          "--job",
+          "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1"
+        ],
+        "environment": {
+          "EVAL_GPU": null,
+          "EVAL_SOURCE": null,
+          "CUDA_VISIBLE_DEVICES": null
+        }
+      },
+      "model_process": {
+        "pid": 2816006,
+        "ppid": 2815480,
+        "start_ticks": 551395380,
+        "argv": [
+          "/home/tione/notebook/baselines/StarVLA/.venv/bin/python",
+          "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1/scripts/eval/serve_champion_official.py",
+          "--config",
+          "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_2.json",
+          "--output",
+          "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/model-000",
+          "--profile-memory",
+          "--recovery-job",
+          "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1"
+        ],
+        "environment": {
+          "EVAL_GPU": null,
+          "EVAL_SOURCE": null,
+          "CUDA_VISIBLE_DEVICES": "2"
+        }
+      },
+      "sim_process": {
+        "pid": 2818729,
+        "ppid": 2815480,
+        "start_ticks": 551407394,
+        "argv": [
+          "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+          "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+          "--task",
+          "canning_food",
+          "--task-id",
+          "48",
+          "--policy-config",
+          "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_2.json",
+          "--output",
+          "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n4-i4",
+          "--num-envs",
+          "4",
+          "--indices",
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "environment": {
+          "EVAL_GPU": "2",
+          "EVAL_SOURCE": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval",
+          "CUDA_VISIBLE_DEVICES": null
+        }
+      },
+      "physical": {
+        "status": "running",
+        "pid": 2818729,
+        "task": "canning_food",
+        "task_id": 48,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+        "started": 1792120392.0553236,
+        "optimizer_updates": 0,
+        "control_steps": [
+          1300,
+          1300,
+          1300,
+          1300
+        ],
+        "updated": 1792121403.6695032
+      },
+      "attempts": [
+        {
+          "status": "running",
+          "task": "canning_food",
+          "indices": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "instance_ids": [
+            305,
+            306,
+            307,
+            308
+          ],
+          "rollout": 0,
+          "started": 1792121009.380938,
+          "max_steps": 34463,
+          "policy_seed": 17,
+          "simulator_seed": 0
+        }
+      ],
+      "manifest": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/manifest.json",
+        "sha256": "b55c9143a655f5b16825ab3284868351f8b89ca2892084ec82707216d71d34d6"
+      },
+      "model": {
+        "status": "ready",
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+        "optimizer_updates": 0,
+        "recovery_manifest_sha256": "b55c9143a655f5b16825ab3284868351f8b89ca2892084ec82707216d71d34d6",
+        "launcher_source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc"
+      },
+      "protocol_prefix": {
+        "schema": "champion_protocol_prefix_audit_v1",
+        "prefix_bytes": 343621,
+        "prefix_sha256": "49109b55b466c0643f566001b3f4d4da6fb500192fff44ddf668bc45dd4a0679",
+        "lines": 272,
+        "connections": 4,
+        "episodes": 4,
+        "closed_episodes": 0,
+        "active_connections": 4,
+        "deliveries": 264,
+        "delivered_controls": 5280,
+        "physically_confirmed_controls": null,
+        "task_ids": [
+          48
+        ],
+        "require_closed": false,
+        "session_summaries": [
+          {
+            "episode": "417566387e274293a82b91a2a9fcf72d/reset-1/task-48",
+            "connection": "417566387e274293a82b91a2a9fcf72d",
+            "epoch": 1,
+            "task": 48,
+            "deliveries": 66,
+            "stage": 1,
+            "votes": [
+              1,
+              1,
+              1
+            ],
+            "stages": 15,
+            "legacy": true,
+            "closed": false
+          },
+          {
+            "episode": "54f92375cafd4a30b6c8fb1ea2c47e5f/reset-1/task-48",
+            "connection": "54f92375cafd4a30b6c8fb1ea2c47e5f",
+            "epoch": 1,
+            "task": 48,
+            "deliveries": 66,
+            "stage": 1,
+            "votes": [
+              1,
+              1,
+              1
+            ],
+            "stages": 15,
+            "legacy": true,
+            "closed": false
+          },
+          {
+            "episode": "00d15b3e76a6430eabeec1b603a0b1b0/reset-1/task-48",
+            "connection": "00d15b3e76a6430eabeec1b603a0b1b0",
+            "epoch": 1,
+            "task": 48,
+            "deliveries": 66,
+            "stage": 0,
+            "votes": [
+              0,
+              0,
+              0
+            ],
+            "stages": 15,
+            "legacy": true,
+            "closed": false
+          },
+          {
+            "episode": "8fd8b763b082477db62f5067c5a773ef/reset-1/task-48",
+            "connection": "8fd8b763b082477db62f5067c5a773ef",
+            "epoch": 1,
+            "task": 48,
+            "deliveries": 66,
+            "stage": 1,
+            "votes": [
+              1,
+              1,
+              1
+            ],
+            "stages": 15,
+            "legacy": true,
+            "closed": false
+          }
+        ],
+        "original_outputs_modified": false,
+        "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+        "does_not_prove": [
+          "raw observation/action/RNG values",
+          "physical execution",
+          "success",
+          "events beyond this exact prefix"
+        ],
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/model-000/events.jsonl",
+        "captured_bytes": 343621,
+        "ignored_incomplete_tail_bytes": 0
+      },
+      "has_real_controls": true
+    }
+  },
+  "original_outputs_modified": false,
+  "both_first_controls_verified": true,
+  "validation_scope": "Actual physical control counters and exact per-run/worker/model/simulator identity; journal per-session task/stage/vote/inpainting/delivery recurrence only. Does not prove raw image/action/RNG equality or complete task success."
+}
