@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-16 11:28 CST / Codex SUBMISSION-FULL-EVAL（夜间新增114完整原件核合，仍不停评）：** 父30批94例＋GPU4侧6批20例原JSON/视频SHA/672×448/30fps/帧数=实控、唯一attempt、原slot/17与0 seeds/官方时限/命令/终态原参数核合；新增0完整成功。父已验930、侧路42＝972完整/16工程异常/12待，已结算22成功，仅内部进行中口径，非官方完整Q/SR。GPU0/2旧失败trace保留四个ConnectionClosedError，各只验失败前完整闭合前缀，并逐task会话数与全部完整批次精确核对；不称失败后缀通过。证据`docs/infra/results/2026-10-16-champion-overnight-originals.json`，完整远端audit SHA4680a6be，本地同SHA忽略副本。GPU2新侧路已各400实控，GPU0仍reset、model未收到动作请求；非暂停py-spy定位官方metrics.reset→BDDL goal satisfaction谓词遍历，未发现模型推理阻塞，继续核其进展、不改官方逻辑或停止GPU2。2823822后继/2826099观察器继续。
+
+- **2026-10-16 11:25 CST / Codex SUBMISSION-FULL-EVAL（只读夜间审计边界修正，不影响评测）：** 新94条主父原件的批次/JSON/视频/物理核验后，整文件终态journal门遇GPU0原NaN失败批尾`connection_error`而拒绝，尚未产出成功审计包；这不是当前恢复run再次失败。只读复核GPU0/2各四个`ConnectionClosedError(None,None,None)`属于各自保留的失败后缀，不能忽略后宣称整trace通过。改独立探针仅验最后完整闭合会话前缀，并逐task会话计数对齐全部完整原件；失败后缀字节/原trace SHA/错误事件单独保留，仍需重验。首探针和错误stdout在本地`artifacts/final-eval-20261016/overnight-audit-v1/`保留。两路worker/模拟器及新后继持续，无停止/重跑/更改actor。
+
 - **2026-10-16 11:20 CST / Codex SUBMISSION-FULL-EVAL（0/2/4后继已实际挂起，两路恢复不停）：** 新等待器2823822/`MEMv8/queue-after-champion-multirecovery-v1`已waiting/零阶段，真实PID/argv/绑定核合；明确等待同父＋GPU0/2新侧路与GPU4原侧路，随后原MEM576，未重启或重写旧1404741。新独立队列源`code/champion-multi-recovery-queue-20261016-v1`=`fb2c7a8afab298bda8b7cd7496c3eda85def679c`，两端各237测试过；旧队列终态SHA40b4861c，新证据`docs/infra/results/2026-10-16-champion-multirecovery-queue-launch.json`。GPU0/2原2815230/2815480及模型/模拟器实活、原权重，场景仍加载，不称有新成功率。原父930完整＋GPU4侧42是运行账面，16工程异常、12待；夜间原件仍待追核。只读观察器2826099/session41474重新建立，明确区分已自然完成与隔离失败，不再用昨日句柄。继续冠军→MEM，用户暂缓的外部交付不做。
 
 - **2026-10-16 11:13 CST / Codex SUBMISSION-FULL-EVAL（恢复模型已ready与后继精确扩展）：** GPU0/2模型2815670/2816006均ready、原2a5ce80b及0更新、正确独立manifest/launcher，sim2818755/2818729场景加载；不是已完成回合。旧1404741已自然终态，新增只读同父等待器扩展：必须原零阶段/已退出/相同MEM未尝试、原升级证书与全部依赖SHA不变、显式严格扩张至父全部0/2/4隔离卡，拒新策略/尝试过MEM/遗漏或替换原恢复。局部90测试通过（包含24个新增正反边界），全套回归和新队列源部署在进行；不热改fe1现役恢复源，无停止健康作业。
