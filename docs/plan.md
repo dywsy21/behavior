@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-16 14:05 CST / Codex SUBMISSION-FULL-EVAL（罐头305–308四原件通过，自动续末两例）：** 原GPU2 worker2815480/模型2816006保持，新模拟器2901123加载309–310，GPU0继续原gift_baskets四例各38700。4原JSON/MP4 SHA、34464实控=视频帧数、672×448/30fps、唯一完成attempt/原17与0 seeds/34463官方时限/9f配置与命令核合；Q依次0/0/0.1/0、success均false。8966906字节journal精确前缀SHA8db8d862、四独立闭合会话递推通过，原2a5ce80b加载身份/零更新核合，最终参数复验仍等模型终态。证据`docs/infra/results/2026-10-16-champion-canning305308-originals.json`，不是人工视频画面审查或全task/模型成绩。累计已审976完整/16既有工程异常/8待、22已结算成功；不重跑旧错误，2823822后继持续。下一等GPU0本批与两路最后两例/完整归档→MEM576。
+
+- **2026-10-16 14:01 CST / Codex SUBMISSION-FULL-EVAL（罐头305–308自然结束、309–310已加载，原件待核）：** 同41474观察GPU2原2815480/2816006保持，completed_parts从0到1、part切到`canning_food-n2-i8`，新模拟器2901123实活；没有人工重启或重跑。GPU0原三进程继续gift_baskets各38000实控，2823822后继仍waiting。新4份完整结果正在做原JSON/视频/时钟/协议核验，未提前将账面976称已审或最终Q/SR；已审游标仍972/16工程异常。下一核原件并确认最后两例首实控，其余运行不停。
+
 - **2026-10-16 13:10 CST / Codex SUBMISSION-FULL-EVAL（原两路连续推进，截止风险重核但不停评）：** 同41474观察原两路34min新增64800实控，无故障/重启，随后GPU0各24900、GPU2各23900；2823822实活，972完整/16既有工程异常/12待不变。重新核[官方公告](https://behavior.stanford.edu/challenge/updates.html)仍10/17 19:59 CST截止，仅余30.811h；原MEM v8清单SHA7819b835、576例/174批未改，远端无status/worker/parts、尚未启动。之前117个完整MEM batch的历史吞吐场景仍需33.750h，即使假设冠军立刻结束并零开销接MEM也约晚2.939h；不是本轮MEM新测速、实际下界或确定完成预言，真实还要冠军收尾/加载/归档。证据`docs/infra/results/2026-10-16-mem-deadline-headroom-1310.json`绑定旧测量SHA0dfa8e52及真实进程。风险已告知；仍按用户冠军→MEM/连续全量，不因截止改actor、缩时限、丢任务或启用暂缓交付。下一继续原两路及终态原件/接MEM验收。
 
 - **2026-10-16 12:20 CST / Codex SUBMISSION-FULL-EVAL（正式归档器的已终态worker预验通过，续评不停）：** 上一goal轮为同41474/原两路真实控制增加16400步的verified wait；本轮ff-only同步成功、origin/main仍33677bd0。为提前发现收尾接MEM障碍，在RTX只读调用现役fb2归档器的`registered_recoveries`和`worker_materials`，父8个终态worker及已完成GPU4侧路的退出/参数/原模型generation/来源绑定全部通过，显式0/2/4注册核合。证据`docs/infra/results/2026-10-16-champion-terminal-parent-package-preflight.json`，探针留本地忽略目录`artifacts/final-eval-20261016/terminal-parent-package-preflight/`。此为已终态部分预验，未绕过剩余GPU0/2、完整1000合账或整体归档门，也不是独立成员review；尚未创建正式输出目录。原两路继续实际推进、2823822仍waiting，累计972完整/16工程异常/12待不变。下一等原12例终态再验全包并确认MEM实际开跑，无停止/重跑/热改actor或外部交付。

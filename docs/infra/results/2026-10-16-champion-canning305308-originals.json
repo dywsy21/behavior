@@ -1,0 +1,326 @@
+{
+  "schema": "champion_recovery_committed_batch_audit_v1",
+  "observed_at": 1792130647.8976629,
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1",
+  "gpu": 2,
+  "part": "canning_food-n4-i4",
+  "tool_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-queue-20261016-v1",
+  "tool_commit": "fb2c7a8afab298bda8b7cd7496c3eda85def679c",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/manifest.json",
+    "sha256": "b55c9143a655f5b16825ab3284868351f8b89ca2892084ec82707216d71d34d6"
+  },
+  "certificate": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parent-worker-certificate.json",
+    "sha256": "3529fc2d2c0dd4031e249047246a830d0e1efcbb132f25e8b7613b115b53bf53"
+  },
+  "records": [
+    {
+      "task": "canning_food",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 34464,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n4-i4/json/canning_food_305_0.json",
+        "sha256": "cc14e69db00a9e97ce99efd0cd90db2dacac7b732bff341a9cd93b944763d0aa"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n4-i4/videos/canning_food_305_0.mp4",
+        "sha256": "f22986c13876f062bed8c6c98861772f85c61672d8015f8fe62ff3e27a85ca7c"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "34464"
+      },
+      "success": false,
+      "q_score_final": 0
+    },
+    {
+      "task": "canning_food",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 34464,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n4-i4/json/canning_food_306_0.json",
+        "sha256": "e7aefc67eb881179df36e7cd77848dea5768cb389ba70319d52368b14b2822e0"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n4-i4/videos/canning_food_306_0.mp4",
+        "sha256": "ee2b34e5d1c1e417b164f3618ef3a24c9713b18fa268f46c95f826596bd52982"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "34464"
+      },
+      "success": false,
+      "q_score_final": 0
+    },
+    {
+      "task": "canning_food",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 34464,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n4-i4/json/canning_food_307_0.json",
+        "sha256": "bee560988124d1e2817984b1cf42cf8136c6fdb5ad5cc6c84771d0f8f029d1c1"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n4-i4/videos/canning_food_307_0.mp4",
+        "sha256": "da1751800dea43b9e984b37d9e92ca2cd1cdb3797b060c00f1c076b29a263a9c"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "34464"
+      },
+      "success": false,
+      "q_score_final": 0.1
+    },
+    {
+      "task": "canning_food",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 34464,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n4-i4/json/canning_food_308_0.json",
+        "sha256": "7e9613ffe0dc29d1e5877665fa0ca25632c2e480456790032d548b8b14496beb"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n4-i4/videos/canning_food_308_0.mp4",
+        "sha256": "ba536264367b68893963659176b446c5b257d5bb7c6d2485047f56fa878a962b"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "34464"
+      },
+      "success": false,
+      "q_score_final": 0
+    }
+  ],
+  "attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n4-i4/attempts/04.json",
+    "sha256": "9751ae061dda22069f38ef4ed6d4cf113c4a7c9a54de46fcaa5d0e0767bf1fc6"
+  },
+  "physical_attempt": {
+    "status": "completed",
+    "task": "canning_food",
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "instance_ids": [
+      305,
+      306,
+      307,
+      308
+    ],
+    "rollout": 0,
+    "started": 1792121009.380938,
+    "max_steps": 34463,
+    "policy_seed": 17,
+    "simulator_seed": 0,
+    "finished": 1792130470.4478145,
+    "seconds": 9461.065943703055,
+    "actual_applied_controls": [
+      34464,
+      34464,
+      34464,
+      34464
+    ],
+    "unused_delivered_controls": {
+      "0": 16,
+      "1": 16,
+      "2": 16,
+      "3": 16
+    },
+    "server_clock_kind": "policy_delivery",
+    "physical_ack_sent": false
+  },
+  "physical_status": {
+    "status": "completed",
+    "pid": 2818729,
+    "task": "canning_food",
+    "task_id": 48,
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+    "started": 1792120392.0553236,
+    "optimizer_updates": 0,
+    "control_steps": [
+      34400,
+      34400,
+      34400,
+      34400
+    ],
+    "updated": 1792130451.199311,
+    "finished": 1792130470.4510643,
+    "official_timeout": 34463,
+    "completed": 4
+  },
+  "command": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/canning_food-n4-i4-command.json",
+    "sha256": "0bab593a0e7f461cb8da24cf69e999b248e4c605a76b2299da0ebba8eb65cf2a"
+  },
+  "resolved_config": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n4-i4/resolved_config.json",
+    "sha256": "a1b90c7eefb2eb59b06df99fcf53be641d7d9c9eb0874256a271e0ccee7da6e5"
+  },
+  "protocol_prefix": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 8966906,
+    "prefix_sha256": "8db8d8623cbc26d5389197ed7b3a574908632166dce8a7a7b4fda571e1c3e470",
+    "lines": 6908,
+    "connections": 4,
+    "episodes": 4,
+    "closed_episodes": 4,
+    "active_connections": 0,
+    "deliveries": 6896,
+    "delivered_controls": 137920,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      48
+    ],
+    "require_closed": false,
+    "session_summaries": [
+      {
+        "episode": "417566387e274293a82b91a2a9fcf72d/reset-1/task-48",
+        "connection": "417566387e274293a82b91a2a9fcf72d",
+        "epoch": 1,
+        "task": 48,
+        "deliveries": 1724,
+        "stage": 7,
+        "votes": [
+          2,
+          2,
+          2
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "54f92375cafd4a30b6c8fb1ea2c47e5f/reset-1/task-48",
+        "connection": "54f92375cafd4a30b6c8fb1ea2c47e5f",
+        "epoch": 1,
+        "task": 48,
+        "deliveries": 1724,
+        "stage": 5,
+        "votes": [
+          5,
+          5,
+          5
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "00d15b3e76a6430eabeec1b603a0b1b0/reset-1/task-48",
+        "connection": "00d15b3e76a6430eabeec1b603a0b1b0",
+        "epoch": 1,
+        "task": 48,
+        "deliveries": 1724,
+        "stage": 7,
+        "votes": [
+          12,
+          4,
+          4
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "8fd8b763b082477db62f5067c5a773ef/reset-1/task-48",
+        "connection": "8fd8b763b082477db62f5067c5a773ef",
+        "epoch": 1,
+        "task": 48,
+        "deliveries": 1724,
+        "stage": 6,
+        "votes": [
+          5,
+          5,
+          14
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": true
+      }
+    ],
+    "original_outputs_modified": false,
+    "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/model-000/events.jsonl",
+    "captured_bytes": 8966906,
+    "ignored_incomplete_tail_bytes": 0
+  },
+  "model": {
+    "status": "ready",
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+    "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+    "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+    "optimizer_updates": 0,
+    "launcher_source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc",
+    "recovery_manifest_sha256": "b55c9143a655f5b16825ab3284868351f8b89ca2892084ec82707216d71d34d6"
+  },
+  "current_worker": {
+    "status": "evaluating",
+    "pid": 2815480,
+    "model_pid": 2816006,
+    "sim_pid": 2901123,
+    "part": "canning_food-n2-i8",
+    "completed_parts": [
+      "canning_food-n4-i4"
+    ],
+    "diagnosed_failed_parts": []
+  },
+  "processes": {
+    "pid": {
+      "pid": 2815480,
+      "ppid": 2159562,
+      "start_ticks": 551393241,
+      "state": null
+    },
+    "model_pid": {
+      "pid": 2816006,
+      "ppid": 2815480,
+      "start_ticks": 551395380,
+      "state": null
+    },
+    "sim_pid": {
+      "pid": 2901123,
+      "ppid": 2815480,
+      "start_ticks": 552415972,
+      "state": null
+    }
+  },
+  "new_completed": 4,
+  "new_success_count": 0,
+  "all_verified_completed_parts": [
+    "canning_food-n4-i4"
+  ],
+  "terminal_parameter_recheck_pending": true,
+  "original_outputs_modified": false,
+  "manual_visual_review": false,
+  "scope": "Original JSON/video SHA and metadata, physical clocks, exact slot/seed/horizon/config/command, loaded model identity, and live exact-prefix per-session recurrence. Not terminal parameter proof, human video review, raw action/image/RNG equality, or a full model score."
+}
