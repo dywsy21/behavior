@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+**2026-10-16 22:07 CST / Codex（最终表单三文件）：** 队友给定最新版`challenge_results_VLA_FINAL.zip`、`EVALUATION_README_FINAL_EN.txt`及已固定SHA的视频`champion_ema8000_videos.zip`；根仅负责原字节上传/校验/匿名公开直链，不代交表单或复述已验Docker资格。最新982原JSON/视频映射和README文本均已核，原ZIP完整SHA与说明一致；新非公开staging恢复字节完全相同的视频ZIP，完成后只发布这三个文件，不发布旧FINAL/PENDING/内部draft、MEM或14异常partial。官方表单填报归团队，上传最新状态见plan。
+
 **2026-10-16 21:17 CST / Codex（用户最新范围）：** 用户说明MEM已停止，本轮不恢复或上传它；根独立负责仅冠军原结果包/全部对应视频发布至既有files分享站点并验SHA/公网链接。现有982完整/18错误披露不变，不重跑挑优、改官方产物或代填提交。node1目录与空间/HTTPS已核，上传尚未开始；详细进度见plan，外部模型交付仍不在范围。
 **2026-10-16 17:27 CST / Codex：** MEM四新完整原件与其全闭合动作ACK审计通过，四例Q0/未成功如实保留；GPU3/5同模型切换铝罐/工具箱后的12回合前缀（各2旧闭合＋4新活跃）空memory/意图/observer时钟/动作隔离核验过。八worker/model持续，账面402完整/34旧异常/564剩，后续8新原件随终态归档继续核，不因审计停评。冠军全量内部包已核验并本地可取；根继续原MEM全量及局部故障处理，不扩大外部交付，成员独立review仍待。证据见plan与两份MEM originals/reset审计。
 

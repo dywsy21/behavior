@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-16 22:07 CST：最终三提交文件（非公开校验中）
+
+- 用户新指定两小文件在RTX `/run/ti/rl_memlite_stage1_20261006/runs/champion_submission_20261016/v1/delivery/submission_current/{challenge_results_VLA_FINAL.zip,EVALUATION_README_FINAL_EN.txt}`；原视频ZIP在上一级`delivery/champion_ema8000_videos.zip`，36588895286字节，SHA256 `71e20b58d4fbd4ece3a32b8374af250dece579e54e5453d8cd053c9a767a92e7`。
+- 最终三文件专用node1暂存 `/home/ubuntu/storage/champion-publish-20261016-final-staging-v2`，通过SHA/原件对应/匿名下载验收后发布到原计划的`share/behavior-2026-champion-20261016`。最终只发布三文件；下方v1中原件、14partial和旧打包partial仍非公开保留，不能整个v1改为公开目录。
+- 原ZIP是982完整MP4＋两原清单，共984 ZIP_STORED成员。复用v1已验视频并复制原ZIP非视频字节恢复完全相同ZIP，不是重新编码/另选视频；全包SHA必须与README完全一致。布局/验签私有文件在node1 `champion-publish-20261016-{canonical-layout,canonical-verification}.json`（后者完成后才有）。最终公开直链以plan后续完成记录为准。
+
 ## 2026-10-16 21:29 CST：冠军提交材料迁至homelab现有分享站点（上传中）
 
 - 目标主机为技能指定`ubuntu@192.168.1.105`（实测hostname node1），既有files站点`/share`映射`/home/ubuntu/storage/share`，未修改nginx、DNS或鉴权。
