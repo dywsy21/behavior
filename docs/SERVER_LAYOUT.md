@@ -2,6 +2,7 @@
 
 ## 2026-10-16 14:16 CST：冠军两恢复路进入最后309–310
 
+- 14:23两路末两例均已实控：GPU0各600、GPU2各6400，各4旧闭合＋2新会话前缀及原身份/种子/时限核合。证据`docs/infra/results/2026-10-16-champion-final-four-first-controls.json`，当前不再是GPU0仅加载；下列worker/model/sim PID均保持。
 - `runs/champion_gpu0_20261016_recovery_v1`当前part `assembling_gift_baskets-n2-i8`，worker2815230/模型2815670不变，sim2907898加载；`runs/champion_gpu2_20261016_recovery_v1`当前part `canning_food-n2-i8`，worker2815480/模型2816006不变，sim2901123已有实控。源仍fe1/实际actor仍9f，不热改或另开重复run。
 - 各自`parts/*-n4-i4/`的305–308共8份原JSON和MP4已完整核验并保留原位置；SHA/物理/协议证据在`docs/infra/results/2026-10-16-champion-{canning,gift}305308-originals.json`。累计980完整/16工程异常/4待，最终模型参数及全量归档仍待终态。礼物篮的粗39000计数曾滞留于官方BDDL终局计分，已自然完成，见`2026-10-16-champion-gift-final-scoring-diagnosis.json`；不是重跑。
 - 下方2823822/`queue-after-champion-multirecovery-v1`保持当前后继，仍等待两路终态与原件归档后接原MEM576；没有MEM worker/parts，不把排队当已启动。两run/当前队列所有日志、旧错误和权重均继续保留。
