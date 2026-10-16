@@ -65,7 +65,8 @@ def test_actual_policy_computation_ast_is_unchanged_from_frozen_actor():
 
 
 @pytest.mark.parametrize('bad', [None, 'unknown_pid', 'same_gpu', 'ppid', 'argv', 'gpu_env', 'source_env', 'large', 'low_free', 'changed_process'])
-def test_live_peer_process_contract_is_checked(tmp_path, monkeypatch, bad):
+@pytest.mark.parametrize('recovered_peer', [False, True])
+def test_live_peer_process_contract_is_checked(tmp_path, monkeypatch, bad, recovered_peer):
     from common import SIM_PYTHON
     parent=tmp_path/'parent';parent.mkdir();runtime=tmp_path/'runtime'
     cfg=parent/'config.json';save(cfg, {'id':'original'})
@@ -76,8 +77,20 @@ def test_live_peer_process_contract_is_checked(tmp_path, monkeypatch, bad):
     save(parent/'workers/gpu_0/status.json',dict(status='evaluating',part=plan['id'],pid=10,sim_pid=20,runtime_commit='actor'))
     monkeypatch.setattr(c,'root_registration',lambda _: (parent,original,{}))
     monkeypatch.setattr(c,'checked_parts',lambda *a:{plan['id']:(0,plan)})
+    peer_job = parent
+    specs = []
+    if recovered_peer:
+        peer_job = tmp_path/'peer'; save(peer_job/'manifest.json', {'gpu':0})
+        w = c.read(parent/'workers/gpu_0/status.json')
+        save(peer_job/'workers/gpu_0/status.json', w)
+        save(parent/'status.json', dict(worker_pids={}))
+        rm = dict(parent=str(parent), source_commit='a'*40, runtime_source=str(runtime),
+                  groups=[dict(gpu=0, parts=[plan])])
+        monkeypatch.setattr(r,'registration',lambda *a,**kw:(peer_job,rm))
+        monkeypatch.setattr(c,'frozen_source',lambda *a:None)
+        specs = [dict(job=str(peer_job),source=str(runtime),source_commit='a'*40)]
     argv=[str(SIM_PYTHON),str(runtime/'scripts/eval/run_champion_task.py'),'--task','task0','--task-id','0',
-          '--policy-config',str(cfg),'--output',str(parent/'parts'/plan['id']),'--num-envs','4','--indices','0','1','2','3']
+          '--policy-config',str(cfg),'--output',str(peer_job/'parts'/plan['id']),'--num-envs','4','--indices','0','1','2','3']
     peer=dict(pid=20,ppid=10,start_ticks=200,argv=argv,environment=dict(EVAL_GPU='0',EVAL_SOURCE=str(runtime/'scripts/eval'),CUDA_VISIBLE_DEVICES=None))
     if bad=='ppid':peer['ppid']=99
     elif bad=='argv':peer['argv']=argv[:-1]+['9']
@@ -96,9 +109,9 @@ def test_live_peer_process_contract_is_checked(tmp_path, monkeypatch, bad):
         return '99, 174 MiB\n' if bad=='unknown_pid' else f'20, {513 if bad=="large" else 174} MiB\n'
     monkeypatch.setattr(p.subprocess,'check_output',query)
     if bad:
-        with pytest.raises(ValueError):p.check(parent,c.sha256(parent/'manifest.json'),0 if bad=='same_gpu' else 4)
+        with pytest.raises(ValueError):p.check(parent,c.sha256(parent/'manifest.json'),0 if bad=='same_gpu' else 4,recoveries=specs)
     else:
-        value=p.check(parent,c.sha256(parent/'manifest.json'),4)
+        value=p.check(parent,c.sha256(parent/'manifest.json'),4,recoveries=specs)
         assert value['owners'][0]['peer']['pid']==20 and not value['peers_stopped']
 
 
@@ -212,3 +225,87 @@ def test_recovery_certificate_rejects_ambiguous_or_changed_parent(tmp_path, monk
     else:
         name=pm['groups'][0]['parts'][1]['id'];save(wp/(name+'-execution-errors.json'),[])
     with pytest.raises((ValueError,RuntimeError)): r.certify(parent,0)
+
+
+@pytest.mark.parametrize('bad', [None, 'log', 'physical', 'command', 'ledger', 'score_claim'])
+def test_operational_failure_is_preserved_not_scored_or_replayed(tmp_path, monkeypatch, bad):
+    parent, pm, wp = recovery_fixture(tmp_path, monkeypatch)
+    part = pm['groups'][0]['parts'][1]; log = wp/(part['id']+'.log')
+    log.write_text('Multiple physical exceptions, not a recognized single traceback\n')
+    monkeypatch.setattr(c,'execution_error',lambda _:None)
+    diagnosis = c.operational_batch_error(parent,part,'Official physical batch incomplete',0,log)
+    ledger = wp/(part['id']+'-execution-errors.json')
+    rows = c.read(ledger)
+    for row in rows:row.update(diagnosis=deepcopy(diagnosis),log=c.binding(log))
+    save(ledger,rows)
+    receipt = Path(diagnosis['operational_receipt']['path'])
+    if bad == 'log':log.write_text('changed\n')
+    elif bad in ('physical','command'):
+        data = c.read(receipt); foreign = tmp_path/'foreign.json';save(foreign,{'other':True})
+        data['physical_status' if bad=='physical' else 'command']=c.binding(foreign)
+        save(receipt,data)
+        for row in rows:row['diagnosis']['operational_receipt']=c.binding(receipt)
+        save(ledger,rows)
+    elif bad == 'ledger':rows[0]['instance_id']=999;save(ledger,rows)
+    elif bad == 'score_claim':
+        for row in rows:row['diagnosis']['official_score_available']=True
+        save(ledger,rows)
+    if bad:
+        with pytest.raises((ValueError,RuntimeError)):r.certify(parent,0)
+    else:
+        before={str(f):f.read_bytes() for f in parent.rglob('*') if f.is_file()}
+        cert=r.certify(parent,0)
+        assert cert['execution_errors']==rows and cert['pending']==pm['groups'][0]['parts'][2:]
+        assert not cert['rerolls_allowed']
+        assert all(Path(f).read_bytes()==raw for f,raw in before.items())
+
+
+@pytest.mark.parametrize('bad',[None,'self','duplicate','fields','commit','relative','source_changed'])
+def test_explicit_peer_spec_pins_without_circular_manifest_hashes(tmp_path,monkeypatch,bad):
+    monkeypatch.setattr(r,'ROOT',tmp_path)
+    job=tmp_path/'runs/ours';source=tmp_path/'code/frozen'
+    peer=dict(job=str(tmp_path/'runs/peer'),source=str(source),source_commit='a'*40)
+    peers=[peer]
+    if bad=='self':peer['job']=str(job)
+    elif bad=='duplicate':peers.append(deepcopy(peer))
+    elif bad=='fields':peer['unknown']=True
+    elif bad=='commit':peer['source_commit']='not-a-commit'
+    elif bad=='relative':peer['job']='runs/peer'
+    def frozen(*args):
+        if bad=='source_changed':raise ValueError('Changed source')
+    monkeypatch.setattr(c,'frozen_source',frozen)
+    if bad:
+        with pytest.raises(ValueError):r.validate_peer_specs(job,peers)
+    else:
+        r.validate_peer_specs(job,peers)
+        assert not (tmp_path/'runs/peer').exists()
+
+
+@pytest.mark.parametrize('bad',['foreign_parent','source','same_gpu','duplicate_gpu'])
+def test_recovery_peer_registration_rejects_foreign_identity(tmp_path,monkeypatch,bad):
+    parent=tmp_path/'parent';peer=tmp_path/'peer';source=tmp_path/'source'
+    save(peer/'manifest.json',{'gpu':0})
+    manifest=dict(parent=str(parent if bad!='foreign_parent' else tmp_path/'foreign'),
+                  source_commit=('b' if bad=='source' else 'a')*40)
+    monkeypatch.setattr(r,'registration',lambda *a,**kw:(peer,manifest))
+    monkeypatch.setattr(c,'frozen_source',lambda *a:None)
+    specs=[dict(job=str(peer),source=str(source),source_commit='a'*40)]
+    if bad=='duplicate_gpu':specs*=2
+    with pytest.raises(ValueError):p.recovery_peer_jobs(parent,0 if bad=='same_gpu' else 2,specs)
+
+
+def test_prepare_pins_future_peer_without_modifying_parent(tmp_path,monkeypatch):
+    parent, _, _ = recovery_fixture(tmp_path,monkeypatch)
+    before={str(f):f.read_bytes() for f in parent.rglob('*') if f.is_file()}
+    job=parent.parent/'recovery-a';peer=parent.parent/'recovery-b'
+    m=r.prepare(parent,0,job,peer_recoveries=[(peer,REPO)])
+    assert m['peer_recoveries']==[dict(job=str(peer),source=str(REPO),source_commit=m['source_commit'])]
+    assert not peer.exists() and r.registration(job,0)[1]==m
+    assert all(Path(f).read_bytes()==raw for f,raw in before.items())
+
+
+def test_self_peer_rejected_before_recovery_directory_creation(tmp_path,monkeypatch):
+    parent, _, _ = recovery_fixture(tmp_path,monkeypatch)
+    job=parent.parent/'recovery'
+    with pytest.raises(ValueError):r.prepare(parent,0,job,peer_recoveries=[(job,REPO)])
+    assert not job.exists()

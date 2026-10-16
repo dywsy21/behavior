@@ -52,7 +52,35 @@ def validate_owners(rows, candidates, gpu):
     return [dict(**row, peer=candidates[row['pid']]) for row in rows]
 
 
-def check(parent, manifest_sha256, gpu):
+def recovery_peer_jobs(parent, gpu, specs):
+    """Verify explicit peer paths against their original-parent certificates.
+
+    Peer manifests need not hash each other (which would create a cycle).
+    Each immutable spec pins the path/source, and registration independently
+    re-derives the exact scope, policy and certificate from the same parent.
+    No directory scan or foreign-process admission is permitted.
+    """
+    import continue_champion_final as c
+    import champion_worker_recovery as recovery
+    result = []; seen = {gpu}
+    for spec in specs:
+        job, source = Path(spec['job']), Path(spec['source'])
+        c.frozen_source(source, spec['source_commit'])
+        if not job.exists():
+            continue  # Any NVML owner will still fail the exact candidate check.
+        initial = c.read(job / 'manifest.json'); pg = initial['gpu']
+        job, m = recovery.registration(job, pg, coordinator_source=source)
+        if (pg in seen or m['source_commit'] != spec['source_commit']
+                or Path(m['parent']).resolve() != parent):
+            raise ValueError('Foreign, duplicate, or same-GPU recovery peer')
+        seen.add(pg)
+        path = job / 'workers' / f'gpu_{pg}' / 'status.json'
+        if path.exists():
+            result.append((job, m, pg, c.read(path)))
+    return result
+
+
+def check(parent, manifest_sha256, gpu, *, recoveries=()):
     import continue_champion_final as c
     from common import SIM_PYTHON
     parent = Path(parent).resolve()
@@ -61,28 +89,37 @@ def check(parent, manifest_sha256, gpu):
     m = c.read(parent / 'manifest.json'); _, original, _ = c.root_registration(parent)
     parts = c.checked_parts(parent, m, original); status = c.read(parent / 'status.json')
     candidates = {}
-    for gs, worker_pid in status['worker_pids'].items():
-        g = int(gs)
-        if g == gpu:
-            continue
-        w = c.read(parent / 'workers' / f'gpu_{g}' / 'status.json')
+    jobs = [(parent, m, int(gs), c.read(parent / 'workers' / f'gpu_{gs}' / 'status.json'), worker_pid)
+            for gs, worker_pid in status['worker_pids'].items() if int(gs) != gpu]
+    for job, rm, pg, w in recovery_peer_jobs(parent, gpu, recoveries):
+        jobs.append((job, rm, pg, w, w['pid']))
+    for job, registration, g, w, worker_pid in jobs:
         if w.get('status') != 'evaluating' or not w.get('part') or not w.get('sim_pid'):
             continue
         try:
             peer = process(w['sim_pid']); worker = process(worker_pid)
         except (FileNotFoundError, ProcessLookupError):
             continue
-        pg, part = parts[w['part']]
-        expected = [str(SIM_PYTHON), str(Path(m['runtime_source']) / 'scripts/eval/run_champion_task.py'),
+        if job == parent:
+            pg, part = parts[w['part']]
+        else:
+            matches = [(group['gpu'], part) for group in registration['groups'] for part in group['parts']
+                       if part['id'] == w['part']]
+            if len(matches) != 1:
+                raise ValueError('Recovery peer is not executing its registered suffix')
+            pg, part = matches[0]
+        expected = [str(SIM_PYTHON), str(Path(registration['runtime_source']) / 'scripts/eval/run_champion_task.py'),
                     '--task', part['task'], '--task-id', str(part['task_id']),
-                    '--policy-config', original['configs'][g]['path'], '--output', str(parent / 'parts' / part['id']),
+                    '--policy-config', original['configs'][g]['path'], '--output', str(job / 'parts' / part['id']),
                     '--num-envs', str(part['num_envs']), '--indices', *map(str, part['indices'])]
         if (pg != g or w['pid'] != worker_pid or peer['ppid'] != worker_pid
                 or w.get('runtime_commit') != original['source_commit'] or peer['argv'] != expected
                 or peer['environment']['EVAL_GPU'] != str(g)
-                or peer['environment']['EVAL_SOURCE'] != str(Path(m['runtime_source']) / 'scripts/eval')):
+                or peer['environment']['EVAL_SOURCE'] != str(Path(registration['runtime_source']) / 'scripts/eval')):
             raise ValueError('Registered peer process identity differs')
-        candidates[peer['pid']] = dict(**peer, gpu=g, worker_pid=worker_pid,
+        if peer['pid'] in candidates:
+            raise ValueError('Peer process appears in multiple registrations')
+        candidates[peer['pid']] = dict(**peer, gpu=g, worker_pid=worker_pid, registration_job=str(job),
                                       worker_start_ticks=worker['start_ticks'], part=part['id'])
     raw = subprocess.check_output(['nvidia-smi', '-i', str(gpu), '--query-compute-apps=pid,used_gpu_memory',
                                    '--format=csv,noheader'], text=True)

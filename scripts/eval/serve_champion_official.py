@@ -44,7 +44,8 @@ async def run(args):
         raise ValueError('Registered model GPU must be idle')
     if recovery_job is not None:
         from champion_peer_admission import check
-        admission=check(registration['parent'],registration['parent_manifest']['sha256'],int(gpu))
+        admission=check(registration['parent'],registration['parent_manifest']['sha256'],int(gpu),
+                        recoveries=registration.get('peer_recoveries', []))
     elif subprocess.check_output(['nvidia-smi','-i',gpu,'--query-compute-apps=pid','--format=csv,noheader'],text=True).strip():
         raise ValueError('Registered model GPU must be idle')
     root=Path(cfg['a800_root']);reference=root/cfg['reference'];openpi=root/cfg['openpi_reference']
@@ -67,7 +68,8 @@ async def run(args):
     if recovery_job is not None:
         # Provenance distinguishes this admission-only entry from the unchanged
         # actor modules imported from the original frozen policy checkout.
-        admission=check(registration['parent'],registration['parent_manifest']['sha256'],int(gpu))
+        admission=check(registration['parent'],registration['parent_manifest']['sha256'],int(gpu),
+                        recoveries=registration.get('peer_recoveries', []))
         status.update(launcher_source_commit=registration['source_commit'],
                       recovery_manifest_sha256=file_sha(recovery_job/'manifest.json'),
                       registered_peer_admission=admission)

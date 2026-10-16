@@ -122,12 +122,30 @@ def certify(parent, gpu):
             records += [c.shared.original_record(p, row) for p, row in c.completed_metrics(directory, final=True)]
         else:
             physical_log = wp / (name + '.log'); diagnosis = c.execution_error(physical_log.read_text())
-            if diagnosis is None or attempt['status'] != 'running':
-                raise ValueError('Only explicitly diagnosed attempted failure can be excluded')
+            ledger = wp / (name + '-execution-errors.json')
+            if attempt['status'] != 'running':
+                raise ValueError('Only a preserved incomplete physical attempt can be excluded')
+            if diagnosis is None:
+                # Preserve the original operational classification. This does
+                # not infer a policy failure or authorize replay of this batch.
+                saved = c.read(ledger)
+                diagnosis = saved[0]['diagnosis'] if saved else None
+                if (not isinstance(diagnosis, dict)
+                        or diagnosis.get('kind') != 'unclassified_operational_batch_error'
+                        or diagnosis.get('scene_slot') is not None
+                        or diagnosis.get('failure_phase') != 'runtime_unknown_preserved_for_diagnosis'
+                        or diagnosis.get('official_score_available') is not False
+                        or diagnosis.get('policy_failure_claimed') is not False):
+                    raise ValueError('Missing preserved operational failure classification')
+                pin = c.validate_operational_error(diagnosis, physical_log, attempts[0], part)
+                operational = c.read(pin['path'])
+                if (operational['physical_status'] != c.binding(directory / 'status.json')
+                        or operational['command'] != c.binding(wp / (name + '-command.json'))):
+                    raise ValueError('Operational evidence is not this physical batch')
+                evidence.append(pin)
             expected = [dict(task=part['task'], instance_id=i, rollout_id=0, original_attempt=c.binding(attempts[0]),
                              diagnosis=diagnosis, log=c.binding(physical_log), rerun_allowed=False)
                         for i in attempt['instance_ids']]
-            ledger = wp / (name + '-execution-errors.json')
             if c.read(ledger) != expected:
                 raise ValueError('Original failure ledger changed')
             errors += expected
@@ -147,7 +165,22 @@ def certify(parent, gpu):
                 terminal_trace=terminal_trace, original_outputs_unmodified=True, rerolls_allowed=False)
 
 
-def prepare(parent, gpu, job):
+def validate_peer_specs(job, peers):
+    if not isinstance(peers, list):
+        raise ValueError('Explicit peer recovery list required')
+    seen = {str(Path(job).resolve())}
+    for peer in peers:
+        if not isinstance(peer, dict) or set(peer) != {'job', 'source', 'source_commit'}:
+            raise ValueError('Exact peer recovery registration fields required')
+        path, source = Path(peer['job']).resolve(), Path(peer['source']).resolve()
+        if (str(path) != peer['job'] or path.parent != ROOT / 'runs' or str(path) in seen
+                or str(source) != peer['source'] or not re.fullmatch(r'[0-9a-f]{40}', peer['source_commit'])):
+            raise ValueError('Duplicate, self, or noncanonical peer recovery')
+        c.frozen_source(source, peer['source_commit'])
+        seen.add(str(path))
+
+
+def prepare(parent, gpu, job, *, peer_recoveries=()):
     parent, job = Path(parent).resolve(), Path(job).resolve()
     if job.exists() or job.parent != ROOT / 'runs':
         raise ValueError('Fresh isolated recovery directory required')
@@ -156,6 +189,11 @@ def prepare(parent, gpu, job):
         raise ValueError('No never-attempted cases remain on this worker')
     commit = subprocess.check_output(['git', '-C', str(c.REPO), 'rev-parse', 'HEAD'], text=True).strip()
     c.frozen_source(c.REPO, commit)
+    peers = [dict(job=str(Path(p).resolve()), source=str(Path(s).resolve()),
+                  source_commit=subprocess.check_output(['git', '-C', str(Path(s).resolve()),
+                                                         'rev-parse', 'HEAD'], text=True).strip())
+             for p, s in peer_recoveries]
+    validate_peer_specs(job, peers)
     pm = c.read(parent / 'manifest.json')
     job.mkdir(); (job / 'parts').mkdir(); (job / 'workers').mkdir()
     atomic_json(job / 'parent-worker-certificate.json', certificate)
@@ -166,6 +204,8 @@ def prepare(parent, gpu, job):
              **{key: pm[key] for key in c.IDENTITY},
              isolate_physical_batches=True, continue_on_batch_errors=True, optimizer_updates=0,
              automatic_retries=False, policy_changed=False)
+    if peers:
+        m['peer_recoveries'] = peers
     atomic_json(job / 'manifest.json', m)
     return m
 
@@ -175,6 +215,7 @@ def registration(job, gpu, *, coordinator_source=None):
     if job.parent != ROOT / 'runs' or m['schema'] != SCHEMA or m['gpu'] != gpu:
         raise ValueError('Exact isolated worker registration required')
     c.frozen_source(c.REPO if coordinator_source is None else Path(coordinator_source), m['source_commit'])
+    validate_peer_specs(job, m.get('peer_recoveries', []))
     c.check_binding(m['parent_manifest']); c.check_binding(m['certificate'])
     parent = Path(m['parent']); pm = c.read(parent / 'manifest.json')
     _, original, _ = c.root_registration(parent); cert = c.read(m['certificate']['path'])
@@ -240,9 +281,11 @@ if __name__ == '__main__':
     parser.add_argument('command', choices=('prepare', 'run', 'verify'))
     parser.add_argument('--parent', type=Path); parser.add_argument('--job', type=Path, required=True)
     parser.add_argument('--gpu', type=int)
+    parser.add_argument('--peer-recovery', type=Path, nargs=2, action='append', default=[],
+                        metavar=('JOB', 'SOURCE'))
     args = parser.parse_args()
     if args.command == 'prepare':
-        m = prepare(args.parent, args.gpu, args.job)
+        m = prepare(args.parent, args.gpu, args.job, peer_recoveries=args.peer_recovery)
         print(json.dumps(dict(job=str(args.job), gpu=m['gpu'], cases=sum(len(p['indices']) for p in m['groups'][m['gpu']]['parts']))))
     elif args.command == 'verify':
         _, m = registration(args.job, args.gpu); print(json.dumps(dict(status='registered', source_commit=m['source_commit'])))
