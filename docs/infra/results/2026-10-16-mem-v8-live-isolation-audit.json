@@ -1,0 +1,1464 @@
+{
+  "schema": "memlite_v8_live_identity_ack_prefix_audit_v1",
+  "started": 1792141980.9733517,
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+    "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+  },
+  "runtime_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+  "coordinator_commit": "79371d77692e0c08a30e34b7de3077c166cd1a09",
+  "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+  "pack_manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+  "models": {
+    "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+    "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+    "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "workers": [
+    {
+      "gpu": 0,
+      "part": "polishing_shoes-n4-i0",
+      "processes": {
+        "pid": {
+          "pid": 2951311,
+          "ppid": 2951296,
+          "start_ticks": 553142979
+        },
+        "model_pid": {
+          "pid": 2951416,
+          "ppid": 2951311,
+          "start_ticks": 553143006
+        },
+        "sim_pid": {
+          "pid": 2952337,
+          "ppid": 2951311,
+          "start_ticks": 553230913
+        }
+      },
+      "model_status": {
+        "status": "ready",
+        "pid": 2951416,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+        "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+        "manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+        "optimizer_updates": 0
+      },
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_0/model-000/events.jsonl",
+      "captured_bytes": 43862711,
+      "complete_captured_bytes": 43862711,
+      "prefix_bytes": 43823470,
+      "prefix_sha256": "26520b6c5326c9e881dddd28d9f38fdc58c06cab83bbdf32892efeacda3f1569",
+      "excluded_live_tail_bytes": 39241,
+      "excluded_live_tail_events": 4,
+      "audit": {
+        "status": "incomplete_causal_trace_audit",
+        "episodes": 4,
+        "closed_episodes": 0,
+        "unclosed_episodes": [
+          {
+            "identity": {
+              "session": "model-000-slot0",
+              "task": "polishing shoes",
+              "instance": 301,
+              "episode": "memlite_final100_20261014_resume_v8-polishing_shoes-301-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 0,
+            "applied_controls": 13296
+          },
+          {
+            "identity": {
+              "session": "model-000-slot1",
+              "task": "polishing shoes",
+              "instance": 302,
+              "episode": "memlite_final100_20261014_resume_v8-polishing_shoes-302-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 1,
+            "applied_controls": 13296
+          },
+          {
+            "identity": {
+              "session": "model-000-slot2",
+              "task": "polishing shoes",
+              "instance": 303,
+              "episode": "memlite_final100_20261014_resume_v8-polishing_shoes-303-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 2,
+            "applied_controls": 13296
+          },
+          {
+            "identity": {
+              "session": "model-000-slot3",
+              "task": "polishing shoes",
+              "instance": 304,
+              "episode": "memlite_final100_20261014_resume_v8-polishing_shoes-304-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 3,
+            "applied_controls": 13296
+          }
+        ],
+        "events": {
+          "begin": 4,
+          "plan": 416,
+          "observer": 3740,
+          "action": 3324,
+          "ack": 3324
+        },
+        "applied_controls": 53184,
+        "models": {
+          "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+          "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+          "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+          "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+          "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+          "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+          "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+        },
+        "tasks": [
+          "polishing shoes"
+        ],
+        "checks": [
+          "fresh empty per-episode memory",
+          "full identity and fixed slot on every event",
+          "high-to-low exact current intent",
+          "observer attempt and applied clock",
+          "unique tokens and exact raw23 physical ACK digest",
+          "final partial chunk acknowledged"
+        ],
+        "proves_full_task_success": false
+      },
+      "physical_batches": [
+        {
+          "part": "polishing_shoes-n4-i0",
+          "attempt": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/polishing_shoes-n4-i0/attempts/00.json",
+            "sha256": "c9011f909ed2d454b1ca26b70bc9c0688f791e166446ff41bb6b70c980c63569"
+          },
+          "physical_attempt": {
+            "status": "running",
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "instance_ids": [
+              301,
+              302,
+              303,
+              304
+            ],
+            "rollout": 0,
+            "started": 1792138780.1955962,
+            "max_steps": 16106,
+            "simulator_seed": 0,
+            "policy_seed": 17
+          },
+          "has_real_controls": true,
+          "physical_status": {
+            "status": "running",
+            "task": "polishing_shoes",
+            "task_id": 79,
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "num_envs": 4,
+            "control_steps": [
+              13184,
+              13184,
+              13184,
+              13184
+            ],
+            "updated": 1792141951.660807
+          }
+        }
+      ]
+    },
+    {
+      "gpu": 1,
+      "part": "turning_out_all_lights_before_sleep-n4-i0",
+      "processes": {
+        "pid": {
+          "pid": 2951312,
+          "ppid": 2951296,
+          "start_ticks": 553142979
+        },
+        "model_pid": {
+          "pid": 2951415,
+          "ppid": 2951312,
+          "start_ticks": 553143006
+        },
+        "sim_pid": {
+          "pid": 2952360,
+          "ppid": 2951312,
+          "start_ticks": 553231212
+        }
+      },
+      "model_status": {
+        "status": "ready",
+        "pid": 2951415,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+        "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+        "manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+        "optimizer_updates": 0
+      },
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_1/model-000/events.jsonl",
+      "captured_bytes": 17289445,
+      "complete_captured_bytes": 17289445,
+      "prefix_bytes": 17249585,
+      "prefix_sha256": "de4430edfc4897f2008185dc10d4f2147e911a8d795f6d10c71fe0f5c47a56db",
+      "excluded_live_tail_bytes": 39860,
+      "excluded_live_tail_events": 4,
+      "audit": {
+        "status": "incomplete_causal_trace_audit",
+        "episodes": 4,
+        "closed_episodes": 0,
+        "unclosed_episodes": [
+          {
+            "identity": {
+              "session": "model-000-slot0",
+              "task": "turning out all lights before sleep",
+              "instance": 301,
+              "episode": "memlite_final100_20261014_resume_v8-turning_out_all_lights_before_sleep-301-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 0,
+            "applied_controls": 5120
+          },
+          {
+            "identity": {
+              "session": "model-000-slot1",
+              "task": "turning out all lights before sleep",
+              "instance": 302,
+              "episode": "memlite_final100_20261014_resume_v8-turning_out_all_lights_before_sleep-302-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 1,
+            "applied_controls": 5120
+          },
+          {
+            "identity": {
+              "session": "model-000-slot2",
+              "task": "turning out all lights before sleep",
+              "instance": 303,
+              "episode": "memlite_final100_20261014_resume_v8-turning_out_all_lights_before_sleep-303-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 2,
+            "applied_controls": 5120
+          },
+          {
+            "identity": {
+              "session": "model-000-slot3",
+              "task": "turning out all lights before sleep",
+              "instance": 304,
+              "episode": "memlite_final100_20261014_resume_v8-turning_out_all_lights_before_sleep-304-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 3,
+            "applied_controls": 5120
+          }
+        ],
+        "events": {
+          "begin": 4,
+          "plan": 164,
+          "observer": 1444,
+          "action": 1280,
+          "ack": 1280
+        },
+        "applied_controls": 20480,
+        "models": {
+          "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+          "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+          "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+          "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+          "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+          "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+          "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+        },
+        "tasks": [
+          "turning out all lights before sleep"
+        ],
+        "checks": [
+          "fresh empty per-episode memory",
+          "full identity and fixed slot on every event",
+          "high-to-low exact current intent",
+          "observer attempt and applied clock",
+          "unique tokens and exact raw23 physical ACK digest",
+          "final partial chunk acknowledged"
+        ],
+        "proves_full_task_success": false
+      },
+      "physical_batches": [
+        {
+          "part": "turning_out_all_lights_before_sleep-n4-i0",
+          "attempt": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/turning_out_all_lights_before_sleep-n4-i0/attempts/00.json",
+            "sha256": "174d88c12fcbe4eb6e4c2ea1212b6b05b97ddde00c9fa2733a4fda46477b198e"
+          },
+          "physical_attempt": {
+            "status": "running",
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "instance_ids": [
+              301,
+              302,
+              303,
+              304
+            ],
+            "rollout": 0,
+            "started": 1792139320.969853,
+            "max_steps": 15009,
+            "simulator_seed": 0,
+            "policy_seed": 17
+          },
+          "has_real_controls": true,
+          "physical_status": {
+            "status": "running",
+            "task": "turning_out_all_lights_before_sleep",
+            "task_id": 66,
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "num_envs": 4,
+            "control_steps": [
+              5120,
+              5120,
+              5120,
+              5120
+            ],
+            "updated": 1792141975.2468996
+          }
+        }
+      ]
+    },
+    {
+      "gpu": 2,
+      "part": "dispose_of_glass-n4-i4",
+      "processes": {
+        "pid": {
+          "pid": 2951313,
+          "ppid": 2951296,
+          "start_ticks": 553142979
+        },
+        "model_pid": {
+          "pid": 2951671,
+          "ppid": 2951313,
+          "start_ticks": 553173445
+        },
+        "sim_pid": {
+          "pid": 2956824,
+          "ppid": 2951313,
+          "start_ticks": 553263958
+        }
+      },
+      "model_status": {
+        "status": "ready",
+        "pid": 2951671,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+        "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+        "manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+        "optimizer_updates": 0
+      },
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_2/model-000/events.jsonl",
+      "captured_bytes": 41018657,
+      "complete_captured_bytes": 41018657,
+      "prefix_bytes": 41018657,
+      "prefix_sha256": "d07365a928cd43a0eac9df32c50e3c78bff7c7c8d6af52fb81f9d6f386eef180",
+      "excluded_live_tail_bytes": 0,
+      "excluded_live_tail_events": 0,
+      "audit": {
+        "status": "incomplete_causal_trace_audit",
+        "episodes": 4,
+        "closed_episodes": 0,
+        "unclosed_episodes": [
+          {
+            "identity": {
+              "session": "model-000-slot0",
+              "task": "dispose of glass",
+              "instance": 305,
+              "episode": "memlite_final100_20261014_resume_v8-dispose_of_glass-305-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 0,
+            "applied_controls": 12432
+          },
+          {
+            "identity": {
+              "session": "model-000-slot1",
+              "task": "dispose of glass",
+              "instance": 306,
+              "episode": "memlite_final100_20261014_resume_v8-dispose_of_glass-306-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 1,
+            "applied_controls": 12432
+          },
+          {
+            "identity": {
+              "session": "model-000-slot2",
+              "task": "dispose of glass",
+              "instance": 307,
+              "episode": "memlite_final100_20261014_resume_v8-dispose_of_glass-307-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 2,
+            "applied_controls": 12432
+          },
+          {
+            "identity": {
+              "session": "model-000-slot3",
+              "task": "dispose of glass",
+              "instance": 308,
+              "episode": "memlite_final100_20261014_resume_v8-dispose_of_glass-308-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 3,
+            "applied_controls": 12432
+          }
+        ],
+        "events": {
+          "begin": 4,
+          "plan": 392,
+          "observer": 3500,
+          "action": 3108,
+          "ack": 3108
+        },
+        "applied_controls": 49728,
+        "models": {
+          "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+          "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+          "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+          "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+          "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+          "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+          "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+        },
+        "tasks": [
+          "dispose of glass"
+        ],
+        "checks": [
+          "fresh empty per-episode memory",
+          "full identity and fixed slot on every event",
+          "high-to-low exact current intent",
+          "observer attempt and applied clock",
+          "unique tokens and exact raw23 physical ACK digest",
+          "final partial chunk acknowledged"
+        ],
+        "proves_full_task_success": false
+      },
+      "physical_batches": [
+        {
+          "part": "dispose_of_glass-n4-i4",
+          "attempt": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/dispose_of_glass-n4-i4/attempts/04.json",
+            "sha256": "e179395a2c14e495364f149161ff75a7d4ebd1d5370858b3ce737e797243ecb5"
+          },
+          "physical_attempt": {
+            "status": "running",
+            "indices": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "instance_ids": [
+              305,
+              306,
+              307,
+              308
+            ],
+            "rollout": 0,
+            "started": 1792139114.3205402,
+            "max_steps": 13792,
+            "simulator_seed": 0,
+            "policy_seed": 17
+          },
+          "has_real_controls": true,
+          "physical_status": {
+            "status": "running",
+            "task": "dispose_of_glass",
+            "task_id": 76,
+            "indices": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "num_envs": 4,
+            "control_steps": [
+              12416,
+              12416,
+              12416,
+              12416
+            ],
+            "updated": 1792141973.4656148
+          }
+        }
+      ]
+    },
+    {
+      "gpu": 3,
+      "part": "collecting_aluminum_cans-n4-i0",
+      "processes": {
+        "pid": {
+          "pid": 2951314,
+          "ppid": 2951296,
+          "start_ticks": 553142979
+        },
+        "model_pid": {
+          "pid": 2951897,
+          "ppid": 2951314,
+          "start_ticks": 553192869
+        },
+        "sim_pid": {
+          "pid": 2969579,
+          "ppid": 2951314,
+          "start_ticks": 553560059
+        }
+      },
+      "model_status": {
+        "status": "ready",
+        "pid": 2951897,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+        "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+        "manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+        "optimizer_updates": 0
+      },
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_3/model-000/events.jsonl",
+      "captured_bytes": 22366008,
+      "complete_captured_bytes": 22366008,
+      "prefix_bytes": 22366008,
+      "prefix_sha256": "ce60bba4277a41401235a32dfbafffab39980ad8de5038d3d24bfffbc1df8fae",
+      "excluded_live_tail_bytes": 0,
+      "excluded_live_tail_events": 0,
+      "audit": {
+        "status": "complete_causal_trace_audit",
+        "episodes": 2,
+        "closed_episodes": 2,
+        "unclosed_episodes": [],
+        "events": {
+          "begin": 2,
+          "plan": 210,
+          "observer": 1888,
+          "action": 1678,
+          "ack": 1678,
+          "close": 2
+        },
+        "applied_controls": 26830,
+        "models": {
+          "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+          "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+          "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+          "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+          "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+          "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+          "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+        },
+        "tasks": [
+          "rearranging kitchen furniture"
+        ],
+        "checks": [
+          "fresh empty per-episode memory",
+          "full identity and fixed slot on every event",
+          "high-to-low exact current intent",
+          "observer attempt and applied clock",
+          "unique tokens and exact raw23 physical ACK digest",
+          "final partial chunk acknowledged"
+        ],
+        "proves_full_task_success": false
+      },
+      "physical_batches": [
+        {
+          "part": "rearranging_kitchen_furniture-n2-i8",
+          "attempt": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/rearranging_kitchen_furniture-n2-i8/attempts/08.json",
+            "sha256": "57c3eef40f00487bcb254bf57166390b80ef1820bdd8ac19ba35af732f092ff1"
+          },
+          "physical_attempt": {
+            "status": "completed",
+            "indices": [
+              8,
+              9
+            ],
+            "instance_ids": [
+              309,
+              310
+            ],
+            "rollout": 0,
+            "started": 1792139518.2068918,
+            "max_steps": 13414,
+            "simulator_seed": 0,
+            "policy_seed": 17,
+            "finished": 1792141909.912765,
+            "seconds": 2391.705461784266,
+            "actual_applied_controls": [
+              13415,
+              13415
+            ],
+            "service_ack": {
+              "steps": [
+                13415,
+                13415
+              ]
+            }
+          },
+          "has_real_controls": true,
+          "physical_status": {
+            "status": "completed",
+            "task": "rearranging_kitchen_furniture",
+            "task_id": 8,
+            "indices": [
+              8,
+              9
+            ],
+            "num_envs": 2,
+            "control_steps": [
+              13415,
+              13415
+            ],
+            "updated": 1792141889.6343048
+          }
+        }
+      ]
+    },
+    {
+      "gpu": 4,
+      "part": "bringing_water-n4-i4",
+      "processes": {
+        "pid": {
+          "pid": 2951315,
+          "ppid": 2951296,
+          "start_ticks": 553142979
+        },
+        "model_pid": {
+          "pid": 2951889,
+          "ppid": 2951315,
+          "start_ticks": 553192670
+        },
+        "sim_pid": {
+          "pid": 2958581,
+          "ppid": 2951315,
+          "start_ticks": 553279978
+        }
+      },
+      "model_status": {
+        "status": "ready",
+        "pid": 2951889,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+        "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+        "manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+        "optimizer_updates": 0
+      },
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_4/model-000/events.jsonl",
+      "captured_bytes": 21565989,
+      "complete_captured_bytes": 21565989,
+      "prefix_bytes": 21526846,
+      "prefix_sha256": "00d6e790facf4bd87e9e02771784aaf04f6e0620f42ebb497d498f0cad14f9cc",
+      "excluded_live_tail_bytes": 39143,
+      "excluded_live_tail_events": 4,
+      "audit": {
+        "status": "incomplete_causal_trace_audit",
+        "episodes": 4,
+        "closed_episodes": 0,
+        "unclosed_episodes": [
+          {
+            "identity": {
+              "session": "model-000-slot0",
+              "task": "bringing water",
+              "instance": 305,
+              "episode": "memlite_final100_20261014_resume_v8-bringing_water-305-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 0,
+            "applied_controls": 6528
+          },
+          {
+            "identity": {
+              "session": "model-000-slot1",
+              "task": "bringing water",
+              "instance": 306,
+              "episode": "memlite_final100_20261014_resume_v8-bringing_water-306-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 1,
+            "applied_controls": 6528
+          },
+          {
+            "identity": {
+              "session": "model-000-slot2",
+              "task": "bringing water",
+              "instance": 307,
+              "episode": "memlite_final100_20261014_resume_v8-bringing_water-307-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 2,
+            "applied_controls": 6528
+          },
+          {
+            "identity": {
+              "session": "model-000-slot3",
+              "task": "bringing water",
+              "instance": 308,
+              "episode": "memlite_final100_20261014_resume_v8-bringing_water-308-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 3,
+            "applied_controls": 6528
+          }
+        ],
+        "events": {
+          "begin": 4,
+          "plan": 208,
+          "observer": 1840,
+          "action": 1632,
+          "ack": 1632
+        },
+        "applied_controls": 26112,
+        "models": {
+          "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+          "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+          "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+          "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+          "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+          "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+          "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+        },
+        "tasks": [
+          "bringing water"
+        ],
+        "checks": [
+          "fresh empty per-episode memory",
+          "full identity and fixed slot on every event",
+          "high-to-low exact current intent",
+          "observer attempt and applied clock",
+          "unique tokens and exact raw23 physical ACK digest",
+          "final partial chunk acknowledged"
+        ],
+        "proves_full_task_success": false
+      },
+      "physical_batches": [
+        {
+          "part": "bringing_water-n4-i4",
+          "attempt": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/bringing_water-n4-i4/attempts/04.json",
+            "sha256": "73794837e2176a827829dbff7851d7b57cbd78e9a665a87415b21a0475e10883"
+          },
+          "physical_attempt": {
+            "status": "running",
+            "indices": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "instance_ids": [
+              305,
+              306,
+              307,
+              308
+            ],
+            "rollout": 0,
+            "started": 1792139779.5569725,
+            "max_steps": 14157,
+            "simulator_seed": 0,
+            "policy_seed": 17
+          },
+          "has_real_controls": true,
+          "physical_status": {
+            "status": "running",
+            "task": "bringing_water",
+            "task_id": 17,
+            "indices": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "num_envs": 4,
+            "control_steps": [
+              6528,
+              6528,
+              6528,
+              6528
+            ],
+            "updated": 1792141978.280017
+          }
+        }
+      ]
+    },
+    {
+      "gpu": 5,
+      "part": "outfit_a_basic_toolbox-n4-i0",
+      "processes": {
+        "pid": {
+          "pid": 2951316,
+          "ppid": 2951296,
+          "start_ticks": 553142979
+        },
+        "model_pid": {
+          "pid": 2951663,
+          "ppid": 2951316,
+          "start_ticks": 553173044
+        },
+        "sim_pid": {
+          "pid": 2967976,
+          "ppid": 2951316,
+          "start_ticks": 553513203
+        }
+      },
+      "model_status": {
+        "status": "ready",
+        "pid": 2951663,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+        "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+        "manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+        "optimizer_updates": 0
+      },
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_5/model-000/events.jsonl",
+      "captured_bytes": 22408236,
+      "complete_captured_bytes": 22408236,
+      "prefix_bytes": 22408236,
+      "prefix_sha256": "1e5ca8d95948e742dc8144eb7f145d3c0f1057101b5ae02faca12f3cbb03d088",
+      "excluded_live_tail_bytes": 0,
+      "excluded_live_tail_events": 0,
+      "audit": {
+        "status": "complete_causal_trace_audit",
+        "episodes": 2,
+        "closed_episodes": 2,
+        "unclosed_episodes": [],
+        "events": {
+          "begin": 2,
+          "plan": 214,
+          "observer": 1924,
+          "action": 1710,
+          "ack": 1710,
+          "close": 2
+        },
+        "applied_controls": 27356,
+        "models": {
+          "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+          "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+          "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+          "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+          "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+          "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+          "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+        },
+        "tasks": [
+          "setting the fire"
+        ],
+        "checks": [
+          "fresh empty per-episode memory",
+          "full identity and fixed slot on every event",
+          "high-to-low exact current intent",
+          "observer attempt and applied clock",
+          "unique tokens and exact raw23 physical ACK digest",
+          "final partial chunk acknowledged"
+        ],
+        "proves_full_task_success": false
+      },
+      "physical_batches": [
+        {
+          "part": "setting_the_fire-n2-i8",
+          "attempt": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/setting_the_fire-n2-i8/attempts/08.json",
+            "sha256": "49a930db3106adb1e55d147be9741a76c69544b8c953ae0b7a0122373d26bae0"
+          },
+          "physical_attempt": {
+            "status": "completed",
+            "indices": [
+              8,
+              9
+            ],
+            "instance_ids": [
+              309,
+              310
+            ],
+            "rollout": 0,
+            "started": 1792138956.0751667,
+            "max_steps": 13677,
+            "simulator_seed": 0,
+            "policy_seed": 17,
+            "finished": 1792141444.3655968,
+            "seconds": 2488.29014767427,
+            "actual_applied_controls": [
+              13678,
+              13678
+            ],
+            "service_ack": {
+              "steps": [
+                13678,
+                13678
+              ]
+            }
+          },
+          "has_real_controls": true,
+          "physical_status": {
+            "status": "completed",
+            "task": "setting_the_fire",
+            "task_id": 30,
+            "indices": [
+              8,
+              9
+            ],
+            "num_envs": 2,
+            "control_steps": [
+              13678,
+              13678
+            ],
+            "updated": 1792141422.4827707
+          }
+        }
+      ]
+    },
+    {
+      "gpu": 6,
+      "part": "setting_mousetraps-n4-i0",
+      "processes": {
+        "pid": {
+          "pid": 2951317,
+          "ppid": 2951296,
+          "start_ticks": 553142979
+        },
+        "model_pid": {
+          "pid": 2952119,
+          "ppid": 2951317,
+          "start_ticks": 553212095
+        },
+        "sim_pid": {
+          "pid": 2964441,
+          "ppid": 2951317,
+          "start_ticks": 553346558
+        }
+      },
+      "model_status": {
+        "status": "ready",
+        "pid": 2952119,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+        "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+        "manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+        "optimizer_updates": 0
+      },
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_6/model-000/events.jsonl",
+      "captured_bytes": 31194314,
+      "complete_captured_bytes": 31194314,
+      "prefix_bytes": 31155688,
+      "prefix_sha256": "ddd5a0e859b162295e7682f602abe8da6e56fdc465202d67cdf127dbfffb49a1",
+      "excluded_live_tail_bytes": 38626,
+      "excluded_live_tail_events": 4,
+      "audit": {
+        "status": "incomplete_causal_trace_audit",
+        "episodes": 4,
+        "closed_episodes": 0,
+        "unclosed_episodes": [
+          {
+            "identity": {
+              "session": "model-000-slot0",
+              "task": "setting mousetraps",
+              "instance": 301,
+              "episode": "memlite_final100_20261014_resume_v8-setting_mousetraps-301-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 0,
+            "applied_controls": 9552
+          },
+          {
+            "identity": {
+              "session": "model-000-slot1",
+              "task": "setting mousetraps",
+              "instance": 302,
+              "episode": "memlite_final100_20261014_resume_v8-setting_mousetraps-302-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 1,
+            "applied_controls": 9552
+          },
+          {
+            "identity": {
+              "session": "model-000-slot2",
+              "task": "setting mousetraps",
+              "instance": 303,
+              "episode": "memlite_final100_20261014_resume_v8-setting_mousetraps-303-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 2,
+            "applied_controls": 9552
+          },
+          {
+            "identity": {
+              "session": "model-000-slot3",
+              "task": "setting mousetraps",
+              "instance": 304,
+              "episode": "memlite_final100_20261014_resume_v8-setting_mousetraps-304-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 3,
+            "applied_controls": 9552
+          }
+        ],
+        "events": {
+          "begin": 4,
+          "plan": 300,
+          "observer": 2688,
+          "action": 2388,
+          "ack": 2388
+        },
+        "applied_controls": 38208,
+        "models": {
+          "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+          "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+          "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+          "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+          "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+          "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+          "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+        },
+        "tasks": [
+          "setting mousetraps"
+        ],
+        "checks": [
+          "fresh empty per-episode memory",
+          "full identity and fixed slot on every event",
+          "high-to-low exact current intent",
+          "observer attempt and applied clock",
+          "unique tokens and exact raw23 physical ACK digest",
+          "final partial chunk acknowledged"
+        ],
+        "proves_full_task_success": false
+      },
+      "physical_batches": [
+        {
+          "part": "setting_mousetraps-n4-i0",
+          "attempt": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/setting_mousetraps-n4-i0/attempts/00.json",
+            "sha256": "11099fd4a081b288aee1594203e87b92e9d9d3a0ce638c312c32c5771d21f87b"
+          },
+          "physical_attempt": {
+            "status": "running",
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "instance_ids": [
+              301,
+              302,
+              303,
+              304
+            ],
+            "rollout": 0,
+            "started": 1792139935.526312,
+            "max_steps": 15294,
+            "simulator_seed": 0,
+            "policy_seed": 17
+          },
+          "has_real_controls": true,
+          "physical_status": {
+            "status": "running",
+            "task": "setting_mousetraps",
+            "task_id": 5,
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "num_envs": 4,
+            "control_steps": [
+              9472,
+              9472,
+              9472,
+              9472
+            ],
+            "updated": 1792141963.9498644
+          }
+        }
+      ]
+    },
+    {
+      "gpu": 7,
+      "part": "cook_hot_dogs-n4-i0",
+      "processes": {
+        "pid": {
+          "pid": 2951318,
+          "ppid": 2951296,
+          "start_ticks": 553142979
+        },
+        "model_pid": {
+          "pid": 2952112,
+          "ppid": 2951318,
+          "start_ticks": 553211893
+        },
+        "sim_pid": {
+          "pid": 2962540,
+          "ppid": 2951318,
+          "start_ticks": 553320326
+        }
+      },
+      "model_status": {
+        "status": "ready",
+        "pid": 2952112,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+        "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+        "manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+        "optimizer_updates": 0
+      },
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_7/model-000/events.jsonl",
+      "captured_bytes": 17088253,
+      "complete_captured_bytes": 17088253,
+      "prefix_bytes": 17049144,
+      "prefix_sha256": "154578239087a669ad76fa8d9b12806ca36a06a1f1ea3756c2de68d9966b2455",
+      "excluded_live_tail_bytes": 39109,
+      "excluded_live_tail_events": 4,
+      "audit": {
+        "status": "incomplete_causal_trace_audit",
+        "episodes": 4,
+        "closed_episodes": 0,
+        "unclosed_episodes": [
+          {
+            "identity": {
+              "session": "model-000-slot0",
+              "task": "cook hot dogs",
+              "instance": 301,
+              "episode": "memlite_final100_20261014_resume_v8-cook_hot_dogs-301-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 0,
+            "applied_controls": 5168
+          },
+          {
+            "identity": {
+              "session": "model-000-slot1",
+              "task": "cook hot dogs",
+              "instance": 302,
+              "episode": "memlite_final100_20261014_resume_v8-cook_hot_dogs-302-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 1,
+            "applied_controls": 5168
+          },
+          {
+            "identity": {
+              "session": "model-000-slot2",
+              "task": "cook hot dogs",
+              "instance": 303,
+              "episode": "memlite_final100_20261014_resume_v8-cook_hot_dogs-303-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 2,
+            "applied_controls": 5168
+          },
+          {
+            "identity": {
+              "session": "model-000-slot3",
+              "task": "cook hot dogs",
+              "instance": 304,
+              "episode": "memlite_final100_20261014_resume_v8-cook_hot_dogs-304-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 3,
+            "applied_controls": 5168
+          }
+        ],
+        "events": {
+          "begin": 4,
+          "plan": 164,
+          "observer": 1456,
+          "action": 1292,
+          "ack": 1292
+        },
+        "applied_controls": 20672,
+        "models": {
+          "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+          "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+          "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+          "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+          "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+          "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+          "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+        },
+        "tasks": [
+          "cook hot dogs"
+        ],
+        "checks": [
+          "fresh empty per-episode memory",
+          "full identity and fixed slot on every event",
+          "high-to-low exact current intent",
+          "observer attempt and applied clock",
+          "unique tokens and exact raw23 physical ACK digest",
+          "final partial chunk acknowledged"
+        ],
+        "proves_full_task_success": false
+      },
+      "physical_batches": [
+        {
+          "part": "cook_hot_dogs-n4-i0",
+          "attempt": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/cook_hot_dogs-n4-i0/attempts/00.json",
+            "sha256": "e8e5d0d9d29f1ed0d3e85eccea38de2e8d3d4487b8cfcad10df080d5ac6be775"
+          },
+          "physical_attempt": {
+            "status": "running",
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "instance_ids": [
+              301,
+              302,
+              303,
+              304
+            ],
+            "rollout": 0,
+            "started": 1792140222.0214875,
+            "max_steps": 13717,
+            "simulator_seed": 0,
+            "policy_seed": 17
+          },
+          "has_real_controls": true,
+          "physical_status": {
+            "status": "running",
+            "task": "cook_hot_dogs",
+            "task_id": 45,
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "num_envs": 4,
+            "control_steps": [
+              5120,
+              5120,
+              5120,
+              5120
+            ],
+            "updated": 1792141963.8682206
+          }
+        }
+      ]
+    }
+  ],
+  "original_outputs_modified": false,
+  "terminal_parameter_proof": false,
+  "complete_episode_outcomes": false,
+  "finished": 1792141986.0426145,
+  "unique_episodes": 28,
+  "workers_verified": 8,
+  "applied_controls_in_verified_prefixes": 262570,
+  "validation_scope": "Stable acknowledged prefixes of live logs: per-episode empty memory, original task/instance/slot, fixed high/low/observer identities, exact current intent alignment, observer attempt/clock, and raw23 action-prefix ACK digests. Independent physical attempt and control snapshots recorded. Not future events, final parameter proof, full task success, complete video review, or a claim that high-level intent content is semantically correct."
+}

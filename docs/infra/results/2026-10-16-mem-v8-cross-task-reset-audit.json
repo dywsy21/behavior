@@ -1,0 +1,532 @@
+{
+  "schema": "memlite_v8_live_cross_task_reset_prefix_audit_v1",
+  "started": 1792142809.8272183,
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+    "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+  },
+  "runtime_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+  "coordinator_commit": "79371d77692e0c08a30e34b7de3077c166cd1a09",
+  "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+  "pack_manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+  "models": {
+    "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+    "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+    "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+    "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+    "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+    "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+    "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+  },
+  "workers": [
+    {
+      "gpu": 3,
+      "part": "collecting_aluminum_cans-n4-i0",
+      "processes": {
+        "pid": {
+          "pid": 2951314,
+          "ppid": 2951296,
+          "start_ticks": 553142979
+        },
+        "model_pid": {
+          "pid": 2951897,
+          "ppid": 2951314,
+          "start_ticks": 553192869
+        },
+        "sim_pid": {
+          "pid": 2969579,
+          "ppid": 2951314,
+          "start_ticks": 553560059
+        }
+      },
+      "model_status": {
+        "status": "ready",
+        "pid": 2951897,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+        "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+        "manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+        "optimizer_updates": 0
+      },
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_3/model-000/events.jsonl",
+      "captured_bytes": 33895737,
+      "complete_captured_bytes": 33895737,
+      "prefix_bytes": 33855906,
+      "prefix_sha256": "9b3eb1e680e6e023303b8ff6f23d804b255e08eab8ca6ade02ff83bbe8c071ae",
+      "excluded_live_tail_bytes": 39831,
+      "excluded_live_tail_events": 4,
+      "audit": {
+        "status": "incomplete_causal_trace_audit",
+        "episodes": 6,
+        "closed_episodes": 2,
+        "unclosed_episodes": [
+          {
+            "identity": {
+              "session": "model-000-slot0",
+              "task": "collecting aluminum cans",
+              "instance": 301,
+              "episode": "memlite_final100_20261014_resume_v8-collecting_aluminum_cans-301-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 0,
+            "applied_controls": 3440
+          },
+          {
+            "identity": {
+              "session": "model-000-slot1",
+              "task": "collecting aluminum cans",
+              "instance": 302,
+              "episode": "memlite_final100_20261014_resume_v8-collecting_aluminum_cans-302-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 1,
+            "applied_controls": 3440
+          },
+          {
+            "identity": {
+              "session": "model-000-slot2",
+              "task": "collecting aluminum cans",
+              "instance": 303,
+              "episode": "memlite_final100_20261014_resume_v8-collecting_aluminum_cans-303-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 2,
+            "applied_controls": 3440
+          },
+          {
+            "identity": {
+              "session": "model-000-slot3",
+              "task": "collecting aluminum cans",
+              "instance": 304,
+              "episode": "memlite_final100_20261014_resume_v8-collecting_aluminum_cans-304-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 3,
+            "applied_controls": 3440
+          }
+        ],
+        "events": {
+          "begin": 6,
+          "plan": 318,
+          "observer": 2856,
+          "action": 2538,
+          "ack": 2538,
+          "close": 2
+        },
+        "applied_controls": 40590,
+        "models": {
+          "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+          "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+          "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+          "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+          "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+          "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+          "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+        },
+        "tasks": [
+          "collecting aluminum cans",
+          "rearranging kitchen furniture"
+        ],
+        "checks": [
+          "fresh empty per-episode memory",
+          "full identity and fixed slot on every event",
+          "high-to-low exact current intent",
+          "observer attempt and applied clock",
+          "unique tokens and exact raw23 physical ACK digest",
+          "final partial chunk acknowledged"
+        ],
+        "proves_full_task_success": false
+      },
+      "physical_batches": [
+        {
+          "part": "rearranging_kitchen_furniture-n2-i8",
+          "attempt": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/rearranging_kitchen_furniture-n2-i8/attempts/08.json",
+            "sha256": "57c3eef40f00487bcb254bf57166390b80ef1820bdd8ac19ba35af732f092ff1"
+          },
+          "physical_attempt": {
+            "status": "completed",
+            "indices": [
+              8,
+              9
+            ],
+            "instance_ids": [
+              309,
+              310
+            ],
+            "rollout": 0,
+            "started": 1792139518.2068918,
+            "max_steps": 13414,
+            "simulator_seed": 0,
+            "policy_seed": 17,
+            "finished": 1792141909.912765,
+            "seconds": 2391.705461784266,
+            "actual_applied_controls": [
+              13415,
+              13415
+            ],
+            "service_ack": {
+              "steps": [
+                13415,
+                13415
+              ]
+            }
+          },
+          "has_real_controls": true,
+          "physical_status": {
+            "status": "completed",
+            "task": "rearranging_kitchen_furniture",
+            "task_id": 8,
+            "indices": [
+              8,
+              9
+            ],
+            "num_envs": 2,
+            "control_steps": [
+              13415,
+              13415
+            ],
+            "updated": 1792141889.6343048
+          }
+        },
+        {
+          "part": "collecting_aluminum_cans-n4-i0",
+          "attempt": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/collecting_aluminum_cans-n4-i0/attempts/00.json",
+            "sha256": "7f81dc63853bc341027b5f2a49d5af7d26f267f861294c0ff30424b16ae1525a"
+          },
+          "physical_attempt": {
+            "status": "running",
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "instance_ids": [
+              301,
+              302,
+              303,
+              304
+            ],
+            "rollout": 0,
+            "started": 1792142083.3436038,
+            "max_steps": 15304,
+            "simulator_seed": 0,
+            "policy_seed": 17
+          },
+          "has_real_controls": true,
+          "physical_status": {
+            "status": "running",
+            "task": "collecting_aluminum_cans",
+            "task_id": 87,
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "num_envs": 4,
+            "control_steps": [
+              3328,
+              3328,
+              3328,
+              3328
+            ],
+            "updated": 1792142783.8645055
+          }
+        }
+      ]
+    },
+    {
+      "gpu": 5,
+      "part": "outfit_a_basic_toolbox-n4-i0",
+      "processes": {
+        "pid": {
+          "pid": 2951316,
+          "ppid": 2951296,
+          "start_ticks": 553142979
+        },
+        "model_pid": {
+          "pid": 2951663,
+          "ppid": 2951316,
+          "start_ticks": 553173044
+        },
+        "sim_pid": {
+          "pid": 2967976,
+          "ppid": 2951316,
+          "start_ticks": 553513203
+        }
+      },
+      "model_status": {
+        "status": "ready",
+        "pid": 2951663,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+        "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+        "manifest_sha256": "07d2308ca8ead800864a6146ea777508a7ac3d7c47053c21aa821b62197040c0",
+        "optimizer_updates": 0
+      },
+      "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_5/model-000/events.jsonl",
+      "captured_bytes": 31079683,
+      "complete_captured_bytes": 31079683,
+      "prefix_bytes": 31040440,
+      "prefix_sha256": "19677fed0a5024e4fd4280990d14ae5bc362197bd263216780443b3dc4e19ea6",
+      "excluded_live_tail_bytes": 39243,
+      "excluded_live_tail_events": 4,
+      "audit": {
+        "status": "incomplete_causal_trace_audit",
+        "episodes": 6,
+        "closed_episodes": 2,
+        "unclosed_episodes": [
+          {
+            "identity": {
+              "session": "model-000-slot0",
+              "task": "outfit a basic toolbox",
+              "instance": 301,
+              "episode": "memlite_final100_20261014_resume_v8-outfit_a_basic_toolbox-301-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 0,
+            "applied_controls": 2592
+          },
+          {
+            "identity": {
+              "session": "model-000-slot1",
+              "task": "outfit a basic toolbox",
+              "instance": 302,
+              "episode": "memlite_final100_20261014_resume_v8-outfit_a_basic_toolbox-302-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 1,
+            "applied_controls": 2592
+          },
+          {
+            "identity": {
+              "session": "model-000-slot2",
+              "task": "outfit a basic toolbox",
+              "instance": 303,
+              "episode": "memlite_final100_20261014_resume_v8-outfit_a_basic_toolbox-303-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 2,
+            "applied_controls": 2592
+          },
+          {
+            "identity": {
+              "session": "model-000-slot3",
+              "task": "outfit a basic toolbox",
+              "instance": 304,
+              "episode": "memlite_final100_20261014_resume_v8-outfit_a_basic_toolbox-304-r0",
+              "models": {
+                "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+                "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+                "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+                "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+                "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+                "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+                "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+              }
+            },
+            "slot": 3,
+            "applied_controls": 2592
+          }
+        ],
+        "events": {
+          "begin": 6,
+          "plan": 298,
+          "observer": 2656,
+          "action": 2358,
+          "ack": 2358,
+          "close": 2
+        },
+        "applied_controls": 37724,
+        "models": {
+          "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+          "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+          "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+          "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+          "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+          "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+          "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+        },
+        "tasks": [
+          "outfit a basic toolbox",
+          "setting the fire"
+        ],
+        "checks": [
+          "fresh empty per-episode memory",
+          "full identity and fixed slot on every event",
+          "high-to-low exact current intent",
+          "observer attempt and applied clock",
+          "unique tokens and exact raw23 physical ACK digest",
+          "final partial chunk acknowledged"
+        ],
+        "proves_full_task_success": false
+      },
+      "physical_batches": [
+        {
+          "part": "setting_the_fire-n2-i8",
+          "attempt": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/setting_the_fire-n2-i8/attempts/08.json",
+            "sha256": "49a930db3106adb1e55d147be9741a76c69544b8c953ae0b7a0122373d26bae0"
+          },
+          "physical_attempt": {
+            "status": "completed",
+            "indices": [
+              8,
+              9
+            ],
+            "instance_ids": [
+              309,
+              310
+            ],
+            "rollout": 0,
+            "started": 1792138956.0751667,
+            "max_steps": 13677,
+            "simulator_seed": 0,
+            "policy_seed": 17,
+            "finished": 1792141444.3655968,
+            "seconds": 2488.29014767427,
+            "actual_applied_controls": [
+              13678,
+              13678
+            ],
+            "service_ack": {
+              "steps": [
+                13678,
+                13678
+              ]
+            }
+          },
+          "has_real_controls": true,
+          "physical_status": {
+            "status": "completed",
+            "task": "setting_the_fire",
+            "task_id": 30,
+            "indices": [
+              8,
+              9
+            ],
+            "num_envs": 2,
+            "control_steps": [
+              13678,
+              13678
+            ],
+            "updated": 1792141422.4827707
+          }
+        },
+        {
+          "part": "outfit_a_basic_toolbox-n4-i0",
+          "attempt": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/outfit_a_basic_toolbox-n4-i0/attempts/00.json",
+            "sha256": "d3b0dcb08ab739e69323ff3d40a45163a702d9a2fec679ffb97af0b96789248b"
+          },
+          "physical_attempt": {
+            "status": "running",
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "instance_ids": [
+              301,
+              302,
+              303,
+              304
+            ],
+            "rollout": 0,
+            "started": 1792142046.6980412,
+            "max_steps": 15956,
+            "simulator_seed": 0,
+            "policy_seed": 17
+          },
+          "has_real_controls": true,
+          "physical_status": {
+            "status": "running",
+            "task": "outfit_a_basic_toolbox",
+            "task_id": 19,
+            "indices": [
+              0,
+              1,
+              2,
+              3
+            ],
+            "num_envs": 4,
+            "control_steps": [
+              2560,
+              2560,
+              2560,
+              2560
+            ],
+            "updated": 1792142795.7418845
+          }
+        }
+      ]
+    }
+  ],
+  "original_outputs_modified": false,
+  "terminal_parameter_proof": false,
+  "complete_episode_outcomes": false,
+  "finished": 1792142811.2177076,
+  "unique_episodes": 12,
+  "workers_verified": 2,
+  "applied_controls_in_verified_prefixes": 78314,
+  "validation_scope": "Stable acknowledged prefixes of live logs: per-episode empty memory, original task/instance/slot, fixed high/low/observer identities, exact current intent alignment, observer attempt/clock, and raw23 action-prefix ACK digests. Independent physical attempt and control snapshots recorded. Not future events, final parameter proof, full task success, complete video review, or a claim that high-level intent content is semantically correct."
+}

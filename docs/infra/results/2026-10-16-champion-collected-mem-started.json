@@ -1,0 +1,671 @@
+{
+  "observed_at": 1792141322.346598,
+  "collection": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results",
+  "summary": {
+    "status": "completed_with_execution_errors",
+    "expected": 1000,
+    "completed": 982,
+    "missing": 18,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.09108661761411252,
+    "completed_only_sr": 0.02240325865580448,
+    "coverage": 1000,
+    "execution_errors": 18,
+    "unaccounted": 0,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.08944705849705849,
+    "conservative_sr_errors_and_missing_as_zero": 0.022,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0
+  },
+  "receipt": {
+    "schema": "champion_continuation_internal_collection_v1",
+    "created": 1792137747.3710551,
+    "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "output": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/challenge_results_draft.zip",
+    "sha256": "207953ef8f072304d4f61732dd2815b448cf089a076d71e44509fffce9e3fb0d",
+    "manifest_sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45",
+    "root_manifest": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+      "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+    },
+    "metrics": 982,
+    "missing": 18,
+    "expected": 1000,
+    "fabricated_metrics": 0,
+    "originals_modified": false,
+    "submitted": false,
+    "videos_uploaded": false,
+    "model_delivery_ready": false,
+    "recoveries": [
+      {
+        "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1",
+        "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+        "manifest": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/manifest.json",
+          "sha256": "044ff86e8b7fd06b9dd17762a4b365ce85569dd3f0a5e37cbdc0e30a56c324b3"
+        }
+      },
+      {
+        "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1",
+        "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+        "manifest": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/manifest.json",
+          "sha256": "b55c9143a655f5b16825ab3284868351f8b89ca2892084ec82707216d71d34d6"
+        }
+      },
+      {
+        "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+        "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1",
+        "manifest": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/manifest.json",
+          "sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46"
+        }
+      }
+    ]
+  },
+  "receipt_binding": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/receipt.json",
+    "sha256": "ff728f4c674d8f54a7fa520c28368f2367af09d14834950b1c5e754a6e8e2f6d",
+    "bytes": 301216
+  },
+  "summary_binding": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/summary.json",
+    "sha256": "57cc6e25d715cdc28c5e040f3e835bdb247c46a74cd46f31235533ec76d0de24",
+    "bytes": 25312
+  },
+  "collection_files": [
+    {
+      "name": "challenge_results_draft.zip",
+      "bytes": 427652
+    },
+    {
+      "name": "execution-errors.json",
+      "bytes": 19889
+    },
+    {
+      "name": "original-run-manifest.json",
+      "bytes": 551567
+    },
+    {
+      "name": "policy-config-gpu-0.json",
+      "bytes": 2467
+    },
+    {
+      "name": "policy-config-gpu-1.json",
+      "bytes": 2467
+    },
+    {
+      "name": "policy-config-gpu-2.json",
+      "bytes": 2467
+    },
+    {
+      "name": "policy-config-gpu-3.json",
+      "bytes": 2467
+    },
+    {
+      "name": "policy-config-gpu-4.json",
+      "bytes": 2467
+    },
+    {
+      "name": "policy-config-gpu-5.json",
+      "bytes": 2467
+    },
+    {
+      "name": "policy-config-gpu-6.json",
+      "bytes": 2467
+    },
+    {
+      "name": "policy-config-gpu-7.json",
+      "bytes": 2467
+    },
+    {
+      "name": "receipt.json",
+      "bytes": 301216
+    },
+    {
+      "name": "recovery-gpu-0-certificate.json",
+      "bytes": 81532
+    },
+    {
+      "name": "recovery-gpu-0-manifest.json",
+      "bytes": 543802
+    },
+    {
+      "name": "recovery-gpu-2-certificate.json",
+      "bytes": 86105
+    },
+    {
+      "name": "recovery-gpu-2-manifest.json",
+      "bytes": 543758
+    },
+    {
+      "name": "recovery-gpu-4-certificate.json",
+      "bytes": 50560
+    },
+    {
+      "name": "recovery-gpu-4-manifest.json",
+      "bytes": 546107
+    },
+    {
+      "name": "run-manifest.json",
+      "bytes": 594651
+    },
+    {
+      "name": "summary.json",
+      "bytes": 25312
+    },
+    {
+      "name": "video-inventory.json",
+      "bytes": 759149
+    }
+  ],
+  "queue": {
+    "status": "running_mem_remainder",
+    "pid": 2823822,
+    "started": 1792120739.461133,
+    "updated": 1792137747.5780344,
+    "phases": [
+      {
+        "name": "remaining_mem",
+        "status": "running",
+        "started": 1792137747.5671818,
+        "argv": [
+          "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+          "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1/scripts/eval/continue_memlite_final.py",
+          "supervise",
+          "--job",
+          "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8"
+        ],
+        "pid": 2951296
+      }
+    ],
+    "error": null
+  },
+  "queue_process": {
+    "pid": 2823822,
+    "state": "S",
+    "ppid": 2159562,
+    "start_ticks": 551434596,
+    "live": true
+  },
+  "mem_status": {
+    "status": "running",
+    "pid": 2951296,
+    "started": 1792137747.7956033,
+    "completed_gpus": [],
+    "failed_gpus": {},
+    "worker_pids": {
+      "0": 2951311,
+      "1": 2951312,
+      "2": 2951313,
+      "3": 2951314,
+      "4": 2951315,
+      "5": 2951316,
+      "6": 2951317,
+      "7": 2951318
+    },
+    "completed": 390,
+    "coverage": 424,
+    "updated": 1792141293.339417
+  },
+  "mem_process": {
+    "pid": 2951296,
+    "state": "S",
+    "ppid": 2823822,
+    "start_ticks": 553142956,
+    "live": true
+  },
+  "mem_summary": {
+    "status": "running",
+    "expected": 1000,
+    "completed": 390,
+    "missing": 610,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.004074074074074075,
+    "completed_only_sr": 0,
+    "coverage": 424,
+    "execution_errors": 34,
+    "unaccounted": 576,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.001588888888888889,
+    "conservative_sr_errors_and_missing_as_zero": 0,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0,
+    "runtime_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+    "orchestrator_commit": "79371d77692e0c08a30e34b7de3077c166cd1a09",
+    "inherited_completed": 390,
+    "administrative_restarts": 4,
+    "policy_changed": false,
+    "optimizer_updates": 0,
+    "original_outputs_unmodified": true
+  },
+  "mem_workers": {
+    "gpu_0": {
+      "status": "evaluating",
+      "pid": 2951311,
+      "model_pid": 2951416,
+      "sim_pid": 2952337,
+      "part": "polishing_shoes-n4-i0",
+      "completed_parts": [],
+      "diagnosed_failed_parts": [],
+      "error": null,
+      "final_verification_error": null,
+      "processes": {
+        "pid": {
+          "pid": 2951311,
+          "state": "S",
+          "ppid": 2951296,
+          "start_ticks": 553142979,
+          "live": true
+        },
+        "model_pid": {
+          "pid": 2951416,
+          "state": "S",
+          "ppid": 2951311,
+          "start_ticks": 553143006,
+          "live": true
+        },
+        "sim_pid": {
+          "pid": 2952337,
+          "state": "S",
+          "ppid": 2951311,
+          "start_ticks": 553230913,
+          "live": true
+        }
+      },
+      "physical": {
+        "status": "running",
+        "task": "polishing_shoes",
+        "task_id": 79,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "control_steps": [
+          10624,
+          10624,
+          10624,
+          10624
+        ],
+        "completed": null,
+        "updated": 1792141316.8396854,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61"
+      }
+    },
+    "gpu_1": {
+      "status": "evaluating",
+      "pid": 2951312,
+      "model_pid": 2951415,
+      "sim_pid": 2952360,
+      "part": "turning_out_all_lights_before_sleep-n4-i0",
+      "completed_parts": [],
+      "diagnosed_failed_parts": [],
+      "error": null,
+      "final_verification_error": null,
+      "processes": {
+        "pid": {
+          "pid": 2951312,
+          "state": "S",
+          "ppid": 2951296,
+          "start_ticks": 553142979,
+          "live": true
+        },
+        "model_pid": {
+          "pid": 2951415,
+          "state": "S",
+          "ppid": 2951312,
+          "start_ticks": 553143006,
+          "live": true
+        },
+        "sim_pid": {
+          "pid": 2952360,
+          "state": "R",
+          "ppid": 2951312,
+          "start_ticks": 553231212,
+          "live": true
+        }
+      },
+      "physical": {
+        "status": "running",
+        "task": "turning_out_all_lights_before_sleep",
+        "task_id": 66,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "control_steps": [
+          3712,
+          3712,
+          3712,
+          3712
+        ],
+        "completed": null,
+        "updated": 1792141262.0534196,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61"
+      }
+    },
+    "gpu_2": {
+      "status": "evaluating",
+      "pid": 2951313,
+      "model_pid": 2951671,
+      "sim_pid": 2956824,
+      "part": "dispose_of_glass-n4-i4",
+      "completed_parts": [],
+      "diagnosed_failed_parts": [],
+      "error": null,
+      "final_verification_error": null,
+      "processes": {
+        "pid": {
+          "pid": 2951313,
+          "state": "S",
+          "ppid": 2951296,
+          "start_ticks": 553142979,
+          "live": true
+        },
+        "model_pid": {
+          "pid": 2951671,
+          "state": "S",
+          "ppid": 2951313,
+          "start_ticks": 553173445,
+          "live": true
+        },
+        "sim_pid": {
+          "pid": 2956824,
+          "state": "S",
+          "ppid": 2951313,
+          "start_ticks": 553263958,
+          "live": true
+        }
+      },
+      "physical": {
+        "status": "running",
+        "task": "dispose_of_glass",
+        "task_id": 76,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "control_steps": [
+          9600,
+          9600,
+          9600,
+          9600
+        ],
+        "completed": null,
+        "updated": 1792141304.565099,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61"
+      }
+    },
+    "gpu_3": {
+      "status": "evaluating",
+      "pid": 2951314,
+      "model_pid": 2951897,
+      "sim_pid": 2960625,
+      "part": "rearranging_kitchen_furniture-n2-i8",
+      "completed_parts": [],
+      "diagnosed_failed_parts": [],
+      "error": null,
+      "final_verification_error": null,
+      "processes": {
+        "pid": {
+          "pid": 2951314,
+          "state": "S",
+          "ppid": 2951296,
+          "start_ticks": 553142979,
+          "live": true
+        },
+        "model_pid": {
+          "pid": 2951897,
+          "state": "S",
+          "ppid": 2951314,
+          "start_ticks": 553192869,
+          "live": true
+        },
+        "sim_pid": {
+          "pid": 2960625,
+          "state": "S",
+          "ppid": 2951314,
+          "start_ticks": 553300802,
+          "live": true
+        }
+      },
+      "physical": {
+        "status": "running",
+        "task": "rearranging_kitchen_furniture",
+        "task_id": 8,
+        "indices": [
+          8,
+          9
+        ],
+        "control_steps": [
+          10240,
+          10240
+        ],
+        "completed": null,
+        "updated": 1792141320.0836024,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61"
+      }
+    },
+    "gpu_4": {
+      "status": "evaluating",
+      "pid": 2951315,
+      "model_pid": 2951889,
+      "sim_pid": 2958581,
+      "part": "bringing_water-n4-i4",
+      "completed_parts": [],
+      "diagnosed_failed_parts": [],
+      "error": null,
+      "final_verification_error": null,
+      "processes": {
+        "pid": {
+          "pid": 2951315,
+          "state": "S",
+          "ppid": 2951296,
+          "start_ticks": 553142979,
+          "live": true
+        },
+        "model_pid": {
+          "pid": 2951889,
+          "state": "S",
+          "ppid": 2951315,
+          "start_ticks": 553192670,
+          "live": true
+        },
+        "sim_pid": {
+          "pid": 2958581,
+          "state": "R",
+          "ppid": 2951315,
+          "start_ticks": 553279978,
+          "live": true
+        }
+      },
+      "physical": {
+        "status": "running",
+        "task": "bringing_water",
+        "task_id": 17,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "control_steps": [
+          4480,
+          4480,
+          4480,
+          4480
+        ],
+        "completed": null,
+        "updated": 1792141302.0919192,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61"
+      }
+    },
+    "gpu_5": {
+      "status": "evaluating",
+      "pid": 2951316,
+      "model_pid": 2951663,
+      "sim_pid": 2954795,
+      "part": "setting_the_fire-n2-i8",
+      "completed_parts": [],
+      "diagnosed_failed_parts": [],
+      "error": null,
+      "final_verification_error": null,
+      "processes": {
+        "pid": {
+          "pid": 2951316,
+          "state": "S",
+          "ppid": 2951296,
+          "start_ticks": 553142979,
+          "live": true
+        },
+        "model_pid": {
+          "pid": 2951663,
+          "state": "S",
+          "ppid": 2951316,
+          "start_ticks": 553173044,
+          "live": true
+        },
+        "sim_pid": {
+          "pid": 2954795,
+          "state": "R",
+          "ppid": 2951316,
+          "start_ticks": 553246432,
+          "live": true
+        }
+      },
+      "physical": {
+        "status": "running",
+        "task": "setting_the_fire",
+        "task_id": 30,
+        "indices": [
+          8,
+          9
+        ],
+        "control_steps": [
+          12928,
+          12928
+        ],
+        "completed": null,
+        "updated": 1792141300.8292809,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61"
+      }
+    },
+    "gpu_6": {
+      "status": "evaluating",
+      "pid": 2951317,
+      "model_pid": 2952119,
+      "sim_pid": 2964441,
+      "part": "setting_mousetraps-n4-i0",
+      "completed_parts": [],
+      "diagnosed_failed_parts": [],
+      "error": null,
+      "final_verification_error": null,
+      "processes": {
+        "pid": {
+          "pid": 2951317,
+          "state": "S",
+          "ppid": 2951296,
+          "start_ticks": 553142979,
+          "live": true
+        },
+        "model_pid": {
+          "pid": 2952119,
+          "state": "S",
+          "ppid": 2951317,
+          "start_ticks": 553212095,
+          "live": true
+        },
+        "sim_pid": {
+          "pid": 2964441,
+          "state": "S",
+          "ppid": 2951317,
+          "start_ticks": 553346558,
+          "live": true
+        }
+      },
+      "physical": {
+        "status": "running",
+        "task": "setting_mousetraps",
+        "task_id": 5,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "control_steps": [
+          6400,
+          6400,
+          6400,
+          6400
+        ],
+        "completed": null,
+        "updated": 1792141303.7599757,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61"
+      }
+    },
+    "gpu_7": {
+      "status": "evaluating",
+      "pid": 2951318,
+      "model_pid": 2952112,
+      "sim_pid": 2962540,
+      "part": "cook_hot_dogs-n4-i0",
+      "completed_parts": [],
+      "diagnosed_failed_parts": [],
+      "error": null,
+      "final_verification_error": null,
+      "processes": {
+        "pid": {
+          "pid": 2951318,
+          "state": "S",
+          "ppid": 2951296,
+          "start_ticks": 553142979,
+          "live": true
+        },
+        "model_pid": {
+          "pid": 2952112,
+          "state": "S",
+          "ppid": 2951318,
+          "start_ticks": 553211893,
+          "live": true
+        },
+        "sim_pid": {
+          "pid": 2962540,
+          "state": "S",
+          "ppid": 2951318,
+          "start_ticks": 553320326,
+          "live": true
+        }
+      },
+      "physical": {
+        "status": "running",
+        "task": "cook_hot_dogs",
+        "task_id": 45,
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "control_steps": [
+          3072,
+          3072,
+          3072,
+          3072
+        ],
+        "completed": null,
+        "updated": 1792141284.0465593,
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61"
+      }
+    }
+  }
+}

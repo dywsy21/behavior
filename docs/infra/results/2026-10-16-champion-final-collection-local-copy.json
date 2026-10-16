@@ -1,0 +1,12 @@
+{
+  "schema": "champion_collection_local_copy_v1",
+  "verified_at_utc": "2026-10-16 09:10:22 UTC",
+  "local_root": "/home/wsy/behavior/artifacts/final-eval-20261016/champion-results-v1",
+  "remote_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results",
+  "files_verified": 21,
+  "bytes": 4551036,
+  "every_file_sha_matches_independently_verified_remote": true,
+  "zip_sha256": "207953ef8f072304d4f61732dd2815b448cf089a076d71e44509fffce9e3fb0d",
+  "original_outputs_modified": false,
+  "submitted": false
+}

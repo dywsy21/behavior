@@ -10,11 +10,11 @@
 
 | 职责 | 当前登记 | 冻结源码 |
 | --- | --- | --- |
-| 冠军评测 | `runs/champion_final100_20261014_resume_v2`，manifest `a80d9602…cc45` | 编排 `code/champion-batch-isolation-20261014-v1` / `f7b72854`；实际actor/仿真入口仍 `9f6e75bd` |
-| MEM后续评测 | `runs/memlite_final100_20261014_resume_v8`，manifest `7819b835…e3b`，登记576剩余实例/174物理batch | 编排 `code/mem-batch-isolation-20261014-v1` / `79371d77`；实际actor仍 `51c11d32` |
+| 冠军评测（已终态归档） | `runs/champion_final100_20261014_resume_v2`及三侧路，manifest `a80d9602…cc45`；982原结果/18工程异常，1000全部核账 | 编排 `code/champion-batch-isolation-20261014-v1` / `f7b72854`；实际actor/仿真入口仍 `9f6e75bd` |
+| MEM续评（正在运行） | `runs/memlite_final100_20261014_resume_v8`，manifest `7819b835…e3b`，原登记576实例/174物理batch；10/16 16:02:27 CST已实际启动八卡 | 编排 `code/mem-batch-isolation-20261014-v1` / `79371d77`；实际actor仍 `51c11d32` |
 | GPU4未尝试后缀恢复 | `runs/champion_gpu4_20261015_recovery_v1`，42例/13原分组已自然完成；父GPU4原故障现场保留 | `code/champion-worker-recovery-20261015-v1` / `11689f50`；实际actor/仿真仍9f |
-| GPU0/2未尝试后缀恢复 | `runs/champion_gpu0_20261016_recovery_v1` / `runs/champion_gpu2_20261016_recovery_v1`，各6例，互相显式登记peer；两路已实际控制 | `code/champion-multi-recovery-20261016-v1` / `fe1db139`；实际actor/仿真仍9f |
-| 冠军→MEM等待与内部归档 | MEM v8下的 `queue-after-champion-multirecovery-v1/`；明确等待原父＋GPU0/2/4侧路，MEM尚未开始 | `code/champion-multi-recovery-queue-20261016-v1` / `fb2c7a8a` |
+| GPU0/2未尝试后缀恢复（已终态） | `runs/champion_gpu0_20261016_recovery_v1` / `runs/champion_gpu2_20261016_recovery_v1`，各6例；GPU0六完整，GPU2四完整＋两保留工程异常，无未尝试后缀 | `code/champion-multi-recovery-20261016-v1` / `fe1db139`；实际actor/仿真仍9f |
+| 冠军→MEM衔接与内部归档 | MEM v8下的 `queue-after-champion-multirecovery-v1/`；冠军已验并归档，当前`running_mem_remainder`，不要另开MEM | `code/champion-multi-recovery-queue-20261016-v1` / `fb2c7a8a` |
 
 ### 异常处置边界
 
@@ -36,7 +36,9 @@ GPU2的原NaN与pre/post-physics复合异常继续保留`unclassified_operationa
 
 最终内部收集目录为 `runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/{champion-results,mem-results}`。ZIP只装真实官方JSON和原wrapper/robot/transport；错误清单、视频索引/SHA、配置/来源和固定1000分母统计在旁，绝不补造官方JSON。存在执行异常时，`official_full_q_score`/`official_full_sr`保持null，另给真实完整样本统计与缺失按0的固定分母值，清楚标明口径。
 
-单24GB Docker、公网/50端口、外部视频托管和正式提交仍由用户暂缓；内部归档不是上述交付的通过证明。当前两轮全量和终态包未完成，不能把工具测试、正在生成的原件或等待器存活称为goal完成。
+10月16日冠军的1000去向已经全部核账并自动衔接MEM，不能再将冠军旧父/侧路退役PID或带错误终态视为当前整体停机。独立复核了982原JSON的ZIP逐字一致/CRC、982原视频SHA、281命令、原wrapper/robot/transport及从原JSON重算汇总；固定1000分母（18缺失计零）Q=0.0894470585、SR=2.2%，仅982完整子集Q=0.0910866176、SR=2.24032587%，`official_full_*`仍null。证据见`results/2026-10-16-champion-final-collection-audit.json`；本地同SHA的21文件副本在`artifacts/final-eval-20261016/champion-results-v1/`（Git忽略）。全部错误和partial视频仍在原run，未重跑或补造官方JSON。
+
+单24GB Docker、公网/50端口、外部视频托管和正式提交仍由用户暂缓；内部归档不是上述交付的通过证明。冠军内部包已完成，但MEM全量及其终态包仍未完成，不能把冠军收尾、前缀会话审计或八卡正在运行称为整个goal完成。
 
 ## 历史实现与诊断（不覆盖上方当前约定）
 

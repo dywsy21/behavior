@@ -1,0 +1,239 @@
+{
+  "schema": "champion_full_collection_independent_audit_v1",
+  "checked_at": 1792141585.135654,
+  "collection": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results",
+  "files": {
+    "challenge_results_draft.zip": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/challenge_results_draft.zip",
+      "sha256": "207953ef8f072304d4f61732dd2815b448cf089a076d71e44509fffce9e3fb0d",
+      "bytes": 427652
+    },
+    "execution-errors.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/execution-errors.json",
+      "sha256": "afc48fa196b3bf8c4822957c77c7099b8ef9dc2192753e1bef2cce1fdf770249",
+      "bytes": 19889
+    },
+    "original-run-manifest.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/original-run-manifest.json",
+      "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297",
+      "bytes": 551567
+    },
+    "policy-config-gpu-0.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/policy-config-gpu-0.json",
+      "sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+      "bytes": 2467
+    },
+    "policy-config-gpu-1.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/policy-config-gpu-1.json",
+      "sha256": "ef627f701aeaa3994aa701ad0837b875e83ddbd582a5c0ab8029ac52ec29d947",
+      "bytes": 2467
+    },
+    "policy-config-gpu-2.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/policy-config-gpu-2.json",
+      "sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+      "bytes": 2467
+    },
+    "policy-config-gpu-3.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/policy-config-gpu-3.json",
+      "sha256": "78067a2510a97b7874a3550d2a759f5716351c33c5c1fc671e41fb2e2e290e9d",
+      "bytes": 2467
+    },
+    "policy-config-gpu-4.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/policy-config-gpu-4.json",
+      "sha256": "d86604d4383c1d672b7a10fb52061e78098ba8219389393cb2345e38166b2143",
+      "bytes": 2467
+    },
+    "policy-config-gpu-5.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/policy-config-gpu-5.json",
+      "sha256": "2ef38ac2c0dceae284086501c55c731da93b6244db9887c7c11bc1a8b15a0da4",
+      "bytes": 2467
+    },
+    "policy-config-gpu-6.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/policy-config-gpu-6.json",
+      "sha256": "6a7d2dd9c5c05b744652159d22ff8fb6aaad377c95822b78c8bb2dcb5df4bd4b",
+      "bytes": 2467
+    },
+    "policy-config-gpu-7.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/policy-config-gpu-7.json",
+      "sha256": "129bc9d9537459688305a59241f1e28ee1d6a42e6d59f380bde43db548d7c34e",
+      "bytes": 2467
+    },
+    "receipt.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/receipt.json",
+      "sha256": "ff728f4c674d8f54a7fa520c28368f2367af09d14834950b1c5e754a6e8e2f6d",
+      "bytes": 301216
+    },
+    "recovery-gpu-0-certificate.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/recovery-gpu-0-certificate.json",
+      "sha256": "02f711c026307ec0d57167f60ec6086f8b0bfd8185c9e5d946e5de6392559c61",
+      "bytes": 81532
+    },
+    "recovery-gpu-0-manifest.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/recovery-gpu-0-manifest.json",
+      "sha256": "044ff86e8b7fd06b9dd17762a4b365ce85569dd3f0a5e37cbdc0e30a56c324b3",
+      "bytes": 543802
+    },
+    "recovery-gpu-2-certificate.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/recovery-gpu-2-certificate.json",
+      "sha256": "3529fc2d2c0dd4031e249047246a830d0e1efcbb132f25e8b7613b115b53bf53",
+      "bytes": 86105
+    },
+    "recovery-gpu-2-manifest.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/recovery-gpu-2-manifest.json",
+      "sha256": "b55c9143a655f5b16825ab3284868351f8b89ca2892084ec82707216d71d34d6",
+      "bytes": 543758
+    },
+    "recovery-gpu-4-certificate.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/recovery-gpu-4-certificate.json",
+      "sha256": "a33c0f3fa746b3e3f72750154deae9919f8219812fe5fbe91ca89bf714627bfd",
+      "bytes": 50560
+    },
+    "recovery-gpu-4-manifest.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/recovery-gpu-4-manifest.json",
+      "sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46",
+      "bytes": 546107
+    },
+    "run-manifest.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/run-manifest.json",
+      "sha256": "5765d6bb240d5cb399a6f63f4bb4bc5e421666f1da938b9715fbd2332761f752",
+      "bytes": 594651
+    },
+    "summary.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/summary.json",
+      "sha256": "57cc6e25d715cdc28c5e040f3e835bdb247c46a74cd46f31235533ec76d0de24",
+      "bytes": 25312
+    },
+    "video-inventory.json": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/video-inventory.json",
+      "sha256": "b2363dc6ab6ebe1cf1a4ad29bdd91aa39f74fd3f600416f743431a7c4eb3db26",
+      "bytes": 759149
+    }
+  },
+  "summary": {
+    "status": "completed_with_execution_errors",
+    "expected": 1000,
+    "completed": 982,
+    "missing": 18,
+    "missing_case_convention": "zero; do not call partial values full-model performance",
+    "completed_only_q": 0.09108661761411252,
+    "completed_only_sr": 0.02240325865580448,
+    "coverage": 1000,
+    "execution_errors": 18,
+    "unaccounted": 0,
+    "official_full_q_score": null,
+    "official_full_sr": null,
+    "conservative_q_errors_and_missing_as_zero": 0.08944705849705849,
+    "conservative_sr_errors_and_missing_as_zero": 0.022,
+    "fabricated_official_metrics": 0,
+    "automatic_rerolls": 0
+  },
+  "full_summary_binding": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/summary.json",
+    "sha256": "57cc6e25d715cdc28c5e040f3e835bdb247c46a74cd46f31235533ec76d0de24",
+    "bytes": 25312
+  },
+  "successes": [
+    {
+      "task": "hanging_pictures",
+      "instance": 306
+    },
+    {
+      "task": "hiding_Easter_eggs",
+      "instance": 302
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance": 304
+    },
+    {
+      "task": "make_microwave_popcorn",
+      "instance": 308
+    },
+    {
+      "task": "turning_on_radio",
+      "instance": 308
+    },
+    {
+      "task": "putting_shoes_on_rack",
+      "instance": 302
+    },
+    {
+      "task": "clean_boxing_gloves",
+      "instance": 309
+    },
+    {
+      "task": "clean_boxing_gloves",
+      "instance": 303
+    },
+    {
+      "task": "cook_hot_dogs",
+      "instance": 309
+    },
+    {
+      "task": "cook_hot_dogs",
+      "instance": 310
+    },
+    {
+      "task": "cook_hot_dogs",
+      "instance": 301
+    },
+    {
+      "task": "cook_hot_dogs",
+      "instance": 305
+    },
+    {
+      "task": "cook_hot_dogs",
+      "instance": 307
+    },
+    {
+      "task": "moving_boxes_to_storage",
+      "instance": 309
+    },
+    {
+      "task": "moving_boxes_to_storage",
+      "instance": 301
+    },
+    {
+      "task": "moving_boxes_to_storage",
+      "instance": 303
+    },
+    {
+      "task": "moving_boxes_to_storage",
+      "instance": 306
+    },
+    {
+      "task": "preparing_lunch_box",
+      "instance": 309
+    },
+    {
+      "task": "putting_shoes_on_rack",
+      "instance": 310
+    },
+    {
+      "task": "setting_mousetraps",
+      "instance": 302
+    },
+    {
+      "task": "slicing_vegetables",
+      "instance": 305
+    },
+    {
+      "task": "slicing_vegetables",
+      "instance": 308
+    }
+  ],
+  "zip_entries": 988,
+  "original_json_entries": 982,
+  "verified_original_video_hashes": 982,
+  "verified_command_receipts": 281,
+  "wrapper_robot_transport_exact": true,
+  "zip_originals_byte_identical": true,
+  "zip_crc_passed": true,
+  "original_metrics_reaggregation_passed": true,
+  "original_outputs_modified": false,
+  "submitted": false,
+  "videos_uploaded": false,
+  "model_delivery_ready": false,
+  "full1000_valid_official_outcomes": false,
+  "scope": "Independent ZIP CRC/entry set and byte-for-byte match to 982 original JSONs; all 982 original video SHA bindings; wrapper/robot/transport identity, historical commands, and recomputed fixed-1000/error-disclosed summaries. No synthetic scores, rerolls, public upload, model-delivery qualification, or independent human visual review."
+}

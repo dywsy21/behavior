@@ -1,0 +1,333 @@
+{
+  "schema": "memlite_v8_first_two_committed_batches_v1",
+  "checked_at": 1792142175.0134597,
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+    "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+  },
+  "runtime_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+  "coordinator_commit": "79371d77692e0c08a30e34b7de3077c166cd1a09",
+  "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+  "batches": [
+    {
+      "gpu": 3,
+      "part": "rearranging_kitchen_furniture-n2-i8",
+      "records": [
+        {
+          "task": "rearranging_kitchen_furniture",
+          "instance_id": 309,
+          "rollout_id": 0,
+          "steps": 13415,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/rearranging_kitchen_furniture-n2-i8/json/rearranging_kitchen_furniture_309_0.json",
+            "sha256": "995352ff4a751a072ad4990bdd860115933b746b30262eb0186b50f650b641f2"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/rearranging_kitchen_furniture-n2-i8/videos/rearranging_kitchen_furniture_309_0.mp4",
+            "sha256": "a0f1c323ac8a2e5573dd595885bf93e6b2ffde807b5ef3bcf50d5464fb4e669a"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13415"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "rearranging_kitchen_furniture",
+          "instance_id": 310,
+          "rollout_id": 0,
+          "steps": 13415,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/rearranging_kitchen_furniture-n2-i8/json/rearranging_kitchen_furniture_310_0.json",
+            "sha256": "732977b6af943c921841cf9f560417a02f6a55a055ce3c2b93a5eac7cd963fbf"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/rearranging_kitchen_furniture-n2-i8/videos/rearranging_kitchen_furniture_310_0.mp4",
+            "sha256": "493bbc28f68f4ad813ee55a1155d3c58643f77a6e19bba7dad64344feba90986"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13415"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/rearranging_kitchen_furniture-n2-i8/attempts/08.json",
+        "sha256": "57c3eef40f00487bcb254bf57166390b80ef1820bdd8ac19ba35af732f092ff1"
+      },
+      "physical_attempt": {
+        "status": "completed",
+        "indices": [
+          8,
+          9
+        ],
+        "instance_ids": [
+          309,
+          310
+        ],
+        "rollout": 0,
+        "started": 1792139518.2068918,
+        "max_steps": 13414,
+        "simulator_seed": 0,
+        "policy_seed": 17,
+        "finished": 1792141909.912765,
+        "seconds": 2391.705461784266,
+        "actual_applied_controls": [
+          13415,
+          13415
+        ],
+        "service_ack": {
+          "steps": [
+            13415,
+            13415
+          ]
+        }
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 2960625,
+        "task": "rearranging_kitchen_furniture",
+        "task_id": 8,
+        "indices": [
+          8,
+          9
+        ],
+        "num_envs": 2,
+        "optimizer_updates": 0,
+        "started": 1792139326.1414547,
+        "official_commit": "a8247a8cc1633fe1ca0cc66aa07243d46c64f155",
+        "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+        "control_steps": [
+          13415,
+          13415
+        ],
+        "updated": 1792141889.6343048,
+        "finished": 1792141909.91428,
+        "official_timeout": 13414,
+        "completed": 2
+      },
+      "command": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_3/rearranging_kitchen_furniture-n2-i8-command.json",
+        "sha256": "1776cfdcb170da846d6a2f3cf6aa7b96ebf83dff4e5371cc53916d01679b402c"
+      },
+      "resolved_config": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/rearranging_kitchen_furniture-n2-i8/resolved_config.json",
+        "sha256": "a48a4f64b6a7b4733cf4ada159d37bbde824adfb2cdd72530d03d9268d21371d"
+      },
+      "closed_protocol_prefix": {
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_3/model-000/events.jsonl",
+        "prefix_bytes": 22366008,
+        "prefix_sha256": "ce60bba4277a41401235a32dfbafffab39980ad8de5038d3d24bfffbc1df8fae"
+      },
+      "closed_protocol_audit": {
+        "status": "complete_causal_trace_audit",
+        "episodes": 2,
+        "closed_episodes": 2,
+        "unclosed_episodes": [],
+        "events": {
+          "begin": 2,
+          "plan": 210,
+          "observer": 1888,
+          "action": 1678,
+          "ack": 1678,
+          "close": 2
+        },
+        "applied_controls": 26830,
+        "models": {
+          "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+          "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+          "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+          "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+          "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+          "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+          "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+        },
+        "tasks": [
+          "rearranging kitchen furniture"
+        ],
+        "checks": [
+          "fresh empty per-episode memory",
+          "full identity and fixed slot on every event",
+          "high-to-low exact current intent",
+          "observer attempt and applied clock",
+          "unique tokens and exact raw23 physical ACK digest",
+          "final partial chunk acknowledged"
+        ],
+        "proves_full_task_success": false
+      }
+    },
+    {
+      "gpu": 5,
+      "part": "setting_the_fire-n2-i8",
+      "records": [
+        {
+          "task": "setting_the_fire",
+          "instance_id": 309,
+          "rollout_id": 0,
+          "steps": 13678,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/setting_the_fire-n2-i8/json/setting_the_fire_309_0.json",
+            "sha256": "dd6f9c39e223b3921764c906ae95638d4fa597abe98814818c0c7d7daa88de31"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/setting_the_fire-n2-i8/videos/setting_the_fire_309_0.mp4",
+            "sha256": "cb4275ffddb0f8ac6e9a180c8a089cc2b41df266fde57e6c36ac114ce44a9df3"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13678"
+          },
+          "success": false,
+          "q_score_final": 0
+        },
+        {
+          "task": "setting_the_fire",
+          "instance_id": 310,
+          "rollout_id": 0,
+          "steps": 13678,
+          "metrics": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/setting_the_fire-n2-i8/json/setting_the_fire_310_0.json",
+            "sha256": "414fd8ae11c111cf9f026dd3c5f6103110845f2815892fdf5551d2402da4b75f"
+          },
+          "video": {
+            "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/setting_the_fire-n2-i8/videos/setting_the_fire_310_0.mp4",
+            "sha256": "cb2ca8542a1bc93f839c087596e71c13bd00a6e4a22de9c9aa1cb6a7bf5bced1"
+          },
+          "video_probe": {
+            "width": 672,
+            "height": 448,
+            "r_frame_rate": "30/1",
+            "nb_frames": "13678"
+          },
+          "success": false,
+          "q_score_final": 0
+        }
+      ],
+      "attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/setting_the_fire-n2-i8/attempts/08.json",
+        "sha256": "49a930db3106adb1e55d147be9741a76c69544b8c953ae0b7a0122373d26bae0"
+      },
+      "physical_attempt": {
+        "status": "completed",
+        "indices": [
+          8,
+          9
+        ],
+        "instance_ids": [
+          309,
+          310
+        ],
+        "rollout": 0,
+        "started": 1792138956.0751667,
+        "max_steps": 13677,
+        "simulator_seed": 0,
+        "policy_seed": 17,
+        "finished": 1792141444.3655968,
+        "seconds": 2488.29014767427,
+        "actual_applied_controls": [
+          13678,
+          13678
+        ],
+        "service_ack": {
+          "steps": [
+            13678,
+            13678
+          ]
+        }
+      },
+      "physical_status": {
+        "status": "completed",
+        "pid": 2954795,
+        "task": "setting_the_fire",
+        "task_id": 30,
+        "indices": [
+          8,
+          9
+        ],
+        "num_envs": 2,
+        "optimizer_updates": 0,
+        "started": 1792138782.4438255,
+        "official_commit": "a8247a8cc1633fe1ca0cc66aa07243d46c64f155",
+        "config_sha256": "98beedb0642d2a72f2ae7dfc0cf39ccd34642b1697ff3ba406cb22dd5279b3cc",
+        "source_commit": "51c11d32a5d2a73df79b4a6a87dd266db2ae6c61",
+        "control_steps": [
+          13678,
+          13678
+        ],
+        "updated": 1792141422.4827707,
+        "finished": 1792141444.366911,
+        "official_timeout": 13677,
+        "completed": 2
+      },
+      "command": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_5/setting_the_fire-n2-i8-command.json",
+        "sha256": "ff6ad5e592709e5fcb4061f1da1ba3d05680a6355aa2735a339e32d74f4d14dc"
+      },
+      "resolved_config": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/parts/setting_the_fire-n2-i8/resolved_config.json",
+        "sha256": "dcf4566113bd9b7df8ca5f520228d84f229332320f67ed05c094ae366a8f80b3"
+      },
+      "closed_protocol_prefix": {
+        "trace": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/workers/gpu_5/model-000/events.jsonl",
+        "prefix_bytes": 22408236,
+        "prefix_sha256": "1e5ca8d95948e742dc8144eb7f145d3c0f1057101b5ae02faca12f3cbb03d088"
+      },
+      "closed_protocol_audit": {
+        "status": "complete_causal_trace_audit",
+        "episodes": 2,
+        "closed_episodes": 2,
+        "unclosed_episodes": [],
+        "events": {
+          "begin": 2,
+          "plan": 214,
+          "observer": 1924,
+          "action": 1710,
+          "ack": 1710,
+          "close": 2
+        },
+        "applied_controls": 27356,
+        "models": {
+          "planner": "047152f1ced65db0ecdf9348ced13980fbae3c512e914e14fccfe871e30ed38d",
+          "low": "34d994c91a1cd1d7190fc0698931886260a3452fb2aae2753cb0280869de0797",
+          "observer_backbone": "bee763385ae1a8aa88c76097856fdbc6831ef6f74bcad729e1bd2fe6dd8f8316",
+          "observer_adapter": "b0f3d1256f9f2961a792c1dda6f98b0d1c6cdf8b15e8e0f520c478f12f2ad699",
+          "planner_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19",
+          "low_normalization": "10dc04dc21f486fd3fd045c8d6114cf87b64b56cc7e038e581d60ff506cbd929",
+          "observer_normalization": "846bcbeac181df5555cb5d40d4183d61743a556df5cf8c8a8fb1bc17e2a40b19"
+        },
+        "tasks": [
+          "setting the fire"
+        ],
+        "checks": [
+          "fresh empty per-episode memory",
+          "full identity and fixed slot on every event",
+          "high-to-low exact current intent",
+          "observer attempt and applied clock",
+          "unique tokens and exact raw23 physical ACK digest",
+          "final partial chunk acknowledged"
+        ],
+        "proves_full_task_success": false
+      }
+    }
+  ],
+  "original_outputs_modified": false,
+  "terminal_parameter_recheck_pending": true,
+  "new_completed": 4,
+  "new_successes": 0,
+  "verified_completed_parts": [
+    "rearranging_kitchen_furniture-n2-i8",
+    "setting_the_fire-n2-i8"
+  ],
+  "validation_scope": "Four committed original JSON/MP4 SHA, metadata and frame/control equality; immutable original task/instance/seed/config/command; exact closed-session raw23 ACK prefixes and official control receipts. No active-model terminal parameter proof, human video review, or full MEM score."
+}

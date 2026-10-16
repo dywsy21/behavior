@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-16 17:02 CST：冠军结果已自动归档，MEM v8八卡当前运行
+
+- 17:11冠军全包独立复核通过；本地同SHA副本`/home/wsy/behavior/artifacts/final-eval-20261016/champion-results-v1/`共21文件/4551036字节，全部Git忽略。包含可直接取用的`challenge_results_draft.zip`、完整逐task`summary.json`、`video-inventory.json`、错误清单和来源配置；原视频仍留RTX，不是已托管/正式提交。MEM GPU5已自然从点火两例切到`outfit_a_basic_toolbox-n4-i0`/sim2967976，其他worker/model不变，账面392/34旧异常/574待。
+- 冠军内部collection：`/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/champion-results/`；`challenge_results_draft.zip`自动receipt SHA207953ef8f072304d4f61732dd2815b448cf089a076d71e44509fffce9e3fb0d，邻接`summary.json`/`receipt.json`/`video-inventory.json`/`execution-errors.json`及各配置/来源证书。17:11独立全包复核通过，不是公开提交或视频托管。
+- 原`runs/memlite_final100_20261014_resume_v8`现已真正启动，supervisor2951296、worker2951311–318，源仍`code/mem-batch-isolation-20261014-v1`=793/实际actor仍`code/memlite-final-eval-20261013-v4`=51c。模型PID按gpu0–7：2951416/2951415/2951671/2951897/2951889/2951663/2952119/2952112；17:02快照的sim为2952337/2952360/2956824/2960625/2958581/2954795/2964441/2962540，每批正常更换，不把退役sim PID当整卡停机。实时状态/日志见各`workers/gpu_N/`并核/proc，父日志`queue-after-champion-multirecovery-v1/mem-supervisor.log`。
+- 原队列2823822/`queue-after-champion-multirecovery-v1`现为`running_mem_remainder`，单一remaining_mem阶段于16:02:27 CST开始；不再waiting，不可另启重复MEM。接续起点为390继承完整/34继承异常、576待，首批八卡均真实控制且无新错误；实时完成数见plan。起点快照`docs/infra/results/2026-10-16-champion-collected-mem-started.json`；全部原冠军run、18错误和partial视频仍保留，任何在用源码禁止pull/热改。
+
 ## 2026-10-16 15:10 CST：罐头末两例错误已隔离，仅礼物篮末两例仍在跑
 
 - RTX根仍`/run/ti/rl_memlite_stage1_20261006`。`runs/champion_gpu2_20261016_recovery_v1`终态`completed_with_execution_errors`，原2815480/2816006/2901123均已退出；6例清单为4完整＋2工程异常，没有未尝试后缀。`parts/canning_food-n2-i8/status.json`遗留running/21400粗步数不代表进程仍活，禁止据此重启旧run。
