@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-16 22:21 CST：冠军三个正式材料已发布并验链
+
+- node1实际公开目录：`/home/ubuntu/storage/share/behavior-2026-champion-20261016`，由下方`final-staging-v2`同盘原子改名，v2旧位置已不存在；仅含`challenge_results_VLA_FINAL.zip`（455031B）、`champion_ema8000_videos.zip`（36588895286B）和`EVALUATION_README_FINAL_EN.txt`（7367B）。
+- URL前缀：`https://files.dywsy21.cn:18080/share/behavior-2026-champion-20261016/`；三直链无登录/凭据可下载，RTX公网HEAD200、两小文件全GET SHA、视频首尾Range206均已验。视频全包目标SHA与源/README均为`71e20b58d4fbd4ece3a32b8374af250dece579e54e5453d8cd053c9a767a92e7`，984成员含982完整原MP4及两原清单，不含14partial。
+- 私有收据：node1 `/home/ubuntu/storage/champion-publish-20261016-{canonical-verification,publication,http-spec}.json`；其中publication是发布瞬间待HTTP验证的历史快照，后续实际匿名验链与完成证据以仓库`docs/infra/results/2026-10-16-champion-submission-public-links.json`为准。本地完整收据在忽略`artifacts/champion-publish-20261016/`。
+- 下方v1暂存/旧ZIP partial、原982视频＋14异常原件及中断传输碎片全部非公开保留，未删除。未改nginx/DNS/鉴权或重启MEM。站点ZIP有长期缓存，不能原地覆盖已发布文件；后续如确需新版本，应另建版本路径。
+
 ## 2026-10-16 22:07 CST：最终三提交文件（非公开校验中）
 
 - 用户新指定两小文件在RTX `/run/ti/rl_memlite_stage1_20261006/runs/champion_submission_20261016/v1/delivery/submission_current/{challenge_results_VLA_FINAL.zip,EVALUATION_README_FINAL_EN.txt}`；原视频ZIP在上一级`delivery/champion_ema8000_videos.zip`，36588895286字节，SHA256 `71e20b58d4fbd4ece3a32b8374af250dece579e54e5453d8cd053c9a767a92e7`。

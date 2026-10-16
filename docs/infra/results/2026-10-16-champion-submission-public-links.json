@@ -1,0 +1,160 @@
+{
+  "schema": "champion-submission-three-public-links-v1",
+  "recorded_at_utc": "2026-10-16T14:22:24Z",
+  "owner": "Codex, single agent",
+  "status": "published_and_anonymous_http_verified",
+  "files": {
+    "challenge_results_VLA_FINAL.zip": {
+      "bytes": 455031,
+      "sha256": "52004e4e89ed4fb1493c30053d15802668a73f7774736b7e36cfb456fa1b4bb4",
+      "url": "https://files.dywsy21.cn:18080/share/behavior-2026-champion-20261016/challenge_results_VLA_FINAL.zip"
+    },
+    "EVALUATION_README_FINAL_EN.txt": {
+      "bytes": 7367,
+      "sha256": "1af6d95d049d634014ce1f4e2e360374cee776340f312225172b6494af0c7858",
+      "url": "https://files.dywsy21.cn:18080/share/behavior-2026-champion-20261016/EVALUATION_README_FINAL_EN.txt"
+    },
+    "champion_ema8000_videos.zip": {
+      "bytes": 36588895286,
+      "sha256": "71e20b58d4fbd4ece3a32b8374af250dece579e54e5453d8cd053c9a767a92e7",
+      "url": "https://files.dywsy21.cn:18080/share/behavior-2026-champion-20261016/champion_ema8000_videos.zip"
+    }
+  },
+  "public_directory": "/home/ubuntu/storage/share/behavior-2026-champion-20261016",
+  "form_field_mapping": {
+    "Self-evaluation results URL": "challenge_results_VLA_FINAL.zip",
+    "Video recordings URL": "champion_ema8000_videos.zip",
+    "Evaluation README URL": "EVALUATION_README_FINAL_EN.txt"
+  },
+  "content_checks": {
+    "schema": "latest-vla-publication-audit-v1",
+    "verified_at_utc": "2026-10-16T14:10:42Z",
+    "small_files": [
+      {
+        "name": "challenge_results_VLA_FINAL.zip",
+        "bytes": 455031,
+        "sha256": "52004e4e89ed4fb1493c30053d15802668a73f7774736b7e36cfb456fa1b4bb4"
+      },
+      {
+        "name": "EVALUATION_README_FINAL_EN.txt",
+        "bytes": 7367,
+        "sha256": "1af6d95d049d634014ce1f4e2e360374cee776340f312225172b6494af0c7858"
+      }
+    ],
+    "original_metric_jsons": 982,
+    "all_metric_jsons_byte_identical_to_audited_originals": true,
+    "all_original_wrapper_robot_transport_bytes_unchanged": true,
+    "standalone_and_embedded_readme_text_equal": true,
+    "all_982_video_to_metric_sha_mappings_equal": true,
+    "credential_pattern_scan_passed": true,
+    "video_archive": {
+      "name": "champion_ema8000_videos.zip",
+      "bytes": 36588895286,
+      "sha256": "71e20b58d4fbd4ece3a32b8374af250dece579e54e5453d8cd053c9a767a92e7"
+    },
+    "prescribed_denominator": 1000,
+    "missing_results": 18,
+    "successes": 22,
+    "fixed_1000_q": 0.08944705849705853,
+    "fixed_1000_sr": 0.022,
+    "model_docker_validation_performed_by_upload_task": false,
+    "official_form_submitted": false
+  },
+  "canonical_video_checks": {
+    "schema": "canonical-video-publication-v1",
+    "verified_at_utc": "2026-10-16T14:21:03Z",
+    "archive": "champion_ema8000_videos.zip",
+    "bytes": 36588895286,
+    "sha256": "71e20b58d4fbd4ece3a32b8374af250dece579e54e5453d8cd053c9a767a92e7",
+    "source_archive_byte_identical": true,
+    "target_full_sha256_readback": true,
+    "all_982_video_source_sha256_and_zip_crc32_verified": true,
+    "zip_members": 984,
+    "complete_mp4": 982,
+    "incomplete_mp4_in_archive": 0,
+    "reencoded_or_edited_videos": 0,
+    "seconds": 964.239
+  },
+  "public_http_checks": {
+    "schema": "champion-three-artifact-anonymous-http-v1",
+    "verified_at_utc": "2026-10-16T14:21:18Z",
+    "base_url": "https://files.dywsy21.cn:18080/share/behavior-2026-champion-20261016/",
+    "headers": [
+      {
+        "file": "challenge_results_VLA_FINAL.zip",
+        "status": 200,
+        "bytes": 455031,
+        "content_type": "application/zip",
+        "accept_ranges": "bytes"
+      },
+      {
+        "file": "EVALUATION_README_FINAL_EN.txt",
+        "status": 200,
+        "bytes": 7367,
+        "content_type": "text/plain",
+        "accept_ranges": "bytes"
+      },
+      {
+        "file": "champion_ema8000_videos.zip",
+        "status": 200,
+        "bytes": 36588895286,
+        "content_type": "application/zip",
+        "accept_ranges": "bytes"
+      }
+    ],
+    "full_get_sha256": [
+      {
+        "file": "challenge_results_VLA_FINAL.zip",
+        "status": 200,
+        "bytes": 455031,
+        "sha256": "52004e4e89ed4fb1493c30053d15802668a73f7774736b7e36cfb456fa1b4bb4"
+      },
+      {
+        "file": "EVALUATION_README_FINAL_EN.txt",
+        "status": 200,
+        "bytes": 7367,
+        "sha256": "1af6d95d049d634014ce1f4e2e360374cee776340f312225172b6494af0c7858"
+      }
+    ],
+    "video_archive_range_gets": [
+      {
+        "start": 0,
+        "end": 65535,
+        "sha256": "846abce9582996869a74ad3c2ae8b16a69dc176f7112cbb78d7b88b10b10d57f",
+        "status": 206,
+        "content_range": "bytes 0-65535/36588895286"
+      },
+      {
+        "start": 36588829750,
+        "end": 36588895285,
+        "sha256": "97dee5f9cb0a109ac105aff95206625a60c815bb6ed721a327c49a558a791db7",
+        "status": 206,
+        "content_range": "bytes 36588829750-36588895285/36588895286"
+      }
+    ],
+    "public_index_contains_only_three_expected_files": true,
+    "credentials": false,
+    "cookies": false,
+    "client_certificate": false,
+    "environment_proxy": false,
+    "redirects": false,
+    "client_location": "RTX public host, outside homelab LAN",
+    "full_video_http_download_performed": false,
+    "video_full_sha256_was_read_back_on_destination": true,
+    "official_form_submitted": false,
+    "seconds": 0.337
+  },
+  "old_final_pending_and_internal_draft_files_not_published": true,
+  "memlite_files_not_published_or_evaluation_restarted": true,
+  "original_files_preserved": true,
+  "nginx_dns_authentication_unchanged": true,
+  "official_form_submitted": false,
+  "docker_gpu_acceptance_performed_by_this_task": false,
+  "evidence_files": {
+    "canonical-verification.json": "286867e42d558c2e06419e6c2629e33ed47597808e20717bd2d078ad2c5d7731",
+    "latest-submission-audit.json": "f507d4ca56a388725fa539268169367697abcc91016942ab2a35db6c89c9cf4a",
+    "publication.json": "f23532c845a232d9a3150d0c8d99ab40a0c42273cf388152a9e57616626b9e09",
+    "anonymous-http-verification.json": "782db5e67e6d9520b7db2fa1d33be291d5aec2ec32d1ee3c000d211d6bef8941",
+    "http-spec.json": "8a68d2291166e8fc0a95b3ddb6810f0b0172116c165ae8bde3cdb3da7a3a6401"
+  }
+}

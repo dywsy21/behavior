@@ -1,5 +1,7 @@
 # 三人协作计划：MEM-Lite + FM 方法验证
 
+**2026-10-16 22:21 CST / Codex（材料托管任务完成，交回团队填表）：** 三个最新冠军文件已发布到`https://files.dywsy21.cn:18080/share/behavior-2026-champion-20261016/`：`challenge_results_VLA_FINAL.zip`、`champion_ema8000_videos.zip`、`EVALUATION_README_FINAL_EN.txt`。982原结果/视频匹配与全SHA（视频整包目标回读）通过；RTX匿名公网三HEAD、两小文件全GET SHA、大ZIP首尾Range206通过。具体字段/URL/SHA在`docs/infra/results/2026-10-16-champion-submission-public-links.json`。根上传/校验职责完成，团队下一自行将三文件直链填入表单；未代提交/作Docker GPU验收，MEM未重启，旧包与异常partial未发布。不要覆盖这些长缓存已发布文件，后续修订使用新版本URL。
+
 **2026-10-16 22:07 CST / Codex（最终表单三文件）：** 队友给定最新版`challenge_results_VLA_FINAL.zip`、`EVALUATION_README_FINAL_EN.txt`及已固定SHA的视频`champion_ema8000_videos.zip`；根仅负责原字节上传/校验/匿名公开直链，不代交表单或复述已验Docker资格。最新982原JSON/视频映射和README文本均已核，原ZIP完整SHA与说明一致；新非公开staging恢复字节完全相同的视频ZIP，完成后只发布这三个文件，不发布旧FINAL/PENDING/内部draft、MEM或14异常partial。官方表单填报归团队，上传最新状态见plan。
 
 **2026-10-16 21:17 CST / Codex（用户最新范围）：** 用户说明MEM已停止，本轮不恢复或上传它；根独立负责仅冠军原结果包/全部对应视频发布至既有files分享站点并验SHA/公网链接。现有982完整/18错误披露不变，不重跑挑优、改官方产物或代填提交。node1目录与空间/HTTPS已核，上传尚未开始；详细进度见plan，外部模型交付仍不在范围。
