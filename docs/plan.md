@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-16 11:35 CST / Codex SUBMISSION-FULL-EVAL（当前处置手册同步，原评测持续）：** 上一goal轮为实质进展（两恢复路实际启动/237双端回归/114原件核验/新后继），本轮ff-only同步且origin/main未变。更新`docs/infra/FINAL_EVAL_CONTINUATION.md`当前表和依赖处置，移除仍将78队列/GPU4单侧路称“当前”的歧义，明确fb2等待同父＋0/2/4、fe1严格peer准入、GPU2复合异常原分类和死零阶段队列扩展边界；历史不删。实时41474再次核两路同PID/start ticks、物理控制继续增加及2823822实活，未启动新评测或改现役源；外部交付仍按用户暂缓。下一等待并验收原剩余12例→MEM576，不机械重做已完成检查。
+
 - **2026-10-16 11:30 CST / Codex SUBMISSION-FULL-EVAL（GPU0/2两路首实控与会话隔离通过）：** 同2815230/2815480、2815670/2816006、2818755/2818729未重启，gift_baskets305–308各200实控、canning_food305–308各1300实控；原manifest/9f actor/2a5ce80b/0更新与17/0 seeds、39090/34463官方时限绑定核合。各4独立会话journal精确前缀57811/343621字节递推验收通过，task只26/48，不冒称原始图像/动作/RNG等价或完整成功。GPU0官方reset→metric→BDDL谓词遍历已自然结束；旧首次批同一阶段也耗565s，未改物理/规则/看门狗或重开回合。证据`docs/infra/results/2026-10-16-champion-multi-recovery-first-controls.json`。两路继续原12待、2823822后继等待后接同MEM576；972完整/16工程异常口径保持，下一收后续原件/终态合账。没有人为全局停机、额外训练或外部交付。
 
 - **2026-10-16 11:28 CST / Codex SUBMISSION-FULL-EVAL（夜间新增114完整原件核合，仍不停评）：** 父30批94例＋GPU4侧6批20例原JSON/视频SHA/672×448/30fps/帧数=实控、唯一attempt、原slot/17与0 seeds/官方时限/命令/终态原参数核合；新增0完整成功。父已验930、侧路42＝972完整/16工程异常/12待，已结算22成功，仅内部进行中口径，非官方完整Q/SR。GPU0/2旧失败trace保留四个ConnectionClosedError，各只验失败前完整闭合前缀，并逐task会话数与全部完整批次精确核对；不称失败后缀通过。证据`docs/infra/results/2026-10-16-champion-overnight-originals.json`，完整远端audit SHA4680a6be，本地同SHA忽略副本。GPU2新侧路已各400实控，GPU0仍reset、model未收到动作请求；非暂停py-spy定位官方metrics.reset→BDDL goal satisfaction谓词遍历，未发现模型推理阻塞，继续核其进展、不改官方逻辑或停止GPU2。2823822后继/2826099观察器继续。

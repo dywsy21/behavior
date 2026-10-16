@@ -2,7 +2,7 @@
 
 2026-10-13，负责人Codex / SUBMISSION-FULL-EVAL。用户要求优先内部评测，模型交付暂缓。本页不授权外部上传、换权重或新训练。
 
-## 当前执行约定（2026-10-15，与下方历史说明区分）
+## 当前执行约定（2026-10-16，与下方历史说明区分）
 
 用户10月14日22:12要求持续评测，已部署**独立物理batch＋单卡故障隔离**；下方旧版本的“未知错误全局STOP”“c978/ae86编排”等仅保留为历史，不能用于当前操作。准确实时进度和PID以[plan](../plan.md)及[服务器目录表](../SERVER_LAYOUT.md)为准，不能只凭某个旧status文件判断仍在运行。
 
@@ -12,8 +12,9 @@
 | --- | --- | --- |
 | 冠军评测 | `runs/champion_final100_20261014_resume_v2`，manifest `a80d9602…cc45` | 编排 `code/champion-batch-isolation-20261014-v1` / `f7b72854`；实际actor/仿真入口仍 `9f6e75bd` |
 | MEM后续评测 | `runs/memlite_final100_20261014_resume_v8`，manifest `7819b835…e3b`，登记576剩余实例/174物理batch | 编排 `code/mem-batch-isolation-20261014-v1` / `79371d77`；实际actor仍 `51c11d32` |
-| GPU4未尝试后缀恢复 | `runs/champion_gpu4_20261015_recovery_v1`，42例/13原分组；父GPU4原故障现场保留 | `code/champion-worker-recovery-20261015-v1` / `11689f50`；实际actor/仿真仍9f |
-| 冠军→MEM等待与内部归档 | MEM v8下的 `queue-after-champion-recovered-v1/`；当前等待原父＋GPU4侧路，无MEM模型或回合 | `code/champion-recovery-collection-20261015-v1` / `78c364b2` |
+| GPU4未尝试后缀恢复 | `runs/champion_gpu4_20261015_recovery_v1`，42例/13原分组已自然完成；父GPU4原故障现场保留 | `code/champion-worker-recovery-20261015-v1` / `11689f50`；实际actor/仿真仍9f |
+| GPU0/2未尝试后缀恢复 | `runs/champion_gpu0_20261016_recovery_v1` / `runs/champion_gpu2_20261016_recovery_v1`，各6例，互相显式登记peer；两路已实际控制 | `code/champion-multi-recovery-20261016-v1` / `fe1db139`；实际actor/仿真仍9f |
+| 冠军→MEM等待与内部归档 | MEM v8下的 `queue-after-champion-multirecovery-v1/`；明确等待原父＋GPU0/2/4侧路，MEM尚未开始 | `code/champion-multi-recovery-queue-20261016-v1` / `fb2c7a8a` |
 
 ### 异常处置边界
 
@@ -27,7 +28,11 @@
 
 仍严格**冠军全量先、MEM剩余后**。等待器不占GPU；冠军1000案例全部有明确去向、原进程退出、各代权重和原件验收、内部归档完成且GPU真正空闲后，才启动已登记MEM。只要有未归属案例或验收错误，不能把队列放行冒称安全；先修复受影响环节，不停止健康评测。
 
-10月15日GPU4的原worker因模型重启被其他本次模拟器的辅助CUDA上下文误挡而退出，其42个未尝试案例已独立续评。新等待器通过显式`--recovery JOB SOURCE`和原故障证书验签接入；原父最终会保留`needs_isolated_worker_recovery`，不改写成completed。归档重读父＋侧路全部真实原件/错误、精确减去父未尝试后缀，核1000去向、同模型/种子/官方时限且无重复；漏侧路、漏代权重、原件变动或重复尝试都拒绝放行。新队列仅替换旧的零阶段等待器，旧STOP/终态保留，健康评测不停。GPU上下文尚未释放时新队列继续等待，不抢卡；当前冻结侧路只适配已验签的这一类故障，并非承诺所有未来故障自动修复。
+10月15日GPU4，以及16日凌晨GPU0/2，均在原物理批次出错后的模型重载阶段被其他已登记模拟器的小辅助CUDA上下文误挡。原父的健康五卡已自然完成，父终态保留`needs_isolated_worker_recovery`；不能改写成completed或把退役原PID继续当活跃worker。三路侧路只执行精确证书中的未尝试后缀。GPU0/2的新准入对peer作业路径/冻结commit、同父证书、实际PID/PPID/argv/env/start ticks及显存上限逐项核验，拒未知/同GPU/显著占用；不隐藏NVML进程、不杀其他worker、不修改推理计算。
+
+GPU2的原NaN与pre/post-physics复合异常继续保留`unclassified_operational_batch_error`，凭原operational receipt/attempt/status/command/log绑定准入其未尝试后缀，不把复合错误“修正”为已查清根因。原失败实例不重试、不填造分数。首实控/四会话隔离证据及登记见16日对应`results/`清单。
+
+新等待器通过三个显式`--recovery JOB SOURCE`和原故障证书接入。旧仅绑定GPU4的1404741队列在父终态后因隔离分区不匹配自行退出、零阶段；新门只允许同父、相同未尝试MEM、已退出零阶段旧队列，完整复核原升级收据/所有依赖SHA，并严格扩展至父隔离集合0/2/4。没有伪装成live-only行政停止，没有删除旧终态，也没有绕过已尝试MEM拒绝门。归档重读父＋三侧路全部真实原件/错误、精确减去父未尝试后缀，核1000去向、同模型/种子/官方时限且无重复；漏侧路、漏代权重、原件变动或重复尝试都拒绝放行。GPU上下文尚未释放时继续等待，不抢卡。该冻结恢复入口仍只支持经过实证核验的故障边界，并非承诺任意未来错误自动修复。
 
 最终内部收集目录为 `runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/{champion-results,mem-results}`。ZIP只装真实官方JSON和原wrapper/robot/transport；错误清单、视频索引/SHA、配置/来源和固定1000分母统计在旁，绝不补造官方JSON。存在执行异常时，`official_full_q_score`/`official_full_sr`保持null，另给真实完整样本统计与缺失按0的固定分母值，清楚标明口径。
 
