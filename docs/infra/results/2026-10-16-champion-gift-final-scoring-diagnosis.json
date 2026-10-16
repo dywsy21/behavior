@@ -1,0 +1,108 @@
+{
+  "schema": "champion_gift_baskets_final_scoring_diagnosis_v1",
+  "observed_at_utc": "2026-10-16 06:13:18 UTC",
+  "source_probe_time": 1792131075.4650936,
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1",
+  "worker": {
+    "status": "evaluating",
+    "part": "assembling_gift_baskets-n4-i4",
+    "pid": 2815230,
+    "model_pid": 2815670,
+    "sim_pid": 2818755,
+    "completed_parts": [],
+    "error": null
+  },
+  "physical": {
+    "status": "running",
+    "pid": 2818755,
+    "task": "assembling_gift_baskets",
+    "task_id": 26,
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+    "started": 1792120393.2802937,
+    "optimizer_updates": 0,
+    "control_steps": [
+      39000,
+      39000,
+      39000,
+      39000
+    ],
+    "updated": 1792130740.2060962
+  },
+  "uncommitted_batch_attempts": [
+    {
+      "status": "running",
+      "task": "assembling_gift_baskets",
+      "indices": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "instance_ids": [
+        305,
+        306,
+        307,
+        308
+      ],
+      "rollout": 0,
+      "started": 1792120796.823464,
+      "max_steps": 39090,
+      "policy_seed": 17,
+      "simulator_seed": 0
+    }
+  ],
+  "preliminary_metrics_not_full_batch_audit": [
+    {
+      "name": "assembling_gift_baskets_305_0.json",
+      "steps": 39091,
+      "success": false,
+      "q_score": {
+        "final": 0.3125
+      }
+    },
+    {
+      "name": "assembling_gift_baskets_306_0.json",
+      "steps": 39091,
+      "success": false,
+      "q_score": {
+        "final": 0.4375
+      }
+    }
+  ],
+  "last_original_log_lines": [
+    "\u001b[0m[02:54:34.394] [INFO] [omnigibson.eval.evaluator] Instance 305 (env 0) finished at step 39091: success=False q_score=0.3125\u001b[0m",
+    "\u001b[0m[02:56:30.139] [INFO] [omnigibson.eval.evaluator] Instance 306 (env 1) finished at step 39091: success=False q_score=0.4375\u001b[0m"
+  ],
+  "process_snapshot": "    PID STAT     ELAPSED     TIME %CPU WCHAN\n2815230 Ss+     03:00:35 00:00:14  0.1 poll_schedule_timeout.constprop.17\n2815670 Ssl     03:00:17 00:21:34 11.9 ep_poll\n2818755 Rsl     02:58:02 09:46:33  329 -\n",
+  "model_last_delivery": {
+    "time": 1792130759.956273,
+    "kind": "delivered",
+    "connection": "a41861bdd57d47f0b9941589ab5a8324",
+    "episode": "a41861bdd57d47f0b9941589ab5a8324/reset-1/task-26",
+    "task": 26,
+    "clock_kind": "policy_delivery",
+    "delivered_controls": 39100,
+    "physically_confirmed_controls": null,
+    "sent_controls": 20,
+    "action_sha256": "014c4f3346be7a5be60a0d12839004c04b26f04f9d184e09db13ca9b5a283bd3",
+    "prediction": 1955
+  },
+  "nonblocking_stack_command": "timeout 15s /usr/local/bin/py-spy dump --pid 2818755 --nonblocking",
+  "nonblocking_stack_main_thread": "Process 2818755: /run/ti/behavior_stage3_20260930/envs/sim/bin/python /run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py --task assembling_gift_baskets --task-id 26 --policy-config /run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_0.json --output /run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4 --num-envs 4 --indices 4 5 6 7\nPython v3.11.15 (/root/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/bin/python3.11)\n\nThread 2818755 (active+gil): \"MainThread\"\n    has_changed (omnigibson/object_states/object_state_base.py:271)\n    current_time_step_index (omnigibson/simulator.py:1177)\n    cache_is_valid (omnigibson/object_states/object_state_base.py:229)\n    get_value (omnigibson/object_states/object_state_base.py:323)\n    get_value (omnigibson/object_states/tensorized_state.py:116)\n    evaluate_bddl_predicate (omnigibson/utils/bddl_utils.py:231)\n    _evaluate_predicate (omnigibson/tasks/behavior_task.py:204)\n    evaluate_fn (omnigibson/tasks/behavior_task.py:228)\n    evaluate (bddl/predicates.py:86)\n    <listcomp> (bddl/condition_evaluation.py:638)\n    evaluate (bddl/condition_evaluation.py:638)\n    evaluate_state (bddl/condition_evaluation.py:734)\n    get_goal_option_satisfaction (omnigibson/tasks/behavior_task.py:232)\n    get_goal_option_satisfaction (omnigibson/eval/evaluator.py:168)\n    _compute_episode_metrics (omnigibson/metrics/task_metric.py:67)\n    aggregate (omnigibson/metrics/metric_base.py:121)\n    record_fn (omnigibson/eval/evaluator.py:679)\n    evaluate_instances_batched (omnigibson/eval/evaluator.py:130)\n    run (omnigibson/eval/evaluator.py:691)\n    main (run_champion_task.py:72)\n    <module> (run_champion_task.py:86)\n",
+  "interpretation": "Observed in official record_fn -> aggregate -> _compute_episode_metrics -> BDDL goal satisfaction traversal. Two original per-instance metrics already appeared sequentially; physical 39000 snapshot is coarse and batch not yet committed. This proves the sampled location and some result progress, not absence of every possible stall or completion of all four cases.",
+  "raw_probe_local": "artifacts/final-eval-20261016/gift-finalization-diagnosis/probe-output.json",
+  "raw_stack_local": "artifacts/final-eval-20261016/gift-finalization-diagnosis/nonblocking-stack.txt",
+  "actor_or_physics_changed": false,
+  "signals_sent_to_evaluator": false,
+  "original_outputs_modified": false,
+  "verified_full_batch_count_unchanged": 976,
+  "execution_errors": 16,
+  "remaining_cases_not_yet_batch_audited": 8
+}
