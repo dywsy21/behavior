@@ -1,0 +1,164 @@
+{
+  "schema": "continuation_deadline_headroom_v1",
+  "observed_at_utc": "2026-10-16T05:10:20Z",
+  "official_deadline": {
+    "utc": "2026-10-17T11:59:00Z",
+    "cst": "2026-10-17T19:59:00+08:00",
+    "source": "https://behavior.stanford.edu/challenge/updates.html",
+    "verified_at_utc": "2026-10-16T05:10:20Z",
+    "latest_announcement": "2026-10-09"
+  },
+  "time_to_deadline_hours": 30.81111111111111,
+  "historical_estimate_source": {
+    "path": "docs/infra/results/2026-10-15-isolated-eval-time-risk-1127.json",
+    "sha256": "0dfa8e5223a7b4d8697b0b70b0ca9eb729ec9775ea420ee3681586e6ca56d3b8"
+  },
+  "mem_registered_remaining": {
+    "manifest": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+      "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+    },
+    "mem_status_exists": false,
+    "mem_worker_statuses": [],
+    "mem_physical_parts": [],
+    "queue": {
+      "status": "waiting_for_champion_continuation",
+      "pid": 2823822,
+      "phases": []
+    },
+    "cases": 576,
+    "physical_batches": 174
+  },
+  "mem_historical_statistics": {
+    "2": {
+      "attempts": 39,
+      "episodes": 78,
+      "weighted_rate": 11.422345490431546,
+      "median_rate": 12.017273861849919,
+      "min_rate": 8.95212583872835,
+      "max_rate": 13.737678882130677,
+      "completed_part_overheads": 39,
+      "median_part_overhead_s": 189.81206033285707
+    },
+    "4": {
+      "attempts": 78,
+      "episodes": 312,
+      "weighted_rate": 14.8575913097219,
+      "median_rate": 15.45515008900048,
+      "min_rate": 11.490514377722974,
+      "max_rate": 18.25553008802004,
+      "completed_part_overheads": 36,
+      "median_part_overhead_s": 340.4834637786262
+    }
+  },
+  "mem_historical_weighted_rate_scenario_hours": 33.75025735857421,
+  "headroom_if_mem_could_start_immediately_hours": -2.9391462474631,
+  "hypothetical_mem_only_finish_utc": "2026-10-17T14:55:20.926Z",
+  "champion_not_finished": {
+    "complete": 972,
+    "execution_errors": 16,
+    "pending": 12,
+    "observer_timestamp": 1792127406.1334033,
+    "workers": {
+      "champion_gpu0": [
+        {
+          "part": "assembling_gift_baskets-n4-i4",
+          "steps": [
+            24900,
+            24900,
+            24900,
+            24900
+          ],
+          "worker": {
+            "pid": 2815230,
+            "live": true,
+            "state": "S",
+            "start_ticks": 551392233
+          },
+          "model": {
+            "pid": 2815670,
+            "live": true,
+            "state": "S",
+            "start_ticks": 551394000
+          },
+          "simulator": {
+            "pid": 2818755,
+            "live": true,
+            "state": "R",
+            "start_ticks": 551407516
+          }
+        }
+      ],
+      "champion_gpu2": [
+        {
+          "part": "canning_food-n4-i4",
+          "steps": [
+            23900,
+            23900,
+            23900,
+            23900
+          ],
+          "worker": {
+            "pid": 2815480,
+            "live": true,
+            "state": "S",
+            "start_ticks": 551393241
+          },
+          "model": {
+            "pid": 2816006,
+            "live": true,
+            "state": "S",
+            "start_ticks": 551395380
+          },
+          "simulator": {
+            "pid": 2818729,
+            "live": true,
+            "state": "R",
+            "start_ticks": 551407394
+          }
+        }
+      ]
+    }
+  },
+  "queue": {
+    "state": {
+      "status": "waiting_for_champion_continuation",
+      "pid": 2823822,
+      "phases": [],
+      "recovery_dependencies": [
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1",
+          "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+          "source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc",
+          "gpu": 0
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1",
+          "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+          "source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc",
+          "gpu": 2
+        },
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+          "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1",
+          "source_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+          "gpu": 4
+        }
+      ]
+    },
+    "proc": {
+      "pid": 2823822,
+      "live": true,
+      "state": "S",
+      "start_ticks": 551434596
+    }
+  },
+  "interpretation": "At the old measured-rate scenario, even zero remaining champion/collection/handoff time would exceed the deadline. This is conditional risk, not a new MEM throughput measurement or a hard runtime lower bound.",
+  "caveats": [
+    "MEM has not started; the 33.75 h scenario is historical and its scene mix/load costs may differ.",
+    "Remaining champion time, startup, failures, final archival and delivery are excluded from the hypothetical MEM-only finish.",
+    "User's champion-then-MEM order, full internal evaluation, fixed actor/physics/horizons and deferred external delivery remain unchanged."
+  ],
+  "runtime_or_process_modified": false,
+  "public_submission": false
+}

@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-16 13:10 CST / Codex SUBMISSION-FULL-EVAL（原两路连续推进，截止风险重核但不停评）：** 同41474观察原两路34min新增64800实控，无故障/重启，随后GPU0各24900、GPU2各23900；2823822实活，972完整/16既有工程异常/12待不变。重新核[官方公告](https://behavior.stanford.edu/challenge/updates.html)仍10/17 19:59 CST截止，仅余30.811h；原MEM v8清单SHA7819b835、576例/174批未改，远端无status/worker/parts、尚未启动。之前117个完整MEM batch的历史吞吐场景仍需33.750h，即使假设冠军立刻结束并零开销接MEM也约晚2.939h；不是本轮MEM新测速、实际下界或确定完成预言，真实还要冠军收尾/加载/归档。证据`docs/infra/results/2026-10-16-mem-deadline-headroom-1310.json`绑定旧测量SHA0dfa8e52及真实进程。风险已告知；仍按用户冠军→MEM/连续全量，不因截止改actor、缩时限、丢任务或启用暂缓交付。下一继续原两路及终态原件/接MEM验收。
+
 - **2026-10-16 12:20 CST / Codex SUBMISSION-FULL-EVAL（正式归档器的已终态worker预验通过，续评不停）：** 上一goal轮为同41474/原两路真实控制增加16400步的verified wait；本轮ff-only同步成功、origin/main仍33677bd0。为提前发现收尾接MEM障碍，在RTX只读调用现役fb2归档器的`registered_recoveries`和`worker_materials`，父8个终态worker及已完成GPU4侧路的退出/参数/原模型generation/来源绑定全部通过，显式0/2/4注册核合。证据`docs/infra/results/2026-10-16-champion-terminal-parent-package-preflight.json`，探针留本地忽略目录`artifacts/final-eval-20261016/terminal-parent-package-preflight/`。此为已终态部分预验，未绕过剩余GPU0/2、完整1000合账或整体归档门，也不是独立成员review；尚未创建正式输出目录。原两路继续实际推进、2823822仍waiting，累计972完整/16工程异常/12待不变。下一等原12例终态再验全包并确认MEM实际开跑，无停止/重跑/热改actor或外部交付。
 
 - **2026-10-16 11:35 CST / Codex SUBMISSION-FULL-EVAL（当前处置手册同步，原评测持续）：** 上一goal轮为实质进展（两恢复路实际启动/237双端回归/114原件核验/新后继），本轮ff-only同步且origin/main未变。更新`docs/infra/FINAL_EVAL_CONTINUATION.md`当前表和依赖处置，移除仍将78队列/GPU4单侧路称“当前”的歧义，明确fb2等待同父＋0/2/4、fe1严格peer准入、GPU2复合异常原分类和死零阶段队列扩展边界；历史不删。实时41474再次核两路同PID/start ticks、物理控制继续增加及2823822实活，未启动新评测或改现役源；外部交付仍按用户暂缓。下一等待并验收原剩余12例→MEM576，不机械重做已完成检查。
