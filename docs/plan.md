@@ -12,6 +12,8 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-16 11:20 CST / Codex SUBMISSION-FULL-EVAL（0/2/4后继已实际挂起，两路恢复不停）：** 新等待器2823822/`MEMv8/queue-after-champion-multirecovery-v1`已waiting/零阶段，真实PID/argv/绑定核合；明确等待同父＋GPU0/2新侧路与GPU4原侧路，随后原MEM576，未重启或重写旧1404741。新独立队列源`code/champion-multi-recovery-queue-20261016-v1`=`fb2c7a8afab298bda8b7cd7496c3eda85def679c`，两端各237测试过；旧队列终态SHA40b4861c，新证据`docs/infra/results/2026-10-16-champion-multirecovery-queue-launch.json`。GPU0/2原2815230/2815480及模型/模拟器实活、原权重，场景仍加载，不称有新成功率。原父930完整＋GPU4侧42是运行账面，16工程异常、12待；夜间原件仍待追核。只读观察器2826099/session41474重新建立，明确区分已自然完成与隔离失败，不再用昨日句柄。继续冠军→MEM，用户暂缓的外部交付不做。
+
 - **2026-10-16 11:13 CST / Codex SUBMISSION-FULL-EVAL（恢复模型已ready与后继精确扩展）：** GPU0/2模型2815670/2816006均ready、原2a5ce80b及0更新、正确独立manifest/launcher，sim2818755/2818729场景加载；不是已完成回合。旧1404741已自然终态，新增只读同父等待器扩展：必须原零阶段/已退出/相同MEM未尝试、原升级证书与全部依赖SHA不变、显式严格扩张至父全部0/2/4隔离卡，拒新策略/尝试过MEM/遗漏或替换原恢复。局部90测试通过（包含24个新增正反边界），全套回归和新队列源部署在进行；不热改fe1现役恢复源，无停止健康作业。
 
 - **2026-10-16 11:11 CST / Codex SUBMISSION-FULL-EVAL（GPU0/2已启，原父自然终态，旧等待器依赖不全）：** 两路恢复PID2815230/2815480实际running，GPU0模型2815670加载；首控制仍待验。原GPU7正常结束、父241557自然退出为needs_isolated_worker_recovery，未被本线程停止。旧1404741等待器零阶段自然报`Parent terminal quarantine is not exactly covered by registered recoveries`：只有GPU4依赖而父现在隔离0/2/4。原live-only升级因此正确拒绝，未创建STOP或升级证书。正在增加同父、已退出、零阶段等待器的精确依赖扩展校验，保留原依赖及历史SHA，只接入新0/2；两路续评继续，不重复启动MEM或冠军原例。完成代码回归/新冻结后挂新后继。

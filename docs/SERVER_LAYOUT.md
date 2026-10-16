@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-16 11:20 CST：0/2/4恢复后自动接MEM（当前等待器）
+
+- 当前等待器`/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/queue-after-champion-multirecovery-v1/status.json`，PID2823822、tmux`mem-after-champion-multirecovery-v8`，外层日志同MEM目录`queue-after-champion-multirecovery-v1.launch.log`；明确绑定原父与下方GPU0/2和GPU4三个恢复run。状态waiting/phases空，MEM未启动。
+- 独立队列/归档工具`code/champion-multi-recovery-queue-20261016-v1`固定`fb2c7a8afab298bda8b7cd7496c3eda85def679c`，双端237回归通过。Git包`runs/final_eval_preparation_20261014/champion-multi-recovery-queue-20261016-v1.bundle` SHA`e6f1bdb89d8f1905cd913fd5e5afd94c700f6aefbdee991a4fc88d5b4b50875d`；本地忽略副本`artifacts/final-eval-20261016/multi-recovery-queue-v1/source.bundle`。不能热改此在用源或现役fe1恢复源。
+- 旧1404741队列自然退出、终态SHA`40b4861c92dc32e894bade0068c19c28a2e65cbdb6d3ea45848c043246d79f04`、零阶段，未写新的STOP或live升级证书；新门严格复核原ab5升级证书/老依赖和同父隔离分区后替代。证据`docs/infra/results/2026-10-16-champion-multirecovery-queue-launch.json`。收集目录仍`runs/final_eval_preparation_20261014/champion-then-mem-collections-v1/`，结果尚未生成。
+- 新只读统一观察器2826099/session41474正在监测父、GPU0/2/4、队列及MEM；它无写入/停止/重试权限。原1408396已退出，其旧句柄不可作为实时证据。
+
 ## 2026-10-16 11:13 CST：冠军GPU0/2未尝试后缀续评（当前）
 
 - RTX根仍`/run/ti/rl_memlite_stage1_20261006`。新`runs/champion_gpu0_20261016_recovery_v1`与`runs/champion_gpu2_20261016_recovery_v1`，各6例；tmux分别`champion-gpu0-recovery-v1`/`champion-gpu2-recovery-v1`，worker2815230/2815480，model2815670/2816006，sim2818755/2818729。日志各`run.log`及`workers/gpu_N/`；模型ready，场景加载，首实控仍待核。

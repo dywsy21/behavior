@@ -1,0 +1,385 @@
+{
+  "schema": "champion_multi_recovery_queue_launch_v1",
+  "observed_at": 1792120837.1610823,
+  "queue": {
+    "status": "waiting_for_champion_continuation",
+    "pid": 2823822,
+    "started": 1792120739.461133,
+    "phases": [],
+    "mem_job": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+    "champion_job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+    "champion_root": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2",
+    "bindings": [
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/manifest.json",
+        "sha256": "7819b8358c4dd5545774a25b259273db2464439bfd3bb2b6869863e9a7a56e3b"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2/manifest.json",
+        "sha256": "a80d9602733825adf4fce759970a7ae8e039eac511458826f9100bcba030cc45"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+        "sha256": "211a42e08ff7f3aedf90654b8f3878e7be1e299132f68dc0b6f41d8555166214"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v6-priority-stop-v1.json",
+        "sha256": "3b962cb99eac2b0fd5f54947041c410e600022add93c77e718d90245c9f9a040"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v1-precontrol-stop-v1.json",
+        "sha256": "a1ff634cbaecd78ffb9597caa0965400e7cdef1c6f39457da5f64f12d5907210"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/manifest.json",
+        "sha256": "19b056a7d2fecd0bab5ae8f2460ed553f6cac19589c8c2866c4c8bd140321297"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/queue-after-champion-recovered-v1/status.json",
+        "sha256": "40b4861c92dc32e894bade0068c19c28a2e65cbdb6d3ea45848c043246d79f04"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/manifest.json",
+        "sha256": "044ff86e8b7fd06b9dd17762a4b365ce85569dd3f0a5e37cbdc0e30a56c324b3"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parent-worker-certificate.json",
+        "sha256": "02f711c026307ec0d57167f60ec6086f8b0bfd8185c9e5d946e5de6392559c61"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/manifest.json",
+        "sha256": "b55c9143a655f5b16825ab3284868351f8b89ca2892084ec82707216d71d34d6"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parent-worker-certificate.json",
+        "sha256": "3529fc2d2c0dd4031e249047246a830d0e1efcbb132f25e8b7613b115b53bf53"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/manifest.json",
+        "sha256": "45830ff311c60813b87694370dd7f8346278c785971bbfa68579a64ebd9ebe46"
+      },
+      {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1/parent-worker-certificate.json",
+        "sha256": "a33c0f3fa746b3e3f72750154deae9919f8219812fe5fbe91ca89bf714627bfd"
+      }
+    ],
+    "mem_source": "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+    "champion_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+    "queue_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-queue-20261016-v1",
+    "queue_source_commit": "fb2c7a8afab298bda8b7cd7496c3eda85def679c",
+    "automatic_retries": false,
+    "output_root": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+    "recovery_dependencies": [
+      {
+        "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1",
+        "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+        "source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc",
+        "gpu": 0
+      },
+      {
+        "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1",
+        "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+        "source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc",
+        "gpu": 2
+      },
+      {
+        "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+        "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1",
+        "source_commit": "11689f50f75fab6f3b86ac7cec0d76df4dcb0b5c",
+        "gpu": 4
+      }
+    ],
+    "updated": 1792120739.4611459
+  },
+  "queue_process": {
+    "pid": 2823822,
+    "ppid": 2159562,
+    "start_ticks": 551434596,
+    "argv": [
+      "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+      "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-queue-20261016-v1/scripts/eval/queue_memlite_after_champion_continuation.py",
+      "--mem-job",
+      "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8",
+      "--champion-job",
+      "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261014_resume_v2",
+      "--authorization",
+      "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/priority-champion-first-v1.json",
+      "--mem-source",
+      "/run/ti/rl_memlite_stage1_20261006/code/mem-batch-isolation-20261014-v1",
+      "--champion-source",
+      "/run/ti/rl_memlite_stage1_20261006/code/champion-batch-isolation-20261014-v1",
+      "--previous-queue",
+      "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/queue-after-champion-recovered-v1",
+      "--queue-name",
+      "queue-after-champion-multirecovery-v1",
+      "--output-root",
+      "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-then-mem-collections-v1",
+      "--recovery",
+      "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1",
+      "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+      "--recovery",
+      "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1",
+      "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+      "--recovery",
+      "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu4_20261015_recovery_v1",
+      "/run/ti/rl_memlite_stage1_20261006/code/champion-worker-recovery-20261015-v1"
+    ],
+    "environment": {
+      "EVAL_GPU": null,
+      "EVAL_SOURCE": null,
+      "CUDA_VISIBLE_DEVICES": null
+    }
+  },
+  "old_queue_terminal": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/memlite_final100_20261014_resume_v8/queue-after-champion-recovered-v1/status.json",
+    "sha256": "40b4861c92dc32e894bade0068c19c28a2e65cbdb6d3ea45848c043246d79f04"
+  },
+  "recoveries": {
+    "0": {
+      "manifest": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/manifest.json",
+        "sha256": "044ff86e8b7fd06b9dd17762a4b365ce85569dd3f0a5e37cbdc0e30a56c324b3"
+      },
+      "worker": {
+        "status": "evaluating",
+        "pid": 2815230,
+        "gpu": 0,
+        "started": 1792120258.0061526,
+        "completed_parts": [],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 2815670,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/workers/gpu_0/model-000",
+        "updated": 1792120393.1652482,
+        "sim_pid": 2818755,
+        "part": "assembling_gift_baskets-n4-i4"
+      },
+      "processes": [
+        {
+          "pid": 2815230,
+          "ppid": 2159562,
+          "start_ticks": 551392233,
+          "argv": [
+            "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+            "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1/scripts/eval/champion_worker_recovery.py",
+            "run",
+            "--job",
+            "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1"
+          ],
+          "environment": {
+            "EVAL_GPU": null,
+            "EVAL_SOURCE": null,
+            "CUDA_VISIBLE_DEVICES": null
+          }
+        },
+        {
+          "pid": 2815670,
+          "ppid": 2815230,
+          "start_ticks": 551394000,
+          "argv": [
+            "/home/tione/notebook/baselines/StarVLA/.venv/bin/python",
+            "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1/scripts/eval/serve_champion_official.py",
+            "--config",
+            "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_0.json",
+            "--output",
+            "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/workers/gpu_0/model-000",
+            "--profile-memory",
+            "--recovery-job",
+            "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1"
+          ],
+          "environment": {
+            "EVAL_GPU": null,
+            "EVAL_SOURCE": null,
+            "CUDA_VISIBLE_DEVICES": "0"
+          }
+        },
+        {
+          "pid": 2818755,
+          "ppid": 2815230,
+          "start_ticks": 551407516,
+          "argv": [
+            "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+            "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+            "--task",
+            "assembling_gift_baskets",
+            "--task-id",
+            "26",
+            "--policy-config",
+            "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_0.json",
+            "--output",
+            "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4",
+            "--num-envs",
+            "4",
+            "--indices",
+            "4",
+            "5",
+            "6",
+            "7"
+          ],
+          "environment": {
+            "EVAL_GPU": "0",
+            "EVAL_SOURCE": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval",
+            "CUDA_VISIBLE_DEVICES": null
+          }
+        }
+      ],
+      "model": {
+        "status": "ready",
+        "pid": 2815670,
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "launcher_source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc",
+        "recovery_manifest_sha256": "044ff86e8b7fd06b9dd17762a4b365ce85569dd3f0a5e37cbdc0e30a56c324b3",
+        "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+        "optimizer_updates": 0
+      },
+      "physical": {
+        "status": "loading",
+        "pid": 2818755,
+        "task": "assembling_gift_baskets",
+        "task_id": 26,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+        "started": 1792120393.2802937,
+        "optimizer_updates": 0
+      }
+    },
+    "2": {
+      "manifest": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/manifest.json",
+        "sha256": "b55c9143a655f5b16825ab3284868351f8b89ca2892084ec82707216d71d34d6"
+      },
+      "worker": {
+        "status": "evaluating",
+        "pid": 2815480,
+        "gpu": 2,
+        "started": 1792120271.8016028,
+        "completed_parts": [],
+        "diagnosed_failed_parts": [],
+        "model_generations": [],
+        "runtime_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "model_pid": 2816006,
+        "model_path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/model-000",
+        "updated": 1792120391.9470656,
+        "sim_pid": 2818729,
+        "part": "canning_food-n4-i4"
+      },
+      "processes": [
+        {
+          "pid": 2815480,
+          "ppid": 2159562,
+          "start_ticks": 551393241,
+          "argv": [
+            "/home/tione/notebook/baselines/GalaxeaVLA/.venv/bin/python",
+            "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1/scripts/eval/champion_worker_recovery.py",
+            "run",
+            "--job",
+            "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1"
+          ],
+          "environment": {
+            "EVAL_GPU": null,
+            "EVAL_SOURCE": null,
+            "CUDA_VISIBLE_DEVICES": null
+          }
+        },
+        {
+          "pid": 2816006,
+          "ppid": 2815480,
+          "start_ticks": 551395380,
+          "argv": [
+            "/home/tione/notebook/baselines/StarVLA/.venv/bin/python",
+            "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1/scripts/eval/serve_champion_official.py",
+            "--config",
+            "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_2.json",
+            "--output",
+            "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/model-000",
+            "--profile-memory",
+            "--recovery-job",
+            "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1"
+          ],
+          "environment": {
+            "EVAL_GPU": null,
+            "EVAL_SOURCE": null,
+            "CUDA_VISIBLE_DEVICES": "2"
+          }
+        },
+        {
+          "pid": 2818729,
+          "ppid": 2815480,
+          "start_ticks": 551407394,
+          "argv": [
+            "/run/ti/behavior_stage3_20260930/envs/sim/bin/python",
+            "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval/run_champion_task.py",
+            "--task",
+            "canning_food",
+            "--task-id",
+            "48",
+            "--policy-config",
+            "/run/ti/rl_memlite_stage1_20261006/runs/champion_final100_20261013_v2/configs/gpu_2.json",
+            "--output",
+            "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n4-i4",
+            "--num-envs",
+            "4",
+            "--indices",
+            "4",
+            "5",
+            "6",
+            "7"
+          ],
+          "environment": {
+            "EVAL_GPU": "2",
+            "EVAL_SOURCE": "/run/ti/rl_memlite_stage1_20261006/code/final-eval-continuation-20261013-v1/scripts/eval",
+            "CUDA_VISIBLE_DEVICES": null
+          }
+        }
+      ],
+      "model": {
+        "status": "ready",
+        "pid": 2816006,
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "launcher_source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc",
+        "recovery_manifest_sha256": "b55c9143a655f5b16825ab3284868351f8b89ca2892084ec82707216d71d34d6",
+        "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+        "optimizer_updates": 0
+      },
+      "physical": {
+        "status": "loading",
+        "pid": 2818729,
+        "task": "canning_food",
+        "task_id": 48,
+        "indices": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+        "config_sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+        "started": 1792120392.0553236,
+        "optimizer_updates": 0
+      }
+    }
+  },
+  "tests": {
+    "local": 237,
+    "target": 237,
+    "independent_member_review": false
+  },
+  "old_queue_stopped_by_us": false,
+  "healthy_eval_stop_requested": false,
+  "policy_changed": false,
+  "original_failed_cases_rerolled": false,
+  "mem_started": false,
+  "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-queue-20261016-v1",
+  "deployment": {
+    "bundle_path": "/run/ti/rl_memlite_stage1_20261006/runs/final_eval_preparation_20261014/champion-multi-recovery-queue-20261016-v1.bundle",
+    "bundle_sha256": "e6f1bdb89d8f1905cd913fd5e5afd94c700f6aefbdee991a4fc88d5b4b50875d",
+    "commit": "fb2c7a8afab298bda8b7cd7496c3eda85def679c"
+  }
+}
