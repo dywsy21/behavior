@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-16 15:10 CST：罐头末两例错误已隔离，仅礼物篮末两例仍在跑
+
+- RTX根仍`/run/ti/rl_memlite_stage1_20261006`。`runs/champion_gpu2_20261016_recovery_v1`终态`completed_with_execution_errors`，原2815480/2816006/2901123均已退出；6例清单为4完整＋2工程异常，没有未尝试后缀。`parts/canning_food-n2-i8/status.json`遗留running/21400粗步数不代表进程仍活，禁止据此重启旧run。
+- 原错误在`workers/gpu_2/canning_food-n2-i8-{operational-error,execution-errors}.json`与`.log`，原attempt及两个partial视频仍在该part；完整SHA/终态参数/会话前缀与失败后缀边界见`docs/infra/results/2026-10-16-champion-canning309310-preserved-error.json`。不生成缺失官方JSON、不把partial视频冒称完整评测视频。
+- `runs/champion_gpu0_20261016_recovery_v1`原worker/model/sim2815230/2815670/2907898持续，礼物篮309/310各19900实控；2823822/`queue-after-champion-multirecovery-v1`仍waiting，生产依赖门已核接受GPU2终态而等GPU0。当前980完整/18工程异常/2待；冠军完整归档及原MEM576启动仍未发生。不得热改在用fe1/fb2/9f源，或清理原错误、视频、权重。
+
 ## 2026-10-16 14:16 CST：冠军两恢复路进入最后309–310
 
 - 14:23两路末两例均已实控：GPU0各600、GPU2各6400，各4旧闭合＋2新会话前缀及原身份/种子/时限核合。证据`docs/infra/results/2026-10-16-champion-final-four-first-controls.json`，当前不再是GPU0仅加载；下列worker/model/sim PID均保持。

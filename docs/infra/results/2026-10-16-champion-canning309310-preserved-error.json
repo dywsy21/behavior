@@ -1,0 +1,265 @@
+{
+  "schema": "champion_canning309310_preserved_error_terminal_audit_v1",
+  "checked_at": 1792134582.6992338,
+  "tool_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-queue-20261016-v1",
+  "tool_commit": "fb2c7a8afab298bda8b7cd7496c3eda85def679c",
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/manifest.json",
+    "sha256": "b55c9143a655f5b16825ab3284868351f8b89ca2892084ec82707216d71d34d6"
+  },
+  "job_status": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/status.json",
+    "sha256": "2aa6351417459dd230d07abb33ac3eb8c892e7bf5feb48faaa401bd8aa0af3d7"
+  },
+  "worker_status": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/status.json",
+    "sha256": "b728d3e924009901b46cdb1cb61281c2d370b4152e190a7ff8b0b1671d660c0f"
+  },
+  "operational_receipt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/canning_food-n2-i8-operational-error.json",
+    "sha256": "84bd53b80baedf4d1f8ca574552929c15911bfe250f5633d864630ad626ead2d"
+  },
+  "error_ledger": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/canning_food-n2-i8-execution-errors.json",
+    "sha256": "21da296b57bc0ec4754972d14ce9e7cdf6b7ec39bc87c40df887da84315b48a9"
+  },
+  "errors": [
+    {
+      "task": "canning_food",
+      "instance_id": 309,
+      "rollout_id": 0,
+      "original_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n2-i8/attempts/08.json",
+        "sha256": "3ec83feeb06b82e7cb9e78b22252818481a8b8685eeaf322b274d0fee4f23b55"
+      },
+      "diagnosis": {
+        "kind": "unclassified_operational_batch_error",
+        "scene_slot": null,
+        "failure_phase": "runtime_unknown_preserved_for_diagnosis",
+        "official_score_available": false,
+        "policy_failure_claimed": false,
+        "operational_receipt": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/canning_food-n2-i8-operational-error.json",
+          "sha256": "84bd53b80baedf4d1f8ca574552929c15911bfe250f5633d864630ad626ead2d"
+        }
+      },
+      "log": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/canning_food-n2-i8.log",
+        "sha256": "2b2f267f92b00d674323829cba0d6eccbc146ebe1e913bbb54f5f4e2f10d6012"
+      },
+      "rerun_allowed": false
+    },
+    {
+      "task": "canning_food",
+      "instance_id": 310,
+      "rollout_id": 0,
+      "original_attempt": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n2-i8/attempts/08.json",
+        "sha256": "3ec83feeb06b82e7cb9e78b22252818481a8b8685eeaf322b274d0fee4f23b55"
+      },
+      "diagnosis": {
+        "kind": "unclassified_operational_batch_error",
+        "scene_slot": null,
+        "failure_phase": "runtime_unknown_preserved_for_diagnosis",
+        "official_score_available": false,
+        "policy_failure_claimed": false,
+        "operational_receipt": {
+          "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/canning_food-n2-i8-operational-error.json",
+          "sha256": "84bd53b80baedf4d1f8ca574552929c15911bfe250f5633d864630ad626ead2d"
+        }
+      },
+      "log": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/canning_food-n2-i8.log",
+        "sha256": "2b2f267f92b00d674323829cba0d6eccbc146ebe1e913bbb54f5f4e2f10d6012"
+      },
+      "rerun_allowed": false
+    }
+  ],
+  "original_attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n2-i8/attempts/08.json",
+    "sha256": "3ec83feeb06b82e7cb9e78b22252818481a8b8685eeaf322b274d0fee4f23b55"
+  },
+  "physical_status": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n2-i8/status.json",
+    "sha256": "60301fc537c4a9b710b464355e09bc34b9ea9e6054575cb6927b9b19a1eb30f4"
+  },
+  "last_control_steps": [
+    21400,
+    21400
+  ],
+  "nominal_horizon": 34463,
+  "policy_seed": 17,
+  "simulator_seed": 0,
+  "command": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/canning_food-n2-i8-command.json",
+    "sha256": "119778bab2e0d6de2e30d277198321f2c6dfa971c6652b4f3fe9438004bc323c"
+  },
+  "resolved_config": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n2-i8/resolved_config.json",
+    "sha256": "2edf4524d31a4c1095e7c641a052be3fc291adecaca2ab85255bbf4474dd21c7"
+  },
+  "log": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/canning_food-n2-i8.log",
+    "sha256": "2b2f267f92b00d674323829cba0d6eccbc146ebe1e913bbb54f5f4e2f10d6012"
+  },
+  "partial_videos": [
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n2-i8/videos/canning_food_309_0.mp4",
+      "sha256": "45ffe6a73420bab013b226ca16e34285ff6aa24cc712fd01baeeb85b77e8323b"
+    },
+    {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parts/canning_food-n2-i8/videos/canning_food_310_0.mp4",
+      "sha256": "3d8406e0293f40315644d2d74e986cd9dd77f64a9160f3619e8bc6116252534c"
+    }
+  ],
+  "observed_log_symptoms": {
+    "/World/scene_1/controllable__r1pro__robot_r1/left_gripper_finger_link1 orientation tensor([nan, nan, nan, nan])": true,
+    "Illegal BroadPhaseUpdateData": true,
+    "read_from_physx must be called during a physics step": true,
+    "RuntimeError: Exception occurred during pre-physics step": true
+  },
+  "root_cause_fully_established": false,
+  "classification_modified": false,
+  "rerun_started": false,
+  "model_result": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/model-000/result.json",
+    "sha256": "066e64e43bc772ec9dff7d415b930473bc0fc1a1f97de1ba2b73e6960beb12cd"
+  },
+  "model_status": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/model-000/status.json",
+    "sha256": "066e64e43bc772ec9dff7d415b930473bc0fc1a1f97de1ba2b73e6960beb12cd"
+  },
+  "model": {
+    "status": "closed",
+    "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+    "parameters_after": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+    "weights_unchanged": true,
+    "optimizer_updates": 0,
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "469f7487375d123a253de1563bc765208f04c1aea927564b3d3e8beb3221bd2c",
+    "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+    "launcher_source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc",
+    "recovery_manifest_sha256": "b55c9143a655f5b16825ab3284868351f8b89ca2892084ec82707216d71d34d6"
+  },
+  "production_terminal_worker_materials_verified": true,
+  "production_ready_gate_waits_only_for_gpu0": true,
+  "completed_session_prefix": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 8966906,
+    "prefix_sha256": "8db8d8623cbc26d5389197ed7b3a574908632166dce8a7a7b4fda571e1c3e470",
+    "lines": 6908,
+    "connections": 4,
+    "episodes": 4,
+    "closed_episodes": 4,
+    "active_connections": 0,
+    "deliveries": 6896,
+    "delivered_controls": 137920,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      48
+    ],
+    "require_closed": true,
+    "original_outputs_modified": false,
+    "scope": "Entire complete-session prefix matched to every committed physical case; known failed suffix preserved, not declared a passing protocol audit.",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/model-000/events.jsonl",
+    "full_original_trace": {
+      "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/workers/gpu_2/model-000/events.jsonl",
+      "sha256": "848eeaf37a410de4f7ca1c257f2f56e9db12f4fd33e176691bb8286a68433cec"
+    },
+    "captured_bytes": 11763223,
+    "excluded_failed_suffix_bytes": 2796317,
+    "excluded_failed_task_ids": [
+      48
+    ],
+    "retained_connection_errors": [
+      {
+        "offset": 11762184,
+        "event": {
+          "time": 1792134371.428405,
+          "kind": "connection_error",
+          "connection": "340906853e3941a887a519059a7c8ce6",
+          "error": "ConnectionClosedError(None, None, None)"
+        }
+      },
+      {
+        "offset": 11762702,
+        "event": {
+          "time": 1792134371.4286542,
+          "kind": "connection_error",
+          "connection": "f438b92a92c74d768bec712d485de186",
+          "error": "ConnectionClosedError(None, None, None)"
+        }
+      }
+    ]
+  },
+  "remaining_unattempted_parts": [],
+  "protected_gpu0": {
+    "processes": {
+      "pid": {
+        "pid": 2815230,
+        "ppid": 2159562,
+        "start_ticks": 551392233,
+        "state": null
+      },
+      "model_pid": {
+        "pid": 2815670,
+        "ppid": 2815230,
+        "start_ticks": 551394000,
+        "state": null
+      },
+      "sim_pid": {
+        "pid": 2907898,
+        "ppid": 2815230,
+        "start_ticks": 552491144,
+        "state": null
+      }
+    },
+    "part": "assembling_gift_baskets-n2-i8",
+    "physical": {
+      "status": "running",
+      "pid": 2907898,
+      "task": "assembling_gift_baskets",
+      "task_id": 26,
+      "indices": [
+        8,
+        9
+      ],
+      "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+      "config_sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+      "started": 1792131229.5602303,
+      "optimizer_updates": 0,
+      "control_steps": [
+        19900,
+        19900
+      ],
+      "updated": 1792134577.336896
+    }
+  },
+  "successor_queue": {
+    "status": "waiting_for_champion_continuation",
+    "process": {
+      "pid": 2823822,
+      "ppid": 2159562,
+      "start_ticks": 551434596,
+      "state": null
+    },
+    "phases": []
+  },
+  "combined_counts": {
+    "completed_originals": 980,
+    "preserved_engineering_errors": 18,
+    "remaining_cases": 2,
+    "settled_successes": 22
+  },
+  "original_outputs_modified": false,
+  "full_model_score": false,
+  "manual_visual_review": false,
+  "validation_scope": "Exact original error/attempt/log/status/command/config provenance and full failed-batch disclosure; terminal frozen parameters and production package gates; prior four complete sessions audited separately from retained failed suffix. No full physical-root-cause claim, fabricated official scores, replay, final overall package, or human video review."
+}
