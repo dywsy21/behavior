@@ -1,0 +1,326 @@
+{
+  "schema": "champion_recovery_committed_batch_audit_v1",
+  "observed_at": 1792131352.6018825,
+  "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1",
+  "gpu": 0,
+  "part": "assembling_gift_baskets-n4-i4",
+  "tool_source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-queue-20261016-v1",
+  "tool_commit": "fb2c7a8afab298bda8b7cd7496c3eda85def679c",
+  "manifest": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/manifest.json",
+    "sha256": "044ff86e8b7fd06b9dd17762a4b365ce85569dd3f0a5e37cbdc0e30a56c324b3"
+  },
+  "certificate": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parent-worker-certificate.json",
+    "sha256": "02f711c026307ec0d57167f60ec6086f8b0bfd8185c9e5d946e5de6392559c61"
+  },
+  "records": [
+    {
+      "task": "assembling_gift_baskets",
+      "instance_id": 305,
+      "rollout_id": 0,
+      "steps": 39091,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4/json/assembling_gift_baskets_305_0.json",
+        "sha256": "24dd8d7e1355e46202b1742c6227feb1aefd64eeca289b5be4d7482de9720d49"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4/videos/assembling_gift_baskets_305_0.mp4",
+        "sha256": "cde9af74436a2463c638ff6410c8a2229a2ab94d2f69f9a11a4818cd721888ad"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "39091"
+      },
+      "success": false,
+      "q_score_final": 0.3125
+    },
+    {
+      "task": "assembling_gift_baskets",
+      "instance_id": 306,
+      "rollout_id": 0,
+      "steps": 39091,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4/json/assembling_gift_baskets_306_0.json",
+        "sha256": "7e140cc56afb96df44ee0c3295fd3e3fbe11cf7311cd8b1977a60e734d9f1eb3"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4/videos/assembling_gift_baskets_306_0.mp4",
+        "sha256": "9f88df2a65453cb3aa37417c24d810edab5e817f34255988ff63ab15eb85bb6a"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "39091"
+      },
+      "success": false,
+      "q_score_final": 0.4375
+    },
+    {
+      "task": "assembling_gift_baskets",
+      "instance_id": 307,
+      "rollout_id": 0,
+      "steps": 39091,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4/json/assembling_gift_baskets_307_0.json",
+        "sha256": "830b8372f077856d42814149b07775c361981674be2a04786fa745859ae91fac"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4/videos/assembling_gift_baskets_307_0.mp4",
+        "sha256": "87b42a1970fd2e8218c4d299bc40515bf1b9e8da68c2feccbd78789d09c50ab6"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "39091"
+      },
+      "success": false,
+      "q_score_final": 0.375
+    },
+    {
+      "task": "assembling_gift_baskets",
+      "instance_id": 308,
+      "rollout_id": 0,
+      "steps": 39091,
+      "metrics": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4/json/assembling_gift_baskets_308_0.json",
+        "sha256": "2635fc67d0ec7b7375e27b5c374a8e29f0ad437d2642f439bc425eb9725fc855"
+      },
+      "video": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4/videos/assembling_gift_baskets_308_0.mp4",
+        "sha256": "004e18d9aa4de16e2cf0b8351e600e28fc090844d61d0c431acbd3bbb107987f"
+      },
+      "video_probe": {
+        "width": 672,
+        "height": 448,
+        "r_frame_rate": "30/1",
+        "nb_frames": "39091"
+      },
+      "success": false,
+      "q_score_final": 0.0625
+    }
+  ],
+  "attempt": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4/attempts/04.json",
+    "sha256": "2ca7205163b4a32c00e55b47064843d7aa0d3c6186352aad85fb890bee789a45"
+  },
+  "physical_attempt": {
+    "status": "completed",
+    "task": "assembling_gift_baskets",
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "instance_ids": [
+      305,
+      306,
+      307,
+      308
+    ],
+    "rollout": 0,
+    "started": 1792120796.823464,
+    "max_steps": 39090,
+    "policy_seed": 17,
+    "simulator_seed": 0,
+    "finished": 1792131221.187625,
+    "seconds": 10424.362755066715,
+    "actual_applied_controls": [
+      39091,
+      39091,
+      39091,
+      39091
+    ],
+    "unused_delivered_controls": {
+      "0": 9,
+      "1": 9,
+      "2": 9,
+      "3": 9
+    },
+    "server_clock_kind": "policy_delivery",
+    "physical_ack_sent": false
+  },
+  "physical_status": {
+    "status": "completed",
+    "pid": 2818755,
+    "task": "assembling_gift_baskets",
+    "task_id": 26,
+    "indices": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+    "started": 1792120393.2802937,
+    "optimizer_updates": 0,
+    "control_steps": [
+      39000,
+      39000,
+      39000,
+      39000
+    ],
+    "updated": 1792130740.2060962,
+    "finished": 1792131221.1903005,
+    "official_timeout": 39090,
+    "completed": 4
+  },
+  "command": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/workers/gpu_0/assembling_gift_baskets-n4-i4-command.json",
+    "sha256": "2aec7e4f9bf599c463e436f899032acfe8fb879fae282d38d8af17884074eedd"
+  },
+  "resolved_config": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parts/assembling_gift_baskets-n4-i4/resolved_config.json",
+    "sha256": "ed0a8c8e7c13e556b33aaaf310dab6865ee3b27cde9ffe842a16cb8713ff21e8"
+  },
+  "protocol_prefix": {
+    "schema": "champion_protocol_prefix_audit_v1",
+    "prefix_bytes": 10183097,
+    "prefix_sha256": "1acde7d46a497d4606a5445fc60e8c5c8850d79e276147e2374b53aaef04eda9",
+    "lines": 7832,
+    "connections": 4,
+    "episodes": 4,
+    "closed_episodes": 4,
+    "active_connections": 0,
+    "deliveries": 7820,
+    "delivered_controls": 156400,
+    "physically_confirmed_controls": null,
+    "task_ids": [
+      26
+    ],
+    "require_closed": false,
+    "session_summaries": [
+      {
+        "episode": "45ed30d10b384255996c5cf159704ea6/reset-1/task-26",
+        "connection": "45ed30d10b384255996c5cf159704ea6",
+        "epoch": 1,
+        "task": 26,
+        "deliveries": 1955,
+        "stage": 14,
+        "votes": [
+          8,
+          9,
+          9
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "aa3c4a2897ea4ed2953e3f38e4fd7117/reset-1/task-26",
+        "connection": "aa3c4a2897ea4ed2953e3f38e4fd7117",
+        "epoch": 1,
+        "task": 26,
+        "deliveries": 1955,
+        "stage": 14,
+        "votes": [
+          8,
+          10,
+          14
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "5eb5533c58914213a0bb03ff3d083073/reset-1/task-26",
+        "connection": "5eb5533c58914213a0bb03ff3d083073",
+        "epoch": 1,
+        "task": 26,
+        "deliveries": 1955,
+        "stage": 14,
+        "votes": [
+          14,
+          14,
+          14
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": true
+      },
+      {
+        "episode": "a41861bdd57d47f0b9941589ab5a8324/reset-1/task-26",
+        "connection": "a41861bdd57d47f0b9941589ab5a8324",
+        "epoch": 1,
+        "task": 26,
+        "deliveries": 1955,
+        "stage": 11,
+        "votes": [
+          1,
+          1,
+          4
+        ],
+        "stages": 15,
+        "legacy": true,
+        "closed": true
+      }
+    ],
+    "original_outputs_modified": false,
+    "scope": "Recorded identity, displayed stage/vote/inpainting recurrence and delivery clock only",
+    "does_not_prove": [
+      "raw observation/action/RNG values",
+      "physical execution",
+      "success",
+      "events beyond this exact prefix"
+    ],
+    "trace": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/workers/gpu_0/model-000/events.jsonl",
+    "captured_bytes": 10183097,
+    "ignored_incomplete_tail_bytes": 0
+  },
+  "model": {
+    "status": "ready",
+    "source_commit": "9f6e75bd7e5efe4ef487c9e7219fcc361e68088b",
+    "config_sha256": "183213e4374514552124d9845ed59bca25e9a3a2866e13c28a99454a0c619648",
+    "asset_receipt_sha256": "9608b3efd724594619a6f78ad034c87585d4ce1036e675cebfc3908fb29744cd",
+    "parameters_before": "2a5ce80b8e6d65ff010be8dad125cf87a6393a0673419be2095d687676f53975",
+    "optimizer_updates": 0,
+    "launcher_source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc",
+    "recovery_manifest_sha256": "044ff86e8b7fd06b9dd17762a4b365ce85569dd3f0a5e37cbdc0e30a56c324b3"
+  },
+  "current_worker": {
+    "status": "evaluating",
+    "pid": 2815230,
+    "model_pid": 2815670,
+    "sim_pid": 2907898,
+    "part": "assembling_gift_baskets-n2-i8",
+    "completed_parts": [
+      "assembling_gift_baskets-n4-i4"
+    ],
+    "diagnosed_failed_parts": []
+  },
+  "processes": {
+    "pid": {
+      "pid": 2815230,
+      "ppid": 2159562,
+      "start_ticks": 551392233,
+      "state": null
+    },
+    "model_pid": {
+      "pid": 2815670,
+      "ppid": 2815230,
+      "start_ticks": 551394000,
+      "state": null
+    },
+    "sim_pid": {
+      "pid": 2907898,
+      "ppid": 2815230,
+      "start_ticks": 552491144,
+      "state": null
+    }
+  },
+  "new_completed": 4,
+  "new_success_count": 0,
+  "all_verified_completed_parts": [
+    "assembling_gift_baskets-n4-i4"
+  ],
+  "terminal_parameter_recheck_pending": true,
+  "original_outputs_modified": false,
+  "manual_visual_review": false,
+  "scope": "Original JSON/video SHA and metadata, physical clocks, exact slot/seed/horizon/config/command, loaded model identity, and live exact-prefix per-session recurrence. Not terminal parameter proof, human video review, raw action/image/RNG equality, or a full model score."
+}

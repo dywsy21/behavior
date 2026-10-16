@@ -12,6 +12,10 @@
 
 ## 实时进度（最新记录在前）
 
+- **2026-10-16 14:16 CST / Codex SUBMISSION-FULL-EVAL（礼物篮305–308四原件通过，冠军只余末四例）：** 原GPU0 worker2815230/模型2815670保持，sim2907898加载309–310；GPU2末两例已各3900实控。新4原JSON/MP4 SHA、39091实控=视频帧数、672×448/30fps、唯一完成attempt/17和0 seeds/39090官方时限/9f配置与命令核合；Q依次0.3125/0.4375/0.375/0.0625、success均false。10183097字节journal前缀SHA1acde7d4、四闭合独立会话递推通过，原2a5ce80b加载身份/零更新核合，最终参数检查仍等终态。证据`docs/infra/results/2026-10-16-champion-gift305308-originals.json`，不是人工视频画面审查或全task/模型成绩。终局BDDL计分已自然完成，未重启/改评分。累计已审980完整/16既有工程异常/4待、22已结算成功；两路最后309–310及2823822后继继续，下一完整终态归档→MEM576。
+
+- **2026-10-16 14:15 CST / Codex SUBMISSION-FULL-EVAL（礼物篮计分自然完成并自动接309–310，四原件待核）：** 同41474确认GPU0 completed_parts=1、part已切`assembling_gift_baskets-n2-i8`，新sim2907898实活；原2815230/2815670不变，未因BDDL终局计分慢发停止/重启。GPU2末两例已各3100实控，2823822后继仍实活。正在核礼物篮305–308四原件，已审游标976/16错误未提前推进；下一合入新原件并验GPU0末两例首控制，其余评测不停。
+
 - **2026-10-16 14:13 CST / Codex SUBMISSION-FULL-EVAL（礼物篮粗计数未变定位为官方终局计分，保持运行）：** GPU0 status暂留39000并非已证实停机：只读原件看到305/306先后写出39091步的JSON（Q0.3125/0.4375、均false，未先入整批游标）；非暂停py-spy明确当前MainThread在官方`record_fn→aggregate→_compute_episode_metrics→get_goal_option_satisfaction`的BDDL谓词遍历，模型最后交付39100后等待请求。只证明采样位置及已有逐例产出，不能以CPU忙证明绝无活锁，四例完整终态仍待。证据`docs/infra/results/2026-10-16-champion-gift-final-scoring-diagnosis.json`，原探针/栈留忽略artifacts；无信号/重启/官方计分或时限改动。GPU2末两例已各1300实控且继续，2823822后继仍等待；已审976/16工程异常口径不变。继续等本批余原件及正常切换，不因陈旧粗计数停评。
 
 - **2026-10-16 14:05 CST / Codex SUBMISSION-FULL-EVAL（罐头305–308四原件通过，自动续末两例）：** 原GPU2 worker2815480/模型2816006保持，新模拟器2901123加载309–310，GPU0继续原gift_baskets四例各38700。4原JSON/MP4 SHA、34464实控=视频帧数、672×448/30fps、唯一完成attempt/原17与0 seeds/34463官方时限/9f配置与命令核合；Q依次0/0/0.1/0、success均false。8966906字节journal精确前缀SHA8db8d862、四独立闭合会话递推通过，原2a5ce80b加载身份/零更新核合，最终参数复验仍等模型终态。证据`docs/infra/results/2026-10-16-champion-canning305308-originals.json`，不是人工视频画面审查或全task/模型成绩。累计已审976完整/16既有工程异常/8待、22已结算成功；不重跑旧错误，2823822后继持续。下一等GPU0本批与两路最后两例/完整归档→MEM576。

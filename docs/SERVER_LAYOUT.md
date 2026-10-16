@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-16 14:16 CST：冠军两恢复路进入最后309–310
+
+- `runs/champion_gpu0_20261016_recovery_v1`当前part `assembling_gift_baskets-n2-i8`，worker2815230/模型2815670不变，sim2907898加载；`runs/champion_gpu2_20261016_recovery_v1`当前part `canning_food-n2-i8`，worker2815480/模型2816006不变，sim2901123已有实控。源仍fe1/实际actor仍9f，不热改或另开重复run。
+- 各自`parts/*-n4-i4/`的305–308共8份原JSON和MP4已完整核验并保留原位置；SHA/物理/协议证据在`docs/infra/results/2026-10-16-champion-{canning,gift}305308-originals.json`。累计980完整/16工程异常/4待，最终模型参数及全量归档仍待终态。礼物篮的粗39000计数曾滞留于官方BDDL终局计分，已自然完成，见`2026-10-16-champion-gift-final-scoring-diagnosis.json`；不是重跑。
+- 下方2823822/`queue-after-champion-multirecovery-v1`保持当前后继，仍等待两路终态与原件归档后接原MEM576；没有MEM worker/parts，不把排队当已启动。两run/当前队列所有日志、旧错误和权重均继续保留。
+
 ## 2026-10-16 11:20 CST：0/2/4恢复后自动接MEM（当前等待器）
 
 - 11:30下方GPU0/2恢复run均已有真实控制（各200/1300），PID不变、各4独立会话前缀通过；证据`docs/infra/results/2026-10-16-champion-multi-recovery-first-controls.json`。不是仅模型ready或场景加载；不另开重复run。
