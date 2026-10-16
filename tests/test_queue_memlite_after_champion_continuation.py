@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import time
 
 import pytest
 
@@ -218,3 +219,107 @@ def test_replace_only_exact_dead_continuation_queue(tmp_path,monkeypatch,bad):
     else:
         q,pin=m.replacement_queue(*args)
         assert q==mem/'queue-resume-v2' and pin==m.c.binding(previous/'status.json')
+
+
+def expanded_fixture(tmp_path, monkeypatch):
+    mem, champ, auth, ms, cs, old, root = fixture(tmp_path, monkeypatch)
+    for name in ('parts', 'workers'):
+        (mem/name).mkdir()
+    mm=m.c.read(mem/'manifest.json')|dict(groups=[],continue_on_batch_errors=True,isolate_physical_batches=True)
+    save(mem/'manifest.json',mm)
+    now=time.time();ancestor=mem/'queue-ancestor'
+    pins=[m.c.binding(mem/'manifest.json'),m.c.binding(mem/'manifest.json'),
+          m.c.binding(champ/'manifest.json'),m.c.binding(auth)]
+    before=dict(status='waiting_for_champion_continuation',started=now-20,pid=99999041,
+                phases=[],mem_job=str(mem),champion_job=str(champ),bindings=pins)
+    save(ancestor/'status.json',before|dict(status='needs_diagnosis',finished=now-10,
+                                          error="InterruptedError('Requested queue stop')"))
+    (ancestor/'STOP').touch();os.utime(ancestor/'STOP',(now-10.5,now-10.5))
+    receipt=tmp_path/'previous-upgrade.json'
+    save(receipt,dict(schema='pending_mem_isolation_upgrade_v1',created=now-11,old_queue=str(ancestor),
+        old_mem=str(mem),new_mem=str(mem),champion=str(champ),authorization=str(auth),old_source=str(ms),
+        new_source=str(ms),bindings=pins,before=before,policy_changed=False,champion_stop_requested=False,
+        scored_cases_replayed=0))
+    recs={};sources={};specs=[]
+    for gpu in (0,2,4):
+        job=tmp_path/f'recovery-{gpu}';source=tmp_path/f'recovery-source-{gpu}'
+        cert=job/'certificate.json';save(cert,dict(gpu=gpu))
+        rm=dict(gpu=gpu,parent=str(champ),source_commit=str(gpu)*40,certificate=m.c.binding(cert))
+        save(job/'manifest.json',rm)
+        save(job/'status.json',dict(status='running',pid=os.getpid()))
+        recs[job]=dict(job=job,source=source,manifest=rm);sources[job]=source;specs.append((job,source))
+    def registered(parent, pairs):
+        assert Path(parent)==champ
+        out={}
+        for job,source in pairs:
+            row=recs[Path(job)]
+            if Path(source)!=row['source']:raise ValueError('Changed recovery source')
+            out[row['manifest']['gpu']]=row
+        return out
+    monkeypatch.setattr(m.pack,'registered_recoveries',registered)
+    queue_source=tmp_path/'frozen-queue-source'
+    def frozen(source,commit):
+        if Path(source)!=queue_source or commit!='a'*40:raise ValueError('Changed old queue source')
+    monkeypatch.setattr(m.c,'frozen_source',frozen)
+    state,_=finished()
+    state.update(status='needs_isolated_worker_recovery',completed_gpus=[1,3,5,6,7],
+                 failed_gpus={'0':{},'2':{},'4':{}})
+    save(champ/'status.json',state)
+    child=specs[-1][0];rm=recs[child]['manifest']
+    row=dict(status='needs_diagnosis',started=now-9,finished=now-1,pid=99999042,phases=[],
+        mem_job=str(mem),champion_job=str(champ),champion_root=str(root),mem_source=str(ms),champion_source=str(cs),
+        queue_source=str(queue_source),queue_source_commit='a'*40,automatic_retries=False,
+        pending_mem_upgrade=m.c.binding(receipt),
+        error="ValueError('Parent terminal quarantine is not exactly covered by registered recoveries')",
+        recovery_dependencies=[dict(job=str(child),source=str(specs[-1][1]),source_commit=rm['source_commit'],gpu=4)],
+        bindings=[m.c.binding(mem/'manifest.json'),m.c.binding(champ/'manifest.json'),m.c.binding(auth),
+                  mm['seal'],m.c.read(champ/'manifest.json')['seal'],m.c.binding(root/'manifest.json'),
+                  m.c.binding(receipt),m.c.binding(ancestor/'status.json'),m.c.binding(child/'manifest.json'),rm['certificate']])
+    save(old/'status.json',row)
+    return mem,champ,auth,old,root,specs,receipt,recs
+
+
+@pytest.mark.parametrize('bad',[None,'live_queue','phase','mem_started','mem_parts','mem_worker','mem_stop',
+    'same_dependencies','missing_old','missing_new','changed_old_commit','changed_old_source','changed_binding',
+    'changed_receipt','unknown_error','foreign_parent','foreign_root','queue_source','parent_live','parent_running',
+    'parent_partition','side_failed','retries','ancestor_phase'])
+def test_expand_dead_waiter_only_with_original_lineage_and_exact_new_quarantines(tmp_path,monkeypatch,bad):
+    mem,champ,auth,old,root,specs,receipt,recs=expanded_fixture(tmp_path,monkeypatch)
+    value=m.c.read(old/'status.json');before=m.c.binding(champ/'status.json')
+    if bad=='live_queue':value['pid']=os.getpid()
+    elif bad=='phase':value['phases']=[dict(name='remaining_mem')]
+    elif bad=='mem_started':save(mem/'status.json',dict(status='running'))
+    elif bad=='mem_parts':(mem/'parts'/'attempted').mkdir()
+    elif bad=='mem_worker':(mem/'workers'/'gpu_0').mkdir()
+    elif bad=='mem_stop':(mem/'STOP').touch()
+    elif bad=='same_dependencies':specs=specs[-1:]
+    elif bad=='missing_old':specs=specs[:2]
+    elif bad=='missing_new':specs=specs[1:]
+    elif bad=='changed_old_commit':value['recovery_dependencies'][0]['source_commit']='changed'
+    elif bad=='changed_old_source':value['recovery_dependencies'][0]['source']=str(tmp_path/'foreign')
+    elif bad=='changed_binding':value['bindings'][-1]['sha256']='changed'
+    elif bad=='changed_receipt':save(receipt,m.c.read(receipt)|dict(policy_changed=True))
+    elif bad=='unknown_error':value['error']='unrelated failure'
+    elif bad=='foreign_parent':value['champion_job']=str(root)
+    elif bad=='foreign_root':value['champion_root']=str(champ)
+    elif bad=='queue_source':value['queue_source_commit']='changed'
+    elif bad in ('parent_live','parent_running','parent_partition'):
+        state=m.c.read(champ/'status.json')
+        if bad=='parent_live':state['pid']=os.getpid()
+        elif bad=='parent_running':state['status']='running'
+        else:state['failed_gpus']={'4':{}}
+        save(champ/'status.json',state);before=m.c.binding(champ/'status.json')
+    elif bad=='side_failed':save(specs[0][0]/'status.json',dict(status='needs_diagnosis',pid=99999045))
+    elif bad=='retries':value['automatic_retries']=True
+    elif bad=='ancestor_phase':
+        previous=Path(m.c.read(receipt)['old_queue']);v=m.c.read(previous/'status.json')
+        save(previous/'status.json',v|dict(phases=[dict(name='remaining_mem')]))
+    save(old/'status.json',value);old_pin=m.c.binding(old/'status.json')
+    args=(mem,root,old,'queue-expanded',auth,champ)
+    if bad:
+        with pytest.raises((ValueError,RuntimeError)):m.replacement_queue(*args,recoveries=specs)
+    else:
+        queue,pin=m.replacement_queue(*args,recoveries=specs)
+        assert queue==mem/'queue-expanded' and pin==old_pin
+    assert m.c.binding(old/'status.json')==old_pin and m.c.binding(champ/'status.json')==before
+    assert not (mem/'queue-expanded').exists() and not (champ/'STOP').exists()

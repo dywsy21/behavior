@@ -1,0 +1,102 @@
+{
+  "source": {
+    "path": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+    "commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc",
+    "bundle_sha256": "73a502002ace5adb95c9f2864c207d420a6556a2d9beed402497bcb1cf32ca16",
+    "local_tests": 213,
+    "target_tests": 213
+  },
+  "prepared": {
+    "0": {
+      "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1",
+      "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+      "source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc",
+      "manifest": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/manifest.json",
+        "sha256": "044ff86e8b7fd06b9dd17762a4b365ce85569dd3f0a5e37cbdc0e30a56c324b3"
+      },
+      "certificate": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1/parent-worker-certificate.json",
+        "sha256": "02f711c026307ec0d57167f60ec6086f8b0bfd8185c9e5d946e5de6392559c61"
+      },
+      "cases": 6,
+      "parts": [
+        {
+          "task_id": 26,
+          "task": "assembling_gift_baskets",
+          "num_envs": 4,
+          "indices": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "id": "assembling_gift_baskets-n4-i4"
+        },
+        {
+          "task_id": 26,
+          "task": "assembling_gift_baskets",
+          "num_envs": 2,
+          "indices": [
+            8,
+            9
+          ],
+          "id": "assembling_gift_baskets-n2-i8"
+        }
+      ],
+      "peer_recoveries": [
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1",
+          "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+          "source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc"
+        }
+      ]
+    },
+    "2": {
+      "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1",
+      "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+      "source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc",
+      "manifest": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/manifest.json",
+        "sha256": "b55c9143a655f5b16825ab3284868351f8b89ca2892084ec82707216d71d34d6"
+      },
+      "certificate": {
+        "path": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu2_20261016_recovery_v1/parent-worker-certificate.json",
+        "sha256": "3529fc2d2c0dd4031e249047246a830d0e1efcbb132f25e8b7613b115b53bf53"
+      },
+      "cases": 6,
+      "parts": [
+        {
+          "task_id": 48,
+          "task": "canning_food",
+          "num_envs": 4,
+          "indices": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "id": "canning_food-n4-i4"
+        },
+        {
+          "task_id": 48,
+          "task": "canning_food",
+          "num_envs": 2,
+          "indices": [
+            8,
+            9
+          ],
+          "id": "canning_food-n2-i8"
+        }
+      ],
+      "peer_recoveries": [
+        {
+          "job": "/run/ti/rl_memlite_stage1_20261006/runs/champion_gpu0_20261016_recovery_v1",
+          "source": "/run/ti/rl_memlite_stage1_20261006/code/champion-multi-recovery-20261016-v1",
+          "source_commit": "fe1db1399f7a6e19beb84e8196e341417301b8cc"
+        }
+      ]
+    }
+  },
+  "scope": "Unattempted suffix only; original operational errors remain unscored and unreplayed; registrations are not proof of execution"
+}

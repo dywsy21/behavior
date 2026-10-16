@@ -38,7 +38,56 @@ def validate_order(mem, champion, authorization, mem_source, champion_source):
     return mem, mm, champion, cm, authorization, root
 
 
-def replacement_queue(mem, champion_root, previous, name, authorization, champion=None, pending_mem_upgrade=None):
+def expanded_recovery_bindings(old, mem, champion_root, champion, authorization, recoveries):
+    """Supersede an exited, zero-phase waiter after additional GPU quarantines.
+
+    Preserve the previous explicit dependencies and their frozen provenance.
+    Only a strict expansion covering this same terminal parent is accepted;
+    this does not restart an attempted MEM or any failed physical case.
+    """
+    from pending_mem_upgrade import unused, verify
+    if (champion is None or old.get('champion_job') != str(champion)
+            or old.get('champion_root') != str(champion_root)
+            or old.get('automatic_retries') is not False
+            or not old.get('pending_mem_upgrade') or not old.get('recovery_dependencies')):
+        raise ValueError('Exact same-parent recovery queue history required')
+    validate_order(mem, champion, authorization, old['mem_source'], old['champion_source'])
+    c.frozen_source(Path(old['queue_source']), old['queue_source_commit'])
+    unused(mem)
+    receipt = old['pending_mem_upgrade']; c.check_binding(receipt)
+    prior = c.read(receipt['path']); previous = Path(prior['old_queue'])
+    verify(receipt['path'], previous, mem, champion, authorization)
+    old_specs = [(v['job'], v['source']) for v in old['recovery_dependencies']]
+    old_recovered = pack.registered_recoveries(champion, old_specs)
+    new_recovered = pack.registered_recoveries(champion, recoveries)
+    if not set(old_recovered) < set(new_recovered):
+        raise ValueError('Recovery replacement must add every new quarantined GPU')
+    canonical = [dict(job=str(v['job']), source=str(v['source']),
+        source_commit=v['manifest']['source_commit'], gpu=gpu) for gpu, v in old_recovered.items()]
+    if old['recovery_dependencies'] != canonical:
+        raise ValueError('Previous recovery source/commit provenance changed')
+    for gpu, before in old_recovered.items():
+        after = new_recovered[gpu]
+        if any(before[k] != after[k] for k in ('job', 'source', 'manifest')):
+            raise ValueError('Existing recovery dependency was replaced')
+    # Validates the exact terminal failed/completed GPU partition. False means
+    # the correctly registered sidecars are still running, which is expected.
+    parent = c.read(Path(champion) / 'status.json')
+    if parent.get('status') != 'needs_isolated_worker_recovery':
+        raise ValueError('Expanded recovery queue requires a terminal isolated parent')
+    c.require_exited([parent['pid'], *parent['worker_pids'].values()])
+    pack.recovered_terminal_ready(champion, recoveries)
+    mm, cm = c.read(mem / 'manifest.json'), c.read(Path(champion) / 'manifest.json')
+    expected = [c.binding(mem / 'manifest.json'), c.binding(Path(champion) / 'manifest.json'),
+        c.binding(authorization), mm['seal'], cm['seal'], c.binding(champion_root / 'manifest.json'),
+        receipt, c.binding(previous / 'status.json')]
+    for rec in old_recovered.values():
+        expected.extend([c.binding(rec['job'] / 'manifest.json'), rec['manifest']['certificate']])
+    return expected
+
+
+def replacement_queue(mem, champion_root, previous, name, authorization, champion=None, pending_mem_upgrade=None,
+                      *, recoveries=()):
     if not re.fullmatch(r'queue-[A-Za-z0-9_-]+', name):
         raise ValueError('Queue basename required')
     previous, queue = Path(previous).resolve(), mem / name
@@ -73,6 +122,8 @@ def replacement_queue(mem, champion_root, previous, name, authorization, champio
         expected = [c.binding(mem/'manifest.json'), c.binding(old_champion/'manifest.json'),
                     c.binding(authorization), c.read(mem/'manifest.json')['seal'],
                     c.read(old_champion/'manifest.json')['seal'], c.binding(champion_root/'manifest.json'), ancestor]
+    elif old.get('error') == "ValueError('Parent terminal quarantine is not exactly covered by registered recoveries')":
+        expected = expanded_recovery_bindings(old, mem, champion_root, champion, authorization, recoveries)
     else:
         raise ValueError('Unclassified previous queue failure')
     if old.get('bindings') != expected:
@@ -93,7 +144,8 @@ def run(mem, champion, authorization, mem_source, champion_source, previous_queu
     mem, mm, champion, cm, auth, root = validate_order(mem, champion, authorization, mem_source, champion_source)
     recovered = pack.registered_recoveries(champion, recoveries)
     recoveries = [(v['job'], v['source']) for v in recovered.values()]
-    queue, old = replacement_queue(mem, root, previous_queue, queue_name, auth, champion,pending_mem_upgrade)
+    queue, old = replacement_queue(mem, root, previous_queue, queue_name, auth, champion,pending_mem_upgrade,
+                                  recoveries=recoveries)
     output_root = Path(output_root).resolve()
     if (not output_root.is_dir() or any((output_root / name).exists() for name in ('champion-results', 'mem-results'))
             or any(output_root.is_relative_to(p) for p in (mem, champion, root))):
@@ -102,7 +154,8 @@ def run(mem, champion, authorization, mem_source, champion_source, previous_queu
     c.frozen_source(c.REPO, commit)
     owner = (mem / 'queue-owner.lock').open('a'); fcntl.flock(owner, fcntl.LOCK_EX | fcntl.LOCK_NB)
     # Recheck after acquiring ownership, before creating or launching anything.
-    replacement_queue(mem, root, previous_queue, queue_name, auth, champion,pending_mem_upgrade)
+    replacement_queue(mem, root, previous_queue, queue_name, auth, champion,pending_mem_upgrade,
+                      recoveries=recoveries)
     queue.mkdir()
     bindings = [c.binding(mem / 'manifest.json'), c.binding(champion / 'manifest.json'), c.binding(auth),
                 mm['seal'], cm['seal'], c.binding(root / 'manifest.json'), old]

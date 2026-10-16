@@ -1,5 +1,11 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-16 11:13 CST：冠军GPU0/2未尝试后缀续评（当前）
+
+- RTX根仍`/run/ti/rl_memlite_stage1_20261006`。新`runs/champion_gpu0_20261016_recovery_v1`与`runs/champion_gpu2_20261016_recovery_v1`，各6例；tmux分别`champion-gpu0-recovery-v1`/`champion-gpu2-recovery-v1`，worker2815230/2815480，model2815670/2816006，sim2818755/2818729。日志各`run.log`及`workers/gpu_N/`；模型ready，场景加载，首实控仍待核。
+- 独立源`code/champion-multi-recovery-20261016-v1`固定`fe1db1399f7a6e19beb84e8196e341417301b8cc`；本地/RTX各213回归通过。actor/物理仍原9f、参数原2a5ce80b。manifest/证书完整SHA见`docs/infra/results/2026-10-16-champion-multi-recovery-registrations.json`。Git包`runs/final_eval_preparation_20261014/champion-multi-recovery-20261016-v1.bundle` SHA73a50200…ca16，本地`artifacts/final-eval-20261016/multi-recovery-v1/source.bundle`；不热改此现役源。
+- 原父`champion_final100_20261014_resume_v2`的健康卡已自然完成、隔离0/2/4，GPU4侧路42例也已自然终态。旧MEM `queue-after-champion-recovered-v1`/1404741因只覆盖GPU4而自行退出，phases空；原日志/终态保留，不能重新使用旧目录。新明确0/2/4后继仍在准备，不称MEM已跑；MEM仍原v8/793源/51c actor/576剩余。旧观察器1408396已经退出，不再把旧session当实时状态。
+
 ## 2026-10-15 12:28 CST：父＋GPU4恢复后自动接MEM（当前等待器）
 
 - 12:30统一只读观察器PID1408396/session23293已实活，按同一视图跟踪父run、GPU4侧路、新队列及MEM；旧303366已自然退出。实时计数不替代原件审计。证据`docs/infra/results/2026-10-15-combined-evaluation-monitor.json`。
