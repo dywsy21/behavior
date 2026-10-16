@@ -1,5 +1,12 @@
 # robo服务器文件位置与保留规则
 
+## 2026-10-16 21:29 CST：冠军提交材料迁至homelab现有分享站点（上传中）
+
+- 目标主机为技能指定`ubuntu@192.168.1.105`（实测hostname node1），既有files站点`/share`映射`/home/ubuntu/storage/share`，未修改nginx、DNS或鉴权。
+- 上传暂存：`/home/ubuntu/storage/champion-publish-20261016-staging-v1`，尚未公开；计划验签后同盘原子移到`/home/ubuntu/storage/share/behavior-2026-champion-20261016`。完整原MP4在`videos/`，错误partial在`incomplete/`，绝不混分母。
+- 原982有效视频＋14错误partial、结果ZIP与summary约37.31GB；来源仅本页记录的冠军六个原run，不上传MEM、权重或训练数据。对应14partial来自18工程异常，4例reset失败无视频。
+- 两次调整并行度留下的本人传输partial保留在`/home/ubuntu/storage/champion-publish-20261016-interrupted-transfer/`及其`parallel4/`，不在公开目录；已完整文件验SHA后复用。上传和核验脚本/源清单在本地忽略`artifacts/champion-publish-20261016/`。完成证据和公开链接以plan最新记录为准。
+
 ## 2026-10-16 17:02 CST：冠军结果已自动归档，MEM v8八卡当前运行
 
 - 17:11冠军全包独立复核通过；本地同SHA副本`/home/wsy/behavior/artifacts/final-eval-20261016/champion-results-v1/`共21文件/4551036字节，全部Git忽略。包含可直接取用的`challenge_results_draft.zip`、完整逐task`summary.json`、`video-inventory.json`、错误清单和来源配置；原视频仍留RTX，不是已托管/正式提交。MEM GPU5已自然从点火两例切到`outfit_a_basic_toolbox-n4-i0`/sim2967976，其他worker/model不变，账面392/34旧异常/574待。
